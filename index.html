@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alberto Migliorato — AI Engineer & Senior SWE</title>
+  <meta name="description" content="Alberto Migliorato — AI Engineer & Senior Software Engineer. LLM training, distributed systems, and open-source developer tooling.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__progress" aria-hidden="true"></div>
+    <a class="nav__brand" href="#hero">albemiglio<span class="accent">.it</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#portfolio">Work</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+  <main>
+    <section id="hero">
+      <div class="hero__grid">
+        <div class="hero__left">
+          <p class="hero__kicker">$ whoami</p>
+          <h1 class="hero__name">Alberto Migliorato</h1>
+          <p class="hero__title">AI Engineer <span class="accent">&amp;</span> Senior SWE</p>
+          <p class="hero__sub">From Java plugins and distributed systems to fine-tuning LLMs in production.</p>
+          <div class="hero__cta">
+            <a class="btn btn--primary" href="https://github.com/albemiglio" target="_blank" rel="noopener">GitHub</a>
+            <a class="btn" href="https://linkedin.com/in/albertomigliorato" target="_blank" rel="noopener">LinkedIn</a>
+            <a class="btn" href="mailto:dev@albemiglio.it">Email</a>
+          </div>
+        </div>
+        <div class="term" aria-hidden="true">
+          <div class="term__bar">
+            <span class="term__dot"></span><span class="term__dot"></span><span class="term__dot"></span>
+            <span class="term__name">zsh — albemiglio</span>
+          </div>
+          <pre class="term__body"><code></code></pre>
+        </div>
+      </div>
+      <a class="scrollcue" href="#about" aria-label="Scroll to content"></a>
+    </section>
+    <section id="about" data-reveal>
+      <div class="rail">
+        <h2 class="section-title"><span class="accent" aria-hidden="true">//</span> About</h2>
+        <p class="prose">MSc student in Computer Engineering (AI &amp; Data Analytics) at Politecnico di Torino. Recently AI Engineer at Nebuly, working on LLM training and inference at scale. Before AI, a senior Java developer: commercial Minecraft plugins with real customers, and founder of the Novaverse network.</p>
+        <p class="aside">Declined internship offers from Amazon (Poland, 2024) and Google (Croatia, 2026).</p>
+      </div>
+    </section>
+    <section id="experience" class="band" data-reveal>
+      <h2 class="section-title"><span class="accent" aria-hidden="true">//</span> Experience</h2>
+      <ol class="ledger" role="list">
+        <li class="lg" data-reveal>
+          <div class="lg__meta">
+            <span class="lg__date">Oct 2025 — Apr 2026</span>
+            <span class="lg__org">Nebuly AI</span>
+            <span class="lg__role">AI Engineer</span>
+          </div>
+          <div class="lg__body">
+            <p>Trained and fine-tuned large language models on Google Cloud Platform (Vertex AI) to improve internal NLP systems.</p>
+            <p>Built models that analyze customer LLM–user conversations, surfacing usage patterns, failure modes, and optimization opportunities to drive product decisions.</p>
+          </div>
+        </li>
+        <li class="lg" data-reveal>
+          <div class="lg__meta">
+            <span class="lg__date">Apr 2024 — Jun 2024</span>
+            <span class="lg__org">KPMG Italy</span>
+            <span class="lg__role">Data Scientist Intern</span>
+          </div>
+          <div class="lg__body">
+            <p>Applied statistical methods to large datasets to generate stakeholder insights.</p>
+            <p>Built a supplier-recommendation tool and a Power BI dashboard scoring supplier reliability.</p>
+          </div>
+        </li>
+        <li class="lg" data-reveal>
+          <div class="lg__meta">
+            <span class="lg__date">Jan 2022 — Present</span>
+            <span class="lg__org">Novaverse</span>
+            <span class="lg__role">Founding Partner &amp; Head Developer</span>
+          </div>
+          <div class="lg__body">
+            <p>Lead developer of a gaming network; performance optimization, resource planning, and prioritization across projects.</p>
+          </div>
+        </li>
+        <li class="lg" data-reveal>
+          <div class="lg__meta">
+            <span class="lg__date">Aug 2022 — Oct 2023</span>
+            <span class="lg__org">Premier Studios</span>
+            <span class="lg__role">Freelance Java Developer</span>
+          </div>
+          <div class="lg__body">
+            <p>Delivered Java applications in an Agile team, integrating with databases and APIs.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+    <section id="portfolio" data-reveal>
+      <h2 class="section-title"><span class="accent" aria-hidden="true">//</span> Selected work</h2>
+      <div class="cards">
+        <a class="card" data-reveal href="https://github.com/albemiglio/keyward" target="_blank" rel="noopener">
+          <h3 class="card__name">keyward</h3>
+          <p class="card__desc">OSS Claude Code plugin that auto-intercepts API keys pasted into chat, stores them in chmod-600 files, and re-submits a sanitized prompt.</p>
+          <p class="card__tags">Python · AI tooling · security</p>
+        </a>
+        <a class="card" data-reveal href="https://github.com/albemiglio/strix-llm" target="_blank" rel="noopener">
+          <h3 class="card__name">strix-llm</h3>
+          <p class="card__desc">Known-good local LLM inference on the Framework Desktop (Ryzen AI Max+ 395 / Strix Halo).</p>
+          <p class="card__tags">LLM · inference · hardware</p>
+        </a>
+        <a class="card" data-reveal href="https://builtbybit.com/resources/18731" target="_blank" rel="noopener">
+          <h3 class="card__name">Nyx</h3>
+          <p class="card__desc">Commercial Minecraft authentication plugin — ~<span data-count="400">400</span> customers, Ed25519 anti-piracy.</p>
+          <p class="card__tags">Java · commercial · security</p>
+        </a>
+      </div>
+      <h3 class="subhead">More</h3>
+      <div class="grid">
+        <a class="chip" data-reveal href="https://github.com/albemiglio/PowerLib" target="_blank" rel="noopener"><strong>PowerLib</strong>Cross-platform Java/Adventure API for Bukkit/Spigot/Paper, BungeeCord and Velocity.</a>
+        <a class="chip" data-reveal href="https://github.com/albemiglio/accounts" target="_blank" rel="noopener"><strong>accounts</strong>Universal cross-plugin UUID migration for Minecraft — a player's data follows their identity across cracked ↔ premium.</a>
+        <a class="chip" data-reveal href="https://github.com/albemiglio/WhatsRust" target="_blank" rel="noopener"><strong>WhatsRust</strong>Lightweight Rust client-server messaging: private chats, group invites, reliable offline delivery.</a>
+      </div>
+    </section>
+    <section id="skills" class="band" data-reveal>
+      <h2 class="section-title"><span class="accent" aria-hidden="true">//</span> Skills</h2>
+      <div class="skills">
+        <div class="skillgroup"><span class="skillgroup__k">Languages</span><span class="skillgroup__v">Java · Python · C · Rust · JavaScript · TypeScript</span></div>
+        <div class="skillgroup"><span class="skillgroup__k">ML / LLM</span><span class="skillgroup__v">LLM training &amp; fine-tuning (single &amp; multi-GPU) · Vertex AI · Scikit-Learn</span></div>
+        <div class="skillgroup"><span class="skillgroup__k">Data / Big Data</span><span class="skillgroup__v">Apache Spark · Hadoop · ClickHouse</span></div>
+        <div class="skillgroup"><span class="skillgroup__k">Cloud</span><span class="skillgroup__v">GCP · AWS · Azure</span></div>
+        <div class="skillgroup"><span class="skillgroup__k">Databases</span><span class="skillgroup__v">PostgreSQL · MySQL · MongoDB</span></div>
+        <div class="skillgroup"><span class="skillgroup__k">Testing / Quality</span><span class="skillgroup__v">Pytest · JUnit · Ruff · Black · Bandit</span></div>
+      </div>
+    </section>
+    <section id="education" data-reveal>
+      <h2 class="section-title"><span class="accent" aria-hidden="true">//</span> Education</h2>
+      <div class="edu">
+        <div class="edu__row"><span class="edu__deg">MSc Computer Engineering — AI &amp; Data Analytics</span><span class="edu__meta">Politecnico di Torino · Sep 2024 – Present</span></div>
+        <div class="edu__row"><span class="edu__deg">BSc Computer Engineering</span><span class="edu__meta">Politecnico di Torino · Thesis: Computer Networks (RSA cryptography)</span></div>
+      </div>
+    </section>
+    <section id="contact" class="band" data-reveal>
+      <h2 class="section-title"><span class="accent" aria-hidden="true">//</span> Contact</h2>
+      <div class="contact">
+        <a class="contact__primary" href="mailto:dev@albemiglio.it">dev@albemiglio.it</a>
+        <div class="contact__rest">
+          <a class="btn" href="https://linkedin.com/in/albertomigliorato" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn" href="https://github.com/albemiglio" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="https://t.me/albemiglio" target="_blank" rel="noopener">Telegram</a>
+          <span class="btn btn--static">Discord: albemiglio</span>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <span>© <span id="yr">2026</span> Alberto Migliorato</span>
+    <span class="footer__mono">built from scratch — no page builders this time</span>
+  </footer>
+  <script src="main.js"></script>
+</body>
+</html>

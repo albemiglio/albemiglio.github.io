@@ -1,0 +1,202 @@
+:root{
+  --bg:#0B0D10; --text:#E7E9EE; --muted:#9AA0AB; --accent:#E8E0D0;
+  --border:#1E222B; --line-strong:#6A6862; --surface:#12151B;
+  --font-sans:"Instrument Sans",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+  --maxw:940px;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);
+  line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.accent{color:var(--accent)}
+/* One focus ring for the whole page: accent clears 3:1 on both --bg and --surface. */
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+/* Per-section measure: sections override --w so the page changes shape as it scrolls. */
+main>section{--w:var(--maxw);max-width:var(--w);margin-inline:auto;padding:5rem 1.25rem}
+/* overflow:hidden keeps the progress bar inside the header; sticky is unaffected
+   because the clip is on the sticky element itself, not an ancestor. */
+.nav{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;
+  align-items:center;gap:1rem;padding:.9rem 1.25rem;overflow:hidden;
+  background:rgba(11,13,16,.8);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border)}
+.nav__progress{position:absolute;left:0;bottom:0;height:2px;width:100%;
+  background:var(--accent);transform:scaleX(0);transform-origin:0 50%}
+.nav__brand{font-family:var(--font-mono);font-weight:700}
+.nav__links{display:flex;gap:1.25rem;font-size:.9rem}
+.nav__links a{color:var(--muted)}
+.nav__links a:hover,.nav__links a:focus-visible{color:var(--text)}
+.nav__links a.is-active{color:var(--accent)}
+@media(max-width:600px){.nav__links{display:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.btn{font-family:var(--font-mono);font-size:.9rem;padding:.55rem 1rem;
+  border:1px solid var(--line-strong);border-radius:8px;color:var(--text);transition:border-color .15s,color .15s}
+.btn:hover,.btn:focus-visible{border-color:var(--accent);color:var(--accent)}
+.btn--primary{background:var(--accent);border-color:var(--accent);color:#0B0D10;font-weight:700}
+.btn--primary:hover,.btn--primary:focus-visible{color:#0B0D10;filter:brightness(1.08)}
+
+#hero{position:relative;min-height:88vh;display:flex;flex-direction:column;
+  justify-content:center;padding-top:6rem;padding-bottom:4rem}
+#hero::before{content:"";position:absolute;top:0;bottom:0;
+  left:50%;translate:-50% 0;width:100vw;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(680px circle at max(12%, calc(50% - 357px)) 8%, rgba(232,224,208,.13), transparent 62%),
+    linear-gradient(rgba(30,34,43,.5) 1px, transparent 1px) 0 0/100% 56px,
+    linear-gradient(90deg, rgba(30,34,43,.5) 1px, transparent 1px) 0 0/56px 100%;
+  -webkit-mask-image:linear-gradient(#000,transparent 78%);
+  mask-image:linear-gradient(#000,transparent 78%)}
+.hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center}
+.hero__kicker{font-family:var(--font-mono);color:var(--accent);font-size:.9rem}
+.hero__name{font-size:clamp(2.4rem,5.4vw,3.9rem);font-weight:700;letter-spacing:-.02em;
+  margin-top:.5rem;line-height:1.05}
+.hero__title{font-size:clamp(1.1rem,2.4vw,1.55rem);color:var(--muted);font-weight:500;margin-top:.6rem}
+.hero__sub{margin-top:1rem;max-width:38ch;color:var(--text)}
+.hero__cta{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.9rem}
+
+/* Terminal card */
+.term{border:1px solid var(--border);border-radius:12px;background:#0E1117;
+  box-shadow:0 24px 60px -30px rgba(0,0,0,.9),0 0 0 1px rgba(232,224,208,.06);
+  overflow:hidden}
+.term__bar{display:flex;align-items:center;gap:.45rem;padding:.6rem .85rem;
+  border-bottom:1px solid var(--border);background:#12151B}
+.term__dot{width:10px;height:10px;border-radius:50%;background:#2A2F3A}
+.term__dot:first-child{background:#3A3630}
+.term__name{margin-left:.5rem;font-family:var(--font-mono);font-size:.72rem;color:var(--muted)}
+.term__body{margin:0;padding:1rem 1.1rem;min-height:15.5rem;
+  font-family:var(--font-mono);font-size:.83rem;line-height:1.75;
+  color:var(--text);white-space:pre-wrap;word-break:break-word}
+.term__body .p{color:var(--accent)}
+.term__body .o{color:var(--muted)}
+
+/* Scroll cue */
+.scrollcue{position:absolute;left:50%;bottom:1.5rem;translate:-50% 0;
+  width:22px;height:34px;border:1px solid var(--border);border-radius:12px}
+.scrollcue::after{content:"";position:absolute;left:50%;top:7px;translate:-50% 0;
+  width:3px;height:6px;border-radius:2px;background:var(--accent);
+  animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%,100%{opacity:1;transform:translateY(0)}50%{opacity:.35;transform:translateY(9px)}}
+.scrollcue:hover,.scrollcue:focus-visible{border-color:var(--accent)}
+
+/* Section rhythm — full-bleed alternating background */
+main>section.band{position:relative}
+main>section.band::before{content:"";position:absolute;inset:0;z-index:-1;
+  left:50%;translate:-50% 0;width:100vw;background:var(--surface);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+
+/* Each section runs at its own measure so the page changes width as it scrolls. */
+#about,#experience{--w:1180px}
+#portfolio{--w:1280px}
+
+.section-title{font-family:var(--font-mono);font-size:1.1rem;color:var(--text);
+  font-weight:500;margin-bottom:1.75rem}
+
+/* About — label, prose, side note. */
+.rail{display:grid;grid-template-columns:11rem minmax(0,1fr) 17rem;gap:3.5rem;align-items:start}
+.rail .section-title{margin-bottom:0}
+/* 54ch keeps the line under ~78 characters once the 1080px breakpoint widens this track. */
+.prose{color:var(--text);font-size:1.05rem;max-width:54ch}
+.aside{font-family:var(--font-mono);font-size:.8rem;line-height:1.7;color:var(--muted);
+  border-left:1px solid var(--line-strong);padding-left:1rem}
+
+/* Experience — one row per role: meta on the left, what came of it on the right. */
+.ledger{list-style:none;padding:0}
+.lg{display:grid;grid-template-columns:16rem 1fr;gap:2.5rem;
+  padding:1.75rem 0;border-top:1px solid var(--border)}
+.lg:last-child{border-bottom:1px solid var(--border)}
+.lg__meta{display:grid;gap:.1rem;align-content:start}
+.lg__date{font-family:var(--font-mono);font-size:.78rem;color:var(--muted)}
+.lg__org{font-weight:600;font-size:1.02rem;margin-top:.5rem}
+.lg__role{font-family:var(--font-mono);font-size:.78rem;color:var(--muted)}
+.lg__body{display:grid;gap:.75rem;max-width:56ch}
+
+/* Portfolio — three hero cards, then a row of secondary repos.
+   The 20rem floor keeps three across at full measure and steps down to two and
+   then one on its own; a straight 3→1 collapse would hand the descriptions a
+   820px line (110+ characters) on the way down. min() so a narrow phone can
+   never be forced wider than its viewport. */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(20rem,100%),1fr));gap:1rem}
+/* Cards and chips are links: --surface on --bg is only 1.15:1, so the border is
+   the control boundary and has to clear 3:1 on its own. Hence --line-strong. */
+.card{border:1px solid var(--line-strong);border-radius:12px;padding:1.25rem;background:var(--surface);
+  max-width:56ch;display:flex;flex-direction:column;gap:.6rem;transition:border-color .15s,transform .15s}
+.card:hover,.card:focus-visible{border-color:var(--accent);transform:translateY(-2px)}
+.card__name{font-family:var(--font-mono);font-size:1.05rem}
+.card__desc{color:var(--muted);font-size:.92rem}
+.card__tags{margin-top:auto;font-family:var(--font-mono);font-size:.78rem;color:var(--accent)}
+.subhead{font-family:var(--font-mono);color:var(--muted);font-size:.9rem;margin:2.25rem 0 1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(20rem,100%),1fr));gap:.75rem}
+.chip{border:1px solid var(--line-strong);border-radius:10px;padding:.85rem 1rem;color:var(--muted);
+  font-size:.9rem;max-width:56ch;transition:border-color .15s,color .15s}
+.chip strong{display:block;color:var(--text);font-family:var(--font-mono);font-size:.88rem;margin-bottom:.25rem}
+.chip:hover,.chip:focus-visible{border-color:var(--accent);color:var(--text)}
+
+/* Skills — facts stated plainly: mono key left, value right. No meters, no bars.
+   Stays at the default 940px measure, so the page pulls back in after the
+   portfolio grid instead of holding one width the whole way down. */
+.skills{display:grid;gap:.9rem}
+.skillgroup{display:grid;grid-template-columns:180px 1fr;gap:1rem;align-items:baseline;
+  border-bottom:1px solid var(--border);padding-bottom:.9rem}
+.skillgroup__k{font-family:var(--font-mono);color:var(--accent);font-size:.85rem}
+.skillgroup__v{color:var(--text)}
+
+/* Education — the page's only two-up block. */
+.edu{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.edu__row{display:grid;gap:.4rem;align-content:start;
+  border-top:1px solid var(--border);padding-top:1rem}
+.edu__deg{font-weight:600}
+.edu__meta{font-family:var(--font-mono);font-size:.82rem;color:var(--muted)}
+
+/* Contact — the address is the primary element, everything else is secondary. */
+#contact{--w:1180px}
+.contact{display:grid;grid-template-columns:1fr auto;gap:2.5rem;align-items:center}
+.contact__primary{font-family:var(--font-mono);font-size:clamp(1.25rem,3.2vw,2.05rem);
+  color:var(--accent);letter-spacing:-.01em;justify-self:start;
+  border-bottom:1px solid var(--line-strong);padding-bottom:.3rem;transition:border-color .15s}
+.contact__primary:hover,.contact__primary:focus-visible{border-color:var(--accent)}
+.contact__rest{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:flex-end}
+/* Discord has no profile URL to link to, so it stays a label shaped like the buttons. */
+.btn--static{color:var(--muted);cursor:default}
+.btn--static:hover{border-color:var(--line-strong);color:var(--muted)}
+
+.footer{max-width:1180px;margin-inline:auto;padding:2.5rem 1.25rem;
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}
+.footer__mono{font-family:var(--font-mono)}
+
+/* Reveal on scroll. The .reveal class is added by JS, never written here, so with
+   JS off nothing is ever hidden. */
+.reveal{opacity:0;transform:translateY(14px);
+  transition:opacity .55s cubic-bezier(.2,.7,.3,1) var(--reveal-delay,0ms),
+             transform .55s cubic-bezier(.2,.7,.3,1) var(--reveal-delay,0ms)}
+.reveal--in{opacity:1;transform:none}
+
+@media(max-width:1080px){
+  .rail{grid-template-columns:11rem minmax(0,1fr);gap:2.5rem}
+  .rail .aside{grid-column:2}
+}
+@media(max-width:860px){
+  .hero__grid{grid-template-columns:1fr;gap:2.25rem}
+  #hero{min-height:auto;padding-top:5rem}
+  .scrollcue{display:none}
+  /* Below this the four channels no longer fit beside the address; they wrap to a
+     second right-aligned row and leave Discord stranded. Stack instead. */
+  .contact{grid-template-columns:1fr;gap:1.5rem}
+  .contact__rest{justify-content:flex-start}
+}
+@media(max-width:820px){
+  .rail{grid-template-columns:1fr;gap:1.5rem}
+  .rail .aside{grid-column:auto}
+  .lg{grid-template-columns:1fr;gap:.9rem;padding:1.4rem 0}
+}
+@media(max-width:700px){
+  .skillgroup{grid-template-columns:1fr;gap:.25rem}
+  .edu{grid-template-columns:1fr;gap:.75rem}
+}
+/* Kill-switch: no motion at all when the user asks for none. */
+@media(prefers-reduced-motion:reduce){
+  .scrollcue::after{animation:none}
+  .card:hover,.card:focus-visible{transform:none}
+  .reveal,.reveal--in{opacity:1;transform:none;transition:none}
+  .nav__progress{display:none}
+}
