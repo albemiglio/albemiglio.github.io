@@ -1,3 +1,20 @@
+/* Self-hosted so the page never waits on a third party. Both are variable fonts:
+   one file each covers 400-700, latin subset only — the page uses nothing else. */
+@font-face{
+  font-family:"Instrument Sans";
+  font-style:normal;
+  font-weight:400 700;
+  font-display:swap;
+  src:url(assets/fonts/instrument-sans-latin.woff2) format("woff2");
+}
+@font-face{
+  font-family:"JetBrains Mono";
+  font-style:normal;
+  font-weight:400 700;
+  font-display:swap;
+  src:url(assets/fonts/jetbrains-mono-latin.woff2) format("woff2");
+}
+
 :root{
   --bg:#0B0D10; --text:#E7E9EE; --muted:#9AA0AB; --accent:#E8E0D0;
   --border:#1E222B; --line-strong:#6A6862; --surface:#12151B;
