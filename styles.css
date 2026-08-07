@@ -180,7 +180,6 @@ main>section.band::before{content:"";position:absolute;inset:0;z-index:-1;
 .footer{max-width:1180px;margin-inline:auto;padding:2.5rem 1.25rem;
   display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
   border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}
-.footer__mono{font-family:var(--font-mono)}
 
 /* Reveal on scroll. The .reveal class is added by JS, never written here, so with
    JS off nothing is ever hidden. */
