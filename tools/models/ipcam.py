@@ -5,7 +5,7 @@ import sys
 import bpy
 
 sys.path.insert(0, os.path.dirname(__file__))
-from common import args, bevel, box, cylinder, deg, export, group, half_sphere, pbr, reset, segments  # noqa: E402
+from common import args, bevel, box, cylinder, deg, export, group, half_sphere, pbr, reset, segments, smooth  # noqa: E402
 
 a = args()
 reset()
@@ -28,6 +28,7 @@ bevel(lens, 0.01)
 bpy.ops.mesh.primitive_uv_sphere_add(segments=s, ring_count=max(8, s // 2), radius=0.17, location=(0, 0, 0.90))
 eye = bpy.context.active_object
 eye.data.materials.append(dark)
+smooth(eye)
 bpy.ops.object.select_all(action="DESELECT")
 lens.select_set(True); eye.select_set(True)
 bpy.context.view_layer.objects.active = lens

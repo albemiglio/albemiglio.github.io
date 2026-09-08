@@ -73,9 +73,9 @@ key_loc = target + right * 2.6 + up * 2.4 + forward * -0.5
 fill_loc = target + right * -2.8 + up * 1.2 + forward * -1.0
 rim_loc = target + right * -0.5 + up * 1.8 + forward * 2.5
 
-area_light_at("key", key_loc, target, 1600, key_rgb, 2.5)
-area_light_at("fill", fill_loc, target, 120, (1, 1, 1), 3.0)
-area_light_at("rim", rim_loc, target, 350, (1, 1, 1), 1.5)
+area_light_at("key", key_loc, target, 500, key_rgb, 2.5)
+area_light_at("fill", fill_loc, target, 20, (0.85, 0.9, 1.0), 3.0)
+area_light_at("rim", rim_loc, target, 40, (0.85, 0.9, 1.0), 1.5)
 
 scene.render.filepath = a.out
 bpy.ops.render.render(write_still=True)

@@ -45,11 +45,22 @@ def bevel(obj, width=0.02, segs=3):
     return mod
 
 
+def smooth(obj, angle_deg=30):
+    """Smooth-shade by dihedral angle: curved faces (small angle between neighbours)
+    render smooth, sharp edges (e.g. a 90-degree box corner) stay flat. Keeps the
+    bevel modifier's sharp CAD edges while removing facet banding on cylinders/spheres."""
+    bpy.context.view_layer.objects.active = obj
+    obj.select_set(True)
+    bpy.ops.object.shade_smooth_by_angle(angle=math.radians(angle_deg))
+    return obj
+
+
 def cylinder(name, radius, depth, z, segs, material):
     bpy.ops.mesh.primitive_cylinder_add(vertices=segs, radius=radius, depth=depth, location=(0, 0, z))
     o = bpy.context.active_object
     o.name = name
     o.data.materials.append(material)
+    smooth(o)
     return o
 
 
@@ -62,6 +73,7 @@ def half_sphere(name, radius, z, segs, material):
     bpy.ops.mesh.bisect(plane_co=(0, 0, z), plane_no=(0, 0, 1), clear_inner=True, use_fill=True)
     bpy.ops.object.mode_set(mode="OBJECT")
     o.data.materials.append(material)
+    smooth(o)
     return o
 
 
