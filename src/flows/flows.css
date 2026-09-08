@@ -11,8 +11,8 @@
 .stepbar { display: flex; gap: 6px; margin-top: 14px; }
 .stepbar:focus-visible { outline-offset: 6px; }
 .step { flex: 1; display: grid; gap: 6px; text-align: left; }
-.step__track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-.step__fill { height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--step-color); }
+.step__track { display: block; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.step__fill { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--step-color); }
 .step__fill--done { transform: scaleX(1); }
 .step__fill--active { animation: stepfill linear forwards; }
 @keyframes stepfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }

@@ -1,0 +1,25 @@
+.ipcam { position: absolute; inset: 0; background: #0f1216; color: #e7e9ee; font-family: var(--font-sans); display: grid; grid-template-rows: 1fr auto; overflow: hidden; }
+.ipcam__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; }
+.ipcam__cam { position: relative; background: #1a1f26; border-radius: 10px; border: 1px solid #262c35; min-height: 60px; }
+.ipcam__cam-name { position: absolute; left: 10px; bottom: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: #9aa0ab; }
+.ipcam__player { position: relative; margin: 12px; border-radius: 10px; overflow: hidden; background: #000; }
+.ipcam__buffering { position: absolute; inset: 0; display: flex; gap: 4px; align-items: center; justify-content: center; }
+.ipcam__buffering span { width: 4px; height: 18px; background: #f0b24a; animation: buffer 600ms ease-in-out infinite; }
+.ipcam__buffering span:nth-child(2) { animation-delay: 120ms; } .ipcam__buffering span:nth-child(3) { animation-delay: 240ms; }
+@keyframes buffer { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+.ipcam__frame { position: absolute; inset: -12%; background:
+  radial-gradient(ellipse at 30% 40%, #3a4250 0%, transparent 55%),
+  radial-gradient(ellipse at 70% 65%, #2a3140 0%, transparent 50%),
+  linear-gradient(#141920, #0b0e12); }
+.ipcam__stamp { position: absolute; left: 10px; top: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: #e7e9ee; background: rgba(0,0,0,.45); padding: 2px 6px; border-radius: 4px; }
+.ipcam__rec { position: absolute; right: 10px; top: 8px; font-family: var(--font-mono); font-size: 0.7rem; color: #fff; background: #ff5c5c; padding: 2px 8px; border-radius: 4px; }
+.ipcam__controls { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 0 12px 12px; }
+.ipcam__joy { width: 44px; height: 44px; border-radius: 50%; background: #1a1f26; border: 1px solid #262c35; display: grid; place-items: center; }
+.ipcam__knob { width: 16px; height: 16px; border-radius: 50%; background: #f0b24a; }
+.ipcam__clips { display: flex; gap: 6px; }
+.ipcam__clip { font-family: var(--font-mono); font-size: 0.68rem; background: #1a1f26; border: 1px solid #262c35; border-radius: 6px; padding: 4px 8px; }
+.ipcam__talk { width: 44px; height: 44px; border-radius: 50%; border: 1px solid #262c35; background: #1a1f26; display: grid; place-items: center; }
+.ipcam__talk--on { background: #f0b24a; }
+.ipcam__wave { display: flex; gap: 2px; align-items: center; }
+.ipcam__wave span { width: 3px; height: 14px; background: #0f1216; animation: buffer 500ms ease-in-out infinite; }
+.ipcam__wave span:nth-child(2) { animation-delay: 100ms; } .ipcam__wave span:nth-child(3) { animation-delay: 200ms; } .ipcam__wave span:nth-child(4) { animation-delay: 300ms; }
