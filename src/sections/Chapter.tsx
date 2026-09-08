@@ -1,0 +1,35 @@
+import type { CSSProperties, JSX, RefCallback } from 'react';
+import type { Step } from '../flows/types';
+import { useFlowPlayer } from '../flows/player';
+import { DeviceFrame } from '../flows/DeviceFrame';
+import { StepBar } from '../flows/StepBar';
+import { useMotionPrefs } from '../MotionProvider';
+
+export type ChapterDef<S> = {
+  id: string; title: string; audience: string; blurb: string; fact: string; color: string;
+  device: 'laptop' | 'phone'; steps: Step<S>[]; Scene: (p: { state: S }) => JSX.Element;
+};
+
+export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; active: boolean; register: RefCallback<HTMLElement> }) {
+  const { reduced } = useMotionPrefs();
+  const player = useFlowPlayer(def.steps, { active, reduced });
+  const { Scene } = def;
+  return (
+    <article id={`work-${def.id}`} className="chapter" ref={register} style={{ '--chapter-color': def.color } as CSSProperties}>
+      <div className="rail chapter__grid">
+        <div>
+          <p className="chapter__kicker">{def.id} · {def.audience}</p>
+          <h3 className="chapter__title">{def.title}</h3>
+          <p className="chapter__blurb">{def.blurb}</p>
+          <p className="chapter__fact">{def.fact}</p>
+        </div>
+        <div className="chapter__stage">
+          <DeviceFrame kind={def.device} label={`${def.id} — ${def.title}`} onPause={player.pause} onResume={player.resume}>
+            <Scene state={player.state} />
+          </DeviceFrame>
+          <StepBar steps={def.steps} index={player.index} playing={player.playing} color={def.color} onSelect={player.goTo} />
+        </div>
+      </div>
+    </article>
+  );
+}

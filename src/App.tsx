@@ -1,5 +1,7 @@
 import './sections/sections.css';
+import './flows/flows.css';
 import { Hero } from './sections/Hero';
+import { Work } from './sections/Work';
 import { MoreWork } from './sections/MoreWork';
 import { About } from './sections/About';
 import { Contact } from './sections/Contact';
@@ -9,6 +11,7 @@ export function App() {
     <>
       <main>
         <Hero />
+        <Work />
         <MoreWork />
         <About />
         <Contact />
