@@ -9,6 +9,11 @@ test.describe('desktop', () => {
       await page.goto('/');
       await page.locator(`#work-${c.id}`).scrollIntoViewIfNeeded();
       const steps = page.locator(`#work-${c.id} .step`);
+      const stepCount = await steps.count();
+      for (let i = 0; i < stepCount; i++) {
+        const box = await steps.nth(i).boundingBox();
+        expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+      }
       for (const i of c.shots) {
         await steps.nth(i).click();
         await expect(steps.nth(i)).toHaveAttribute('aria-current', 'step');
@@ -33,6 +38,12 @@ test.describe('mobile 390', () => {
     const [scrollWidth, innerWidth] = await inner.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
     expect(scrollWidth).toBeLessThanOrEqual(innerWidth);
     await frame.locator('#work-ipcam').scrollIntoViewIfNeeded();
+    const steps = frame.locator('#work-ipcam .step');
+    const stepCount = await steps.count();
+    for (let i = 0; i < stepCount; i++) {
+      const box = await steps.nth(i).boundingBox();
+      expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    }
     await page.waitForTimeout(700);
     await page.screenshot({ path: 'e2e/screenshots/ipcam-mobile.png' });
   });
@@ -46,6 +57,12 @@ test.describe('reduced motion', () => {
     await expect(page.locator('#work-ipcam .step').last()).toHaveAttribute('aria-current', 'step');
     await page.waitForTimeout(2500);
     await expect(page.locator('#work-ipcam .step').last()).toHaveAttribute('aria-current', 'step');
+    const waveSpan = page.locator('#work-ipcam .ipcam__wave span').first();
+    const anim = await waveSpan.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { name: cs.animationName, duration: parseFloat(cs.animationDuration) };
+    });
+    expect(anim.name === 'none' || anim.duration <= 0.001).toBe(true);
     await page.locator('#work-ipcam').screenshot({ path: 'e2e/screenshots/ipcam-reduced.png' });
   });
 });

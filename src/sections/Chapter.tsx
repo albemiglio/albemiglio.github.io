@@ -10,6 +10,8 @@ export type ChapterDef<S> = {
   device: 'laptop' | 'phone'; steps: Step<S>[]; Scene: (p: { state: S }) => JSX.Element;
 };
 
+export type AnyChapterDef = ChapterDef<any>;
+
 export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; active: boolean; register: RefCallback<HTMLElement> }) {
   const { reduced } = useMotionPrefs();
   const player = useFlowPlayer(def.steps, { active, reduced });
@@ -23,8 +25,14 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
           <p className="chapter__blurb">{def.blurb}</p>
           <p className="chapter__fact">{def.fact}</p>
         </div>
-        <div className="chapter__stage">
-          <DeviceFrame kind={def.device} label={`${def.id} — ${def.title}`} onPause={player.pause} onResume={player.resume}>
+        <div
+          className="chapter__stage"
+          onMouseEnter={player.pause}
+          onMouseLeave={player.resume}
+          onFocus={player.pause}
+          onBlur={player.resume}
+        >
+          <DeviceFrame kind={def.device} label={`${def.id} — ${def.title}`}>
             <Scene state={player.state} />
           </DeviceFrame>
           <StepBar steps={def.steps} index={player.index} playing={player.playing} color={def.color} onSelect={player.goTo} />

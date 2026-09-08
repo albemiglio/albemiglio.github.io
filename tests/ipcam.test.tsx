@@ -14,7 +14,7 @@ test('declares five steps in the specified order', () => {
 
 test('grid shows four offline cameras', () => {
   mount(at('grid'));
-  expect(screen.getAllByRole('button', { name: /camera/i })).toHaveLength(4);
+  expect(screen.getAllByTestId('cam-tile')).toHaveLength(4);
   expect(screen.queryByTestId('player')).toBeNull();
 });
 

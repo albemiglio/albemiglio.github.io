@@ -24,9 +24,9 @@ export function IpcamScene({ state }: { state: IpcamState }) {
       {state.view === 'grid' ? (
         <div className="ipcam__grid">
           {cameras.map((c) => (
-            <motion.button key={c.id} type="button" className="ipcam__cam" aria-label={`Camera ${c.name}`} layoutId={c.id === liveCamera.id ? 'cam' : undefined}>
+            <motion.div key={c.id} className="ipcam__cam" aria-hidden="true" data-testid="cam-tile" layoutId={c.id === liveCamera.id ? 'cam' : undefined}>
               <span className="ipcam__cam-name">{c.name}</span>
-            </motion.button>
+            </motion.div>
           ))}
         </div>
       ) : (

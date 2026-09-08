@@ -1,4 +1,4 @@
-import { Chapter, type ChapterDef } from './Chapter';
+import { Chapter, type AnyChapterDef, type ChapterDef } from './Chapter';
 import { useActiveChapter } from '../flows/useActiveChapter';
 import { IpcamScene } from '../flows/ipcam/Scene';
 import { ipcamSteps, type IpcamState } from '../flows/ipcam/steps';
@@ -10,13 +10,13 @@ const ipcam: ChapterDef<IpcamState> = {
   audience: 'home cameras',
   blurb: 'Client and server rebuilt from a reverse-engineered P2P protocol: live view, recordings, two-way audio and camera control, self-hosted.',
   fact: 'Protocol published as measured · github.com/albemiglio/ipcam-protocol',
-  color: '#F0B24A',
+  color: 'var(--c-ipcam)',
   device: 'laptop',
   steps: ipcamSteps,
   Scene: IpcamScene,
 };
 
-export const chapters = [ipcam] as const;
+export const chapters: AnyChapterDef[] = [ipcam];
 const ids = chapters.map((c) => c.id);
 
 export function Work() {

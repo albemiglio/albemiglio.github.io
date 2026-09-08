@@ -23,3 +23,6 @@
 .ipcam__wave { display: flex; gap: 2px; align-items: center; }
 .ipcam__wave span { width: 3px; height: 14px; background: #0f1216; animation: buffer 500ms ease-in-out infinite; }
 .ipcam__wave span:nth-child(2) { animation-delay: 100ms; } .ipcam__wave span:nth-child(3) { animation-delay: 200ms; } .ipcam__wave span:nth-child(4) { animation-delay: 300ms; }
+@media (prefers-reduced-motion: reduce) {
+  .ipcam__buffering span, .ipcam__wave span { animation: none; }
+}

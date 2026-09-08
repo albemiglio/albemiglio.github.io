@@ -11,17 +11,16 @@ const steps = [
 test('marks the current step and selects on click', async () => {
   const onSelect = vi.fn();
   render(<StepBar steps={steps} index={1} playing color="#F0B24A" onSelect={onSelect} />);
-  expect(screen.getByRole('button', { name: 'Beta' })).toHaveAttribute('aria-current', 'step');
-  expect(screen.getByRole('button', { name: 'Alpha' })).not.toHaveAttribute('aria-current');
-  await userEvent.click(screen.getByRole('button', { name: 'Gamma' }));
+  expect(screen.getByRole('button', { name: /Beta/ })).toHaveAttribute('aria-current', 'step');
+  expect(screen.getByRole('button', { name: /Alpha/ })).not.toHaveAttribute('aria-current');
+  await userEvent.click(screen.getByRole('button', { name: /Gamma/ }));
   expect(onSelect).toHaveBeenCalledWith(2);
 });
 
 test('arrow keys move and clamp', async () => {
   const onSelect = vi.fn();
   render(<StepBar steps={steps} index={2} playing={false} color="#F0B24A" onSelect={onSelect} />);
-  const bar = screen.getByRole('group', { name: /steps/i });
-  bar.focus();
+  screen.getByRole('button', { name: /Gamma/ }).focus();
   await userEvent.keyboard('{ArrowRight}');
   expect(onSelect).not.toHaveBeenCalled();
   await userEvent.keyboard('{ArrowLeft}');

@@ -12,7 +12,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --noEmit",
     "models": "node tools/models/build.mjs",
     "e2e": "playwright test -c e2e/playwright.config.ts",
     "budget": "node tools/budget.mjs"

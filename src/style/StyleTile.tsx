@@ -38,7 +38,7 @@ export function StyleTile() {
           <Button href="#" variant="primary">GitHub</Button>
           <Button href="#">LinkedIn</Button>
         </p>
-        <StepBar steps={steps} index={index} playing color="#F0B24A" onSelect={setIndex} />
+        <StepBar steps={steps} index={index} playing color="var(--c-ipcam)" onSelect={setIndex} />
       </section>
       <section className="render">
         <div>
