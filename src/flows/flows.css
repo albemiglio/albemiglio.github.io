@@ -1,0 +1,21 @@
+.device { position: relative; background: var(--surface); border: 1px solid var(--border); overflow: hidden; }
+.device--laptop { border-radius: 14px; aspect-ratio: 16 / 10; }
+.device--phone { border-radius: 32px; aspect-ratio: 9 / 19.5; max-width: 320px; margin: 0 auto; }
+.device__bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.device__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.device__notch { width: 90px; height: 22px; margin: 8px auto 0; border-radius: 12px; background: var(--bg); }
+.device__screen { position: absolute; inset: 0; }
+.device--laptop .device__screen { top: 35px; }
+.device--phone .device__screen { top: 38px; }
+
+.stepbar { display: flex; gap: 6px; margin-top: 14px; }
+.stepbar:focus-visible { outline-offset: 6px; }
+.step { flex: 1; display: grid; gap: 6px; text-align: left; }
+.step__track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.step__fill { height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--step-color); }
+.step__fill--done { transform: scaleX(1); }
+.step__fill--active { animation: stepfill linear forwards; }
+@keyframes stepfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.step__label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); transition: color 150ms var(--ease); }
+.step[aria-current="step"] .step__label { color: var(--text); }
+@media (max-width: 640px) { .step__label { display: none; } .step[aria-current="step"] .step__label { display: block; } }
