@@ -1,0 +1,51 @@
+import { expect, test } from '@playwright/test';
+
+const chapters = [{ id: 'ipcam', shots: [0, 2, 4] }];
+
+test.describe('desktop', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+  for (const c of chapters) {
+    test(`chapter ${c.id} renders its key steps`, async ({ page }) => {
+      await page.goto('/');
+      await page.locator(`#work-${c.id}`).scrollIntoViewIfNeeded();
+      const steps = page.locator(`#work-${c.id} .step`);
+      for (const i of c.shots) {
+        await steps.nth(i).click();
+        await expect(steps.nth(i)).toHaveAttribute('aria-current', 'step');
+        await page.waitForTimeout(700);
+        await page.locator(`#work-${c.id}`).screenshot({ path: `e2e/screenshots/${c.id}-desktop-${i}.png` });
+      }
+    });
+  }
+});
+
+test.describe('mobile 390', () => {
+  test('no horizontal scroll and chapter renders', async ({ page }) => {
+    await page.setContent('<style>html,body{margin:0;background:#0B0D10}</style><iframe id="f" src="http://127.0.0.1:4173/" style="width:390px;height:844px;border:0"></iframe>');
+    const frame = page.frameLocator('#f');
+    await expect(frame.locator('#work-ipcam')).toBeVisible();
+    let inner = page.frame({ url: /127\.0\.0\.1:4173/ });
+    if (!inner) {
+      await frame.locator('#work-ipcam').waitFor();
+      inner = page.frame({ url: /127\.0\.0\.1:4173/ });
+    }
+    if (!inner) throw new Error('iframe for 127.0.0.1:4173 not found');
+    const [scrollWidth, innerWidth] = await inner.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
+    expect(scrollWidth).toBeLessThanOrEqual(innerWidth);
+    await frame.locator('#work-ipcam').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(700);
+    await page.screenshot({ path: 'e2e/screenshots/ipcam-mobile.png' });
+  });
+});
+
+test.describe('reduced motion', () => {
+  test.use({ reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
+  test('shows the last step without autoplay', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('#work-ipcam').scrollIntoViewIfNeeded();
+    await expect(page.locator('#work-ipcam .step').last()).toHaveAttribute('aria-current', 'step');
+    await page.waitForTimeout(2500);
+    await expect(page.locator('#work-ipcam .step').last()).toHaveAttribute('aria-current', 'step');
+    await page.locator('#work-ipcam').screenshot({ path: 'e2e/screenshots/ipcam-reduced.png' });
+  });
+});

@@ -13,7 +13,9 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",
-    "models": "node tools/models/build.mjs"
+    "models": "node tools/models/build.mjs",
+    "e2e": "playwright test -c e2e/playwright.config.ts",
+    "budget": "node tools/budget.mjs"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@gltf-transform/cli": "^4.5.0",
+    "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
