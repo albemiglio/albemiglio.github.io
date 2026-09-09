@@ -45,7 +45,7 @@ export function AsdScene({ state }: { state: AsdState }) {
           <>
             <div className="asd__toolbar">
               <h4 className="asd__heading">Members</h4>
-              <button type="button" className="asd__new-btn" autoFocus>+ New member</button>
+              <button type="button" className="asd__new-btn" data-highlight="">+ New member</button>
             </div>
             <ul className="asd__list">
               {members.map((m) => (

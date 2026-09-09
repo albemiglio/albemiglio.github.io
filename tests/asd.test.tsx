@@ -13,7 +13,7 @@ test('list shows every member and focuses the new-member button', () => {
   expect(screen.getAllByTestId('member-row')).toHaveLength(members.length);
   expect(members.length).toBe(5);
   const btn = screen.getByRole('button', { name: /new member/i });
-  expect(document.activeElement).toBe(btn);
+  expect(btn).toHaveAttribute('data-highlight');
 });
 
 test('form shows the sign-up form with the name already typed (reduced)', () => {

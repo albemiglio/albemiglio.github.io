@@ -11,7 +11,9 @@
 .asd__toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .asd__heading { margin: 0; font-size: 0.92rem; font-weight: 600; letter-spacing: -0.01em; }
 .asd__new-btn { min-height: 44px; padding: 0 14px; border-radius: 999px; background: #1f1f1f; color: #fff; font-size: 0.76rem; font-weight: 600; border: 0; cursor: pointer; }
-.asd__new-btn:focus-visible { outline: 2px solid #1f1f1f; outline-offset: 2px; }
+/* The flow "gives focus" to the button visually only: a real focus() would scroll-jack every
+   visitor on autoplay. */
+.asd__new-btn:focus-visible, .asd__new-btn[data-highlight] { outline: 2px solid #1f1f1f; outline-offset: 2px; }
 .asd__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; overflow: hidden auto; }
 .asd__row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid #ebebeb; border-radius: 10px; background: #fff; font-size: 0.76rem; }
 .asd__row-name { font-weight: 500; }
