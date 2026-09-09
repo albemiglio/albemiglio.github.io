@@ -1,0 +1,46 @@
+/* Palette lifted from asd.albemiglio.it's own CSS bundle (P3-R6, no login):
+   white base #fff / subtle #f7f7f7, ink text #1f1f1f, border #ebebeb, black
+   actions (bg-ink), success green #0f7b2e on tint #e7f6ec for the paid pill,
+   warning amber #b45309 on tint #fef3c7 for due, fully-rounded pills. */
+.asd { position: absolute; inset: 0; background: #fff; color: #1f1f1f; font-family: var(--font-sans); display: grid; grid-template-columns: 44px 1fr; overflow: hidden; }
+.asd__sidebar { background: #f7f7f7; border-right: 1px solid #ebebeb; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 0; }
+.asd__logo { width: 22px; height: 22px; border-radius: 6px; background: #1f1f1f; color: #fff; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; display: grid; place-items: center; }
+.asd__nav-dot { width: 8px; height: 8px; border-radius: 50%; background: #ebebeb; }
+.asd__nav-dot--active { background: var(--c-asd); }
+.asd__content { padding: 14px 16px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+.asd__toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.asd__heading { margin: 0; font-size: 0.92rem; font-weight: 600; letter-spacing: -0.01em; }
+.asd__new-btn { min-height: 44px; padding: 0 14px; border-radius: 999px; background: #1f1f1f; color: #fff; font-size: 0.76rem; font-weight: 600; border: 0; cursor: pointer; }
+.asd__new-btn:focus-visible { outline: 2px solid #1f1f1f; outline-offset: 2px; }
+.asd__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; overflow: hidden auto; }
+.asd__row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid #ebebeb; border-radius: 10px; background: #fff; font-size: 0.76rem; }
+.asd__row-name { font-weight: 500; }
+.asd__row-year { color: #717171; font-family: var(--font-mono); font-size: 0.68rem; }
+.asd__pill { font-family: var(--font-mono); font-size: 0.66rem; background: #f7f7f7; border-radius: 999px; padding: 2px 8px; color: #717171; }
+
+.asd__form-grid { display: grid; grid-template-columns: 1fr 96px; gap: 12px; min-height: 0; overflow: hidden; }
+.asd__form-main { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.asd__signup { display: flex; flex-direction: column; gap: 8px; }
+.asd__label { display: flex; flex-direction: column; gap: 4px; font-size: 0.66rem; color: #717171; }
+.asd__field { min-height: 28px; display: flex; align-items: center; padding: 0 8px; border: 1px solid #ebebeb; border-radius: 8px; background: #f7f7f7; font-size: 0.76rem; color: #1f1f1f; }
+.asd__caret { width: 1px; height: 12px; background: #1f1f1f; margin-left: 1px; animation: asd-caret 900ms step-end infinite; }
+@keyframes asd-caret { 50% { opacity: 0; } }
+
+.asd__family { display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px dashed #ebebeb; }
+.asd__family-row, .asd__family-card { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 8px; font-size: 0.7rem; }
+.asd__family-row { background: #fff; border: 1px solid #ebebeb; }
+.asd__family-card { background: #f7f7f7; border: 1px solid #ebebeb; }
+.asd__avatar { width: 16px; height: 16px; border-radius: 50%; background: #ebebeb; flex: none; }
+
+.asd__fee-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.asd__fee-badge { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 10px; border-radius: 999px; background: #fef3c7; color: #b45309; }
+.asd__fee-badge[data-fee="paid"] { background: #e7f6ec; color: #0f7b2e; }
+.asd__amount { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; }
+
+.asd__documents { border-left: 1px solid #ebebeb; padding-left: 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.asd__doc-heading { margin: 0; font-size: 0.66rem; color: #717171; text-transform: uppercase; letter-spacing: 0.05em; }
+.asd__document { padding: 8px; border: 1px solid #ebebeb; border-radius: 8px; background: #f7f7f7; font-family: var(--font-mono); font-size: 0.66rem; color: #1f1f1f; }
+
+@media (prefers-reduced-motion: reduce) {
+  .asd__caret { animation: none; }
+}

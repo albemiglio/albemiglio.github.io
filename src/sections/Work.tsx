@@ -3,6 +3,8 @@ import { Chapter, type AnyChapterDef, type ChapterDef } from './Chapter';
 import { useActiveChapter } from '../flows/useActiveChapter';
 import { IpcamScene } from '../flows/ipcam/Scene';
 import { ipcamSteps, type IpcamState } from '../flows/ipcam/steps';
+import { AsdScene } from '../flows/asd/Scene';
+import { asdSteps, type AsdState } from '../flows/asd/steps';
 import { useSceneProgress } from '../scene/useSceneProgress';
 import { sceneStore } from '../scene/store';
 import './work.css';
@@ -20,7 +22,13 @@ const ipcam: ChapterDef<IpcamState> = {
   Scene: IpcamScene,
 };
 
-export const chapters: AnyChapterDef[] = [ipcam];
+const asd: ChapterDef<AsdState> = {
+  id: 'asd', object: 'card', title: 'Members, fees and receipts in one place', audience: 'sports clubs',
+  blurb: 'Multi-tenant management for amateur sports clubs: sign-ups, family links, fee tracking and the receipts the accountant asks for.',
+  fact: '36 organisations live · asd.albemiglio.it', color: 'var(--c-asd)', device: 'laptop', steps: asdSteps, Scene: AsdScene,
+};
+
+export const chapters: AnyChapterDef[] = [ipcam, asd];
 const ids = chapters.map((c) => c.id);
 
 export function Work() {
