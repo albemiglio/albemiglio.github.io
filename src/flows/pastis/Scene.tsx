@@ -23,12 +23,11 @@ export function PastisScene({ state }: { state: PastisState }) {
     if (reduced) { setTiers(state.tiers); return; }
     // F4/P3-R18: the 3D cake (src/scene/objects/Cake.tsx) reads stepState.pastis.tiers, not this
     // local counter — publish the displayed count on every tick so the sculpture follows it.
+    // Spread from this Scene's own `state`, not from the store: Chapter's effect (the parent)
+    // writes the full step state AFTER this child's effect ran, so reading the store here would
+    // see the previous step and either no-op or race the parent's write.
     const publish = (n: number) => {
-      sceneStore.set((s) => {
-        const p = s.stepState.pastis as PastisState | undefined;
-        if (!p || !p.configuring) return {};
-        return { stepState: { ...s.stepState, pastis: { ...p, tiers: n as PastisState['tiers'] } } };
-      });
+      sceneStore.set((s) => ({ stepState: { ...s.stepState, pastis: { ...state, tiers: n as PastisState['tiers'] } } }));
     };
     setTiers(1);
     publish(1);
