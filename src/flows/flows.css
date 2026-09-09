@@ -14,6 +14,13 @@
 /* F3a: over the 3D deck the bar needs a solid backing to stay readable; in normal flow (fallback
    image, no scene) the transparent bar is fine as-is. */
 .chapter__stage[data-scene] .stepbar { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+/* M2: hide the pill while the 3D handoff hasn't reached the flat DOM pose yet (data-flat unset),
+   so it doesn't clutter the view mid-rotation; keep it up under focus so keyboard users never
+   lose the control. `[data-scene]` only exists while the scene is open, which itself requires
+   motion not to be reduced (useSceneGate) — under prefers-reduced-motion this rule never
+   matches, so the opacity transition never has anything to animate there. */
+.chapter__stage[data-scene]:not([data-flat]) .stepbar { opacity: 0; transition: opacity 200ms var(--ease); }
+.chapter__stage[data-scene]:not([data-flat]):focus-within .stepbar { opacity: 1; }
 .stepbar:focus-visible { outline-offset: 6px; }
 .step { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 6px; text-align: left; min-height: 44px; padding-top: 6px; }
 .step__track { display: block; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }

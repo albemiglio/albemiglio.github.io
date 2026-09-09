@@ -32,8 +32,19 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
     const el = frameRef.current;
     if (!el) return;
     const rect = sceneStore.get().rects[def.id]?.frame;
-    el.style.transform = !rect || !quad || isNearIdentity(rect, quad) ? '' : quadToMatrix3d(rect, quad);
+    const flat = !rect || !quad || isNearIdentity(rect, quad);
+    el.style.transform = flat ? '' : quadToMatrix3d(rect!, quad!);
+    // M2: `data-flat` gates the StepBar fade in flows.css — the pill only earns its keep once the
+    // device has actually handed off to the flat DOM pose; while it's still rotating in/out, the
+    // 3D shell is doing the talking and the pill would just clutter that.
+    el.parentElement?.toggleAttribute('data-flat', flat);
   }), [def.id]);
+  // M2: belt-and-suspenders for the fallback path — the CSS fade rule already requires
+  // `[data-scene]` (only present while sceneOpen), so this never matters in practice, but keeps
+  // the DOM attribute honest if that selector ever changes.
+  useEffect(() => {
+    if (!sceneOpen) frameRef.current?.parentElement?.setAttribute('data-flat', '');
+  }, [sceneOpen]);
   const { Scene } = def;
   return (
     <article id={`work-${def.id}`} className="chapter" ref={register} style={{ '--chapter-color': def.color } as CSSProperties}>
