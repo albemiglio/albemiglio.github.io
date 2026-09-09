@@ -1,7 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type RefCallback } from 'react';
 
 export function useActiveChapter(ids: string[]) {
   const els = useRef(new Map<string, HTMLElement>());
+  // F10: one ref callback per id, memoised here — `register(id)` is called inline in Work's JSX
+  // on every render, and a fresh closure each time would defeat Chapter's own
+  // `useCallback([register])` stability (it would see a new function prop every render and
+  // re-run its ref callback, re-registering the article on every step tick).
+  const callbacks = useRef(new Map<string, RefCallback<HTMLElement>>());
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const compute = useCallback(() => {
@@ -36,8 +41,13 @@ export function useActiveChapter(ids: string[]) {
     };
   }, [compute]);
 
-  const register = useCallback((id: string) => (el: HTMLElement | null) => {
-    if (el) els.current.set(id, el); else els.current.delete(id);
+  const register = useCallback((id: string): RefCallback<HTMLElement> => {
+    let cb = callbacks.current.get(id);
+    if (!cb) {
+      cb = (el) => { if (el) els.current.set(id, el); else els.current.delete(id); };
+      callbacks.current.set(id, cb);
+    }
+    return cb;
   }, []);
 
   return { activeId, register };
