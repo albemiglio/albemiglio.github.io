@@ -12,7 +12,3 @@ export function modelUrl(name: string) {
 export function useModel(name: string) {
   return useGLTF(modelUrl(name), false, true);
 }
-
-export function preloadModel(name: string) {
-  useGLTF.preload(modelUrl(name), false, true);
-}
