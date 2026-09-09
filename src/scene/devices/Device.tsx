@@ -71,18 +71,35 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
   // corners this one's chapter still points to via sceneStore.getQuad, while staying
   // allocation-free after mount.
   const quad = useMemo<Quad>(() => [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }], []);
+  // F9: only the chapter's own bail (below) needs to fire once per off-screen entry — every
+  // other chapter's Device is off-screen on almost every frame, and re-clearing an already-null
+  // quad would still walk the quadListeners for `id` for no reason.
+  const wasOffScreen = useRef(false);
 
   useFrame(() => {
+    const s = sceneStore.get();
+    const rect = s.rects[id]?.frame;
+    const p = pivot.current;
+    if (!p || !rect || !s.viewport.w) { if (p) p.visible = false; sceneStore.setQuad(id, null); return; }
+
+    // F9: bail before any of the unproject/lookAt/scale-probe work below once the frame has
+    // scrolled entirely out of view — that's every chapter but the one or two near the fold on
+    // any given frame, and none of that work changes what's on screen for them.
+    if (rect.y > s.viewport.h || rect.y + rect.h < 0) {
+      if (!wasOffScreen.current) {
+        wasOffScreen.current = true;
+        p.visible = false;
+        sceneStore.setQuad(id, null);
+      }
+      return;
+    }
+    wasOffScreen.current = false;
+
     // F4: the renderer only refreshes the camera's view matrix once per render; CameraRig moves
     // the camera synchronously on a store emit before that happens, so project/unproject here
     // would otherwise read a one-frame-stale matrix.
     camera.updateMatrixWorld();
     camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
-
-    const s = sceneStore.get();
-    const rect = s.rects[id]?.frame;
-    const p = pivot.current;
-    if (!p || !rect || !s.viewport.w) { if (p) p.visible = false; sceneStore.setQuad(id, null); return; }
 
     // F3b: the chapter keyframes now pitch the camera, so `rectToWorld` (which assumes a camera
     // looking straight down -Z) can no longer place the device. Unproject the rect's centre
