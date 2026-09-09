@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, Matrix4, Quaternion, Vector3, type Group, type Mesh, type Object3D } from 'three';
 import { useModel } from '../loaders';
 import { chapterPhase } from '../math';
-import { sceneStore } from '../store';
+import { sceneStore, type Quad } from '../store';
 import { rectCenterOnZPlane, screenCorners } from './screenAnchor';
 
 const CHAPTER = { start: 0.1, end: 0.6 };
@@ -66,6 +66,11 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
   const forward = useMemo(() => new Vector3(), []);
   const lookTarget = useMemo(() => new Vector3(), []);
   const centre = useMemo(() => new Vector3(), []);
+  // F1: this device instance's own quad buffer — screenCorners fills it in place every frame.
+  // Owning it per instance (not a module-level scratch) keeps a second Device from clobbering the
+  // corners this one's chapter still points to via sceneStore.getQuad, while staying
+  // allocation-free after mount.
+  const quad = useMemo<Quad>(() => [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }], []);
 
   useFrame(() => {
     // F4: the renderer only refreshes the camera's view matrix once per render; CameraRig moves
@@ -107,13 +112,13 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
     // approximation otherwise.
     p.scale.setScalar(1);
     p.updateMatrixWorld(true);
-    const probe = screenCorners(fit.box, screen.matrixWorld, camera, s.viewport);
+    const probe = screenCorners(fit.box, screen.matrixWorld, camera, s.viewport, quad);
     const probeW = Math.hypot(probe[1].x - probe[0].x, probe[1].y - probe[0].y);
     if (probeW > 1e-6) {
       p.scale.setScalar(rect.w / probeW);
       p.updateMatrixWorld(true);
     }
-    sceneStore.setQuad(id, screenCorners(fit.box, screen.matrixWorld, camera, s.viewport));
+    sceneStore.setQuad(id, screenCorners(fit.box, screen.matrixWorld, camera, s.viewport, quad));
     // P2-R2: only while the yaw is still converging — an unconditional invalidate() here would
     // spin the render loop forever.
     if (Math.abs(yaw.current - targetYaw) > 1e-3) invalidate();

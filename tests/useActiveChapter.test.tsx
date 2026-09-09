@@ -62,3 +62,20 @@ test('coalesces a burst of scroll events into a single compute per frame', () =>
   act(() => vi.runAllTimers());
   expect(result.current.activeId).toBe('a');
 });
+
+// fix-round-1, F2: the cleanup's cancelAnimationFrame(raf) had no test — nothing checked that
+// unmounting mid-scroll actually cancels the pending frame rather than leaving it dangling
+// (which would call compute()/setState after the component using this hook is gone).
+test('cancels a pending animation frame on unmount', () => {
+  Object.defineProperty(window, 'innerHeight', { value: 1000, configurable: true });
+  const cancelSpy = vi.spyOn(window, 'cancelAnimationFrame');
+  const { result, unmount } = renderHook(() => useActiveChapter(['a']));
+  act(() => {
+    result.current.register('a')(el(200, 800));
+    window.dispatchEvent(new Event('scroll')); // schedules a frame, not yet flushed
+  });
+  expect(vi.getTimerCount()).toBe(1); // the scheduled frame is still pending
+  unmount();
+  expect(vi.getTimerCount()).toBe(0); // cancelled, not just abandoned
+  expect(cancelSpy).toHaveBeenCalled();
+});

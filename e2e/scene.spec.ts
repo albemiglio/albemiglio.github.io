@@ -13,19 +13,19 @@ test.describe('scene', () => {
     const top = await work.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
     const height = await work.evaluate((el) => el.getBoundingClientRect().height);
     const frame = page.locator('#work-ipcam .device');
-    // entering: rotated, matrix applied
+    // entering: rotated, matrix applied. toHaveCSS already polls up to its timeout, so no fixed
+    // wait is needed before it (fix-round-1, F4).
     await page.evaluate((y) => window.scrollTo(0, y), top - height * 0.3);
-    await page.waitForTimeout(600);
     await expect(frame).toHaveCSS('transform', /matrix3d/);
     await page.screenshot({ path: 'e2e/screenshots/scene-enter.png' });
-    // frontal: identity. Under SwiftShader the device's yaw/scale lerp converges slowly, so this
-    // polls via the expect timeout rather than a fixed wait.
+    // frontal: identity. Under SwiftShader the device's yaw/scale lerp converges slowly — CI runs
+    // on SwiftShader and is roughly 3x slower than a local GPU, so this needs a longer timeout
+    // than the default 5s to poll all the way to convergence without flaking (fix-round-1, F3).
     await page.evaluate((y) => window.scrollTo(0, y), top + height * 0.05);
-    await expect(frame).toHaveCSS('transform', 'none', { timeout: 5_000 });
+    await expect(frame).toHaveCSS('transform', 'none', { timeout: 15_000 });
     await page.screenshot({ path: 'e2e/screenshots/scene-front.png' });
     // leaving: rotated the other way
     await page.evaluate((y) => window.scrollTo(0, y), top + height * 0.7);
-    await page.waitForTimeout(600);
     await expect(frame).toHaveCSS('transform', /matrix3d/);
     await page.screenshot({ path: 'e2e/screenshots/scene-leave.png' });
   });
