@@ -79,7 +79,7 @@ export function PastisScene({ state }: { state: PastisState }) {
             transition={{ duration: dur.base }}
           >
             <span className="pastis__sheet-handle" aria-hidden="true" />
-            <h5 className="pastis__sheet-title">Configure cake</h5>
+            <h4 className="pastis__sheet-title">Configure cake</h4>
             <div className="pastis__field-row">
               <span className="pastis__field-label">Tiers</span>
               <div className="pastis__tiers">

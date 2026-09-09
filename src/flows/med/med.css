@@ -14,7 +14,9 @@
 .med__timer { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; }
 .med__timer[data-low] { color: #b23c25; }
 .med__timer-box:has(.med__timer[data-low]) { background: #fbeae6; }
-.med__timer-unit { font-size: 0.6rem; color: inherit; opacity: 0.8; }
+/* #1f5f94 on #e8f2fb ~5.93:1 (WCAG AA needs 4.5:1); the inherited #0f6fbf was 3.29:1 — opacity
+   0.8 on `inherit` only makes it worse, so this sets its own color instead. */
+.med__timer-unit { font-size: 0.6rem; color: #1f5f94; }
 
 .med__prompt { margin: 0; font-size: 0.86rem; font-weight: 600; line-height: 1.35; flex: none; }
 

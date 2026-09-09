@@ -96,7 +96,7 @@ export function MedScene({ state }: { state: MedState }) {
                 </span>
               )}
             </div>
-            <h5 className="med__prompt" data-testid="question-title">{q.prompt}</h5>
+            <h4 className="med__prompt" data-testid="question-title">{q.prompt}</h4>
             <motion.ul className="med__options" layout>
               {q.options.map((o) => {
                 const isSelected = o.letter === state.selected;
