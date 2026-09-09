@@ -26,6 +26,21 @@ test('opens after idle when WebGL is available', () => {
   HTMLCanvasElement.prototype.getContext = orig;
 });
 
+test('stays closed until window load fires when the document is still loading', () => {
+  const orig = HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = (() => ({})) as any;
+  Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true });
+  const { result } = renderHook(() => useSceneGate(), { wrapper: wrap(false) });
+  act(() => { (globalThis as any).__idle?.(); });
+  expect(result.current).toBe(false);
+  expect((globalThis as any).__idle).toBeUndefined();
+  act(() => { window.dispatchEvent(new Event('load')); });
+  act(() => { (globalThis as any).__idle?.(); });
+  expect(result.current).toBe(true);
+  Object.defineProperty(document, 'readyState', { value: 'complete', configurable: true });
+  HTMLCanvasElement.prototype.getContext = orig;
+});
+
 const fakeGL = (renderer: string, unmasked?: string) => ({
   RENDERER: 0x1f01,
   getParameter: (p: number) => (p === 0x1f01 ? renderer : unmasked ?? ''),

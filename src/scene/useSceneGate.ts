@@ -21,7 +21,7 @@ export function isSoftwareRenderer(gl: WebGLRenderingContext | null = probeConte
   return names.some((n) => SOFTWARE_RENDERER.test(String(n ?? '')));
 }
 
-function onIdle(fn: () => void): () => void {
+export function onIdle(fn: () => void): () => void {
   if (typeof requestIdleCallback === 'function') {
     const id = requestIdleCallback(fn, { timeout: 2000 });
     return () => cancelIdleCallback(id);
@@ -31,12 +31,32 @@ function onIdle(fn: () => void): () => void {
   return () => clearTimeout(t);
 }
 
+// Two rAFs = one full paint has happened, so the scene chunk's fetch never lands inside
+// Lantern's LCP dependency graph (P3-R14/F1). jsdom's rAF is a macrotask with nothing driving
+// the clock in these tests, so test mode resolves synchronously, same trick as onIdle above.
+function afterPaint(fn: () => void): () => void {
+  if (import.meta.env.MODE === 'test') { fn(); return () => {}; }
+  let raf2 = 0;
+  const raf1 = requestAnimationFrame(() => { raf2 = requestAnimationFrame(fn); });
+  return () => { cancelAnimationFrame(raf1); cancelAnimationFrame(raf2); };
+}
+
+export function afterLoad(fn: () => void): () => void {
+  if (document.readyState === 'complete') return afterPaint(fn);
+  let cancelPaint = () => {};
+  const onLoad = () => { cancelPaint = afterPaint(fn); };
+  window.addEventListener('load', onLoad, { once: true });
+  return () => { window.removeEventListener('load', onLoad); cancelPaint(); };
+}
+
 export function useSceneGate(): boolean {
   const { reduced } = useMotionPrefs();
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (reduced) { setOpen(false); return; }
-    return onIdle(() => setOpen(hasWebGL()));
+    let cancelIdle = () => {};
+    const cancelLoad = afterLoad(() => { cancelIdle = onIdle(() => setOpen(hasWebGL())); });
+    return () => { cancelLoad(); cancelIdle(); };
   }, [reduced]);
   return open;
 }
