@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { AnimatePresence, animate, motion, useMotionValue } from 'motion/react';
 import { useMotionPrefs } from '../../MotionProvider';
 import { maxScore, questions } from './data';
@@ -17,21 +17,28 @@ export function MedScene({ state }: { state: MedState }) {
   const showScore = state.selected !== null && !state.review && !state.timer;
 
   // P3-R5: a real countdown (setInterval, 1000ms) that only runs while `state.timer` is true
-  // (question/answer) and restarts to 30 on each fresh entry into the *question* step itself —
-  // not on every tick where timer stays true, so it keeps counting down through 'answer' instead
-  // of jumping back to 30. Scene only ever receives `state`; it has no way to advance the flow,
-  // so "does nothing else" at zero is automatic.
-  const inQuestion = state.timer && state.selected === null;
-  const wasInQuestion = useRef(false);
+  // (question/answer) and resets to 30 only when a fresh question starts — `state.timer` turning
+  // true, or `state.question` changing while it's already true. Deliberately NOT keyed on
+  // `state.selected`/`inQuestion`, so the question -> answer transition (timer stays true, same
+  // question) doesn't tear down and rebuild the interval and lose tick alignment. When `timer`
+  // turns false the interval is cleared and the last displayed value is left frozen (it's hidden
+  // from view anyway — the timer chip only renders while `state.timer` is true). Scene only ever
+  // receives `state`; it has no way to advance the flow, so "does nothing else" at zero is
+  // automatic — the interval clears itself instead of ticking past 0 (F3).
   const [seconds, setSeconds] = useState(START_SECONDS);
   useEffect(() => {
-    if (!state.timer) { setSeconds(START_SECONDS); wasInQuestion.current = false; return; }
-    if (inQuestion && !wasInQuestion.current) setSeconds(START_SECONDS);
-    wasInQuestion.current = inQuestion;
+    if (!state.timer) return;
+    setSeconds(START_SECONDS);
     if (reduced) return;
-    const id = setInterval(() => setSeconds((s) => Math.max(s - 1, 0)), 1000);
+    const id = setInterval(() => {
+      setSeconds((s) => {
+        const next = Math.max(s - 1, 0);
+        if (next === 0) clearInterval(id);
+        return next;
+      });
+    }, 1000);
     return () => clearInterval(id);
-  }, [state.timer, inQuestion, reduced]);
+  }, [state.timer, state.question, reduced]);
 
   const scoreMv = useMotionValue(reduced && showScore ? state.score : 0);
   const [displayScore, setDisplayScore] = useState(reduced && showScore ? state.score : 0);
@@ -74,6 +81,7 @@ export function MedScene({ state }: { state: MedState }) {
           <motion.div
             key={`q${state.question}`}
             className="med__panel med__quiz-panel"
+            layout
             initial={{ x: '100%', opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '-100%', opacity: 0 }}
@@ -117,9 +125,9 @@ export function MedScene({ state }: { state: MedState }) {
                 <motion.div
                   className="med__explanation"
                   data-testid="explanation"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 12 }}
                   transition={{ duration: dur.base }}
                 >
                   {q.explanation}

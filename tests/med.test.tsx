@@ -57,3 +57,30 @@ test('next shows the second question', () => {
   mountReduced(at('next'));
   expect(screen.getByTestId('question-title')).toHaveTextContent(questions[1].prompt);
 });
+
+test('the timer keeps counting through the question -> answer transition (no restart)', () => {
+  vi.useFakeTimers();
+  const setIntervalSpy = vi.spyOn(global, 'setInterval');
+  const { rerender } = render(<MotionProvider><MedScene state={at('question')} /></MotionProvider>);
+  act(() => { vi.advanceTimersByTime(5000); });
+  expect(screen.getByTestId('timer')).toHaveTextContent('25');
+  const callsBeforeAnswer = setIntervalSpy.mock.calls.length;
+  rerender(<MotionProvider><MedScene state={at('answer')} /></MotionProvider>);
+  // the same question, still timed: the interval must not be torn down and rebuilt
+  expect(setIntervalSpy.mock.calls.length).toBe(callsBeforeAnswer);
+  act(() => { vi.advanceTimersByTime(5000); });
+  expect(screen.getByTestId('timer')).toHaveTextContent('20');
+  vi.useRealTimers();
+  setIntervalSpy.mockRestore();
+});
+
+test('stops the interval once it reaches 0 (no ticks left running)', () => {
+  vi.useFakeTimers();
+  render(<MotionProvider><MedScene state={at('question')} /></MotionProvider>);
+  act(() => { vi.advanceTimersByTime(30000); });
+  expect(screen.getByTestId('times-up')).toBeInTheDocument();
+  act(() => { vi.advanceTimersByTime(5000); });
+  expect(screen.getByTestId('times-up')).toBeInTheDocument();
+  expect(vi.getTimerCount()).toBe(0);
+  vi.useRealTimers();
+});
