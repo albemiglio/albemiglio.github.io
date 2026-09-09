@@ -1,11 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
-import { lerpKeyframes } from './math';
-import { sceneStore } from './store';
+import { CHAPTER_IDS } from '../chapters';
+import { chapterIndex, lerpKeyframes } from './math';
+import { sceneStore, type SceneState } from './store';
 
 export const CAMERA_FOV = 35;
 export const CAMERA_DIST = 8;
+const DRIFT_X = 0.35;
 
 // Position and look-at per progress along the Work section. Part 2 has one chapter, so the
 // camera only drifts slightly on the way in; Part 3 adds a keyframe per chapter.
@@ -22,20 +24,29 @@ const TARGET = [
 
 export function CameraRig() {
   const { camera, invalidate } = useThree();
-  const lastProgress = useRef<number | null>(null);
+  const last = useRef<string | null>(null);
+  const lookTarget = useMemo(() => new Vector3(), []);
   useEffect(() => {
-    const apply = (p: number) => {
-      // P2-R2: the store emits for reasons other than progress (rects, activeId, …); re-applying
-      // the keyframes and invalidating on every emit would loop the render, so bail unless
-      // progress itself moved.
-      if (p === lastProgress.current) return;
-      lastProgress.current = p;
-      camera.position.fromArray(lerpKeyframes(POSITION, p));
-      camera.lookAt(new Vector3().fromArray(lerpKeyframes(TARGET, p)));
+    const apply = (s: SceneState) => {
+      const p = s.progress;
+      // Continuous chapter index drives a lateral drift so the camera glides between chapters
+      // instead of jumping; the store emits for reasons unrelated to either (rects, activeId,
+      // …), so bail unless progress or the chapter index actually moved.
+      const c = chapterIndex(s.rects, CHAPTER_IDS, s.viewport.h);
+      const sig = `${p}:${c.toFixed(3)}`;
+      if (sig === last.current) return;
+      last.current = sig;
+      const pos = lerpKeyframes(POSITION, p);
+      pos[0] += DRIFT_X * Math.sin(Math.PI * c);
+      camera.position.fromArray(pos);
+      const tgt = lerpKeyframes(TARGET, p);
+      tgt[0] += DRIFT_X * 0.5 * Math.sin(Math.PI * c);
+      lookTarget.fromArray(tgt);
+      camera.lookAt(lookTarget);
       invalidate();
     };
-    apply(sceneStore.get().progress);
-    return sceneStore.subscribe((s) => apply(s.progress));
-  }, [camera, invalidate]);
+    apply(sceneStore.get());
+    return sceneStore.subscribe(apply);
+  }, [camera, invalidate, lookTarget]);
   return null;
 }

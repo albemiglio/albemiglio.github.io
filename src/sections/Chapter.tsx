@@ -7,10 +7,11 @@ import { useMotionPrefs } from '../MotionProvider';
 import { sceneStore, useSceneSelector } from '../scene/store';
 import { isNearIdentity, quadToMatrix3d } from '../scene/math';
 import { useRectRegistration } from '../scene/useRectRegistration';
+import type { ChapterMeta } from '../chapters';
 
 export type ChapterDef<S> = {
   id: string; title: string; audience: string; blurb: string; fact: string; color: string;
-  device: 'laptop' | 'phone'; steps: Step<S>[]; Scene: (p: { state: S }) => JSX.Element;
+  object: ChapterMeta['object']; device: 'laptop' | 'phone'; steps: Step<S>[]; Scene: (p: { state: S }) => JSX.Element;
 };
 
 export type AnyChapterDef = ChapterDef<any>;
@@ -21,9 +22,11 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
   const sceneOpen = useSceneSelector((s) => s.sceneOpen);
   const objectRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
+  const articleRef = useRef<HTMLElement>(null);
   useEffect(() => { sceneStore.set((s) => ({ stepState: { ...s.stepState, [def.id]: player.state } })); }, [def.id, player.state]);
   useRectRegistration(def.id, 'object', objectRef);
   useRectRegistration(def.id, 'frame', frameRef);
+  useRectRegistration(def.id, 'chapter', articleRef);
   // The frame rides the 3D screen plane in CSS 3D: still DOM, still crisp, still clickable. The
   // quad arrives outside the reactive state (P2-R2), so this writes the transform straight to the
   // node — no React render per scroll frame. No scene, no quad, no matrix: the frame stays in
@@ -47,7 +50,12 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
   }, [sceneOpen]);
   const { Scene } = def;
   return (
-    <article id={`work-${def.id}`} className="chapter" ref={register} style={{ '--chapter-color': def.color } as CSSProperties}>
+    <article
+      id={`work-${def.id}`}
+      className="chapter"
+      ref={(el) => { articleRef.current = el; register(el); }}
+      style={{ '--chapter-color': def.color } as CSSProperties}
+    >
       <div className="rail chapter__grid">
         <div className="chapter__text">
           <p className="chapter__kicker">{def.id} · {def.audience}</p>
@@ -57,8 +65,8 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
           <div className="chapter__object" ref={objectRef} aria-hidden="true">
             {!sceneOpen && (
               <picture>
-                <source srcSet={`/fallback/${def.id}.webp`} type="image/webp" />
-                <img src={`/fallback/${def.id}.png`} alt="" loading="lazy" />
+                <source srcSet={`/fallback/${def.object}.webp`} type="image/webp" />
+                <img src={`/fallback/${def.object}.png`} alt="" loading="lazy" />
               </picture>
             )}
           </div>

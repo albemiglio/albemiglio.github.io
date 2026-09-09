@@ -2,11 +2,10 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, Matrix4, Quaternion, Vector3, type Group, type Mesh, type Object3D } from 'three';
 import { useModel } from '../loaders';
-import { chapterPhase } from '../math';
+import { chapterPhaseFromRect } from '../math';
 import { sceneStore, type Quad } from '../store';
 import { rectCenterOnZPlane, screenCorners } from './screenAnchor';
 
-const CHAPTER = { start: 0.1, end: 0.6 };
 const YAW = MathUtils.degToRad(35);
 
 function yawFor(phase: number) {
@@ -54,7 +53,8 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
     const check = () => {
       const s = sceneStore.get();
       const r = s.rects[id]?.frame;
-      const sig = `${r?.x},${r?.y},${r?.w},${r?.h},${s.viewport.w},${s.viewport.h},${Math.round(s.progress * 1000)}`;
+      const c = s.rects[id]?.chapter;
+      const sig = `${r?.x},${r?.y},${r?.w},${r?.h},${c?.y},${c?.h},${s.viewport.w},${s.viewport.h},${Math.round(s.progress * 1000)}`;
       if (sig === last) return;
       last = sig;
       invalidate();
@@ -102,7 +102,7 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
     lookTarget.copy(p.position).sub(forward);
     p.lookAt(lookTarget);
 
-    const targetYaw = yawFor(chapterPhase(s.progress, CHAPTER.start, CHAPTER.end));
+    const targetYaw = yawFor(chapterPhaseFromRect(s.rects[id]?.chapter, s.viewport.h));
     yaw.current = MathUtils.lerp(yaw.current, targetYaw, 0.25);
     p.rotateY(yaw.current);
 

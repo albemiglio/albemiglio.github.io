@@ -1,7 +1,7 @@
 import { useEffect, type RefObject } from 'react';
 import { sceneStore } from './store';
 
-export function useRectRegistration(id: string, kind: 'object' | 'frame', ref: RefObject<HTMLElement | null>) {
+export function useRectRegistration(id: string, kind: 'object' | 'frame' | 'chapter', ref: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;

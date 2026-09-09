@@ -3,12 +3,11 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Group, MathUtils, MeshStandardMaterial, type Mesh, type Object3D } from 'three';
 import { useModel } from '../loaders';
 import { useSceneSelector } from '../store';
-import { chapterPhase, explodeAmount } from '../math';
+import { chapterPhaseFromRect, explodeAmount } from '../math';
 import { ipcamPose } from './ipcamPose';
 import type { IpcamState } from '../../flows/ipcam/steps';
 
 const IDLE: IpcamState = { view: 'grid', pan: 0, tilt: 0, rec: false, clips: 0, talk: false };
-const CHAPTER = { start: 0.1, end: 0.6 }; // slice of the Work progress owned by this chapter (Part 3 computes it per chapter)
 
 // lens/cradle/leds each carry their own local origin in the glTF (not a shared point — see
 // task-6-report.md), so rotating them individually would swing each around a different pivot
@@ -70,11 +69,11 @@ export function IpCamera() {
   );
 
   const state = useSceneSelector((s) => (s.stepState.ipcam as IpcamState | undefined) ?? IDLE);
-  const progress = useSceneSelector((s) => s.progress);
-  // Round to 3 decimals: `progress` (and so `explode`) changes on every scroll tick, but the
-  // pose only actually differs once it crosses a ~0.001 threshold — memoising on the rounded
-  // value keeps `target` referentially stable outside the explode window (P2-R2).
-  const explode = Math.round(explodeAmount(chapterPhase(progress, CHAPTER.start, CHAPTER.end)) * 1000) / 1000;
+  // Round to 3 decimals inside the selector: the phase (and so `explode`) changes on every
+  // scroll tick, but the pose only actually differs once it crosses a ~0.001 threshold — this
+  // keeps IpCamera from even re-rendering outside the explode window (P2-R2).
+  const phase = useSceneSelector((s) => Math.round(chapterPhaseFromRect(s.rects.ipcam?.chapter, s.viewport.h) * 1000) / 1000);
+  const explode = Math.round(explodeAmount(phase) * 1000) / 1000;
   const target = useMemo(() => ipcamPose(state, explode), [state, explode]);
   useEffect(() => { invalidate(); }, [target, invalidate]);
 

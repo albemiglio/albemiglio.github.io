@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react';
 import type { Pt, Rect } from './math';
 
 export type { Rect } from './math';
-export type ChapterRects = { object?: Rect; frame?: Rect };
+export type ChapterRects = { object?: Rect; frame?: Rect; chapter?: Rect };
 export type SceneState = {
   progress: number;
   activeId: string | null;
@@ -39,7 +39,7 @@ export const sceneStore = {
     state = { ...state, ...p };
     emit();
   },
-  setRect(id: string, kind: 'object' | 'frame', rect: Rect | null) {
+  setRect(id: string, kind: 'object' | 'frame' | 'chapter', rect: Rect | null) {
     const current = { ...(state.rects[id] ?? {}) };
     if (rect) current[kind] = rect; else delete current[kind];
     state = { ...state, rects: { ...state.rects, [id]: current } };

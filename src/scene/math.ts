@@ -84,8 +84,19 @@ export function lerpKeyframes<T extends number[]>(keys: { at: number; v: T }[], 
   return [...keys[keys.length - 1].v] as T;
 }
 
-export function chapterPhase(progress: number, start: number, end: number): number {
-  return Math.min(1, Math.max(0, (progress - start) / (end - start)));
+// How far a chapter's <article> has travelled through the viewport: 0 when its top is at the
+// bottom edge, 1 when its bottom has left the top edge. The device is frontal around 0.5.
+export function chapterPhaseFromRect(rect: Rect | undefined, vh: number): number {
+  if (!rect || rect.h + vh <= 0) return 0;
+  return Math.min(1, Math.max(0, (vh - rect.y) / (rect.h + vh)));
+}
+
+// Continuous chapter index 0..N: chapters above the viewport count 1, the current one its
+// phase. Drives the camera's lateral drift so it never jumps between chapters.
+export function chapterIndex(rects: Record<string, { chapter?: Rect }>, ids: readonly string[], vh: number): number {
+  let c = 0;
+  for (const id of ids) c += chapterPhaseFromRect(rects[id]?.chapter, vh);
+  return c;
 }
 
 // Rises 0→1 over phase 0.05–0.25, holds, falls back to 0 by 0.45; 0 elsewhere.

@@ -42,3 +42,13 @@ test('with the scene gated off, the chapter falls back to the static image', () 
   const img = container.querySelector('.chapter__object img');
   expect(img).toHaveAttribute('src', '/fallback/ipcam.png');
 });
+
+test('the fallback image is keyed by the chapter object, not its id', () => {
+  sceneStore.set({ sceneOpen: false });
+  const def = { ...chapters[0], id: 'other-id', object: 'card' as const };
+  const { container } = render(
+    <MotionProvider forceReduced><Chapter def={def} active register={() => {}} /></MotionProvider>,
+  );
+  const img = container.querySelector('.chapter__object img');
+  expect(img).toHaveAttribute('src', '/fallback/card.png');
+});

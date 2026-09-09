@@ -14,6 +14,7 @@ const ipcam: ChapterDef<IpcamState> = {
   blurb: 'Client and server rebuilt from a reverse-engineered P2P protocol: live view, recordings, two-way audio and camera control, self-hosted.',
   fact: 'Protocol published as measured · github.com/albemiglio/ipcam-protocol',
   color: 'var(--c-ipcam)',
+  object: 'ipcam',
   device: 'laptop',
   steps: ipcamSteps,
   Scene: IpcamScene,
