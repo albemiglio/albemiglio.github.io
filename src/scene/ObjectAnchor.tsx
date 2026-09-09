@@ -105,7 +105,10 @@ export function ObjectAnchor({
       if (haveHero) {
         rectCenterOnZPlane(heroRect!, s.viewport, camera, heroCentre);
         const w = rectToWorld(heroRect!, s.viewport, CAMERA_FOV, CAMERA_DIST, view.width / view.height);
-        b.heroScale = (Math.min(w.scaleW, w.scaleH) * size) / 2;
+        // F1/P3-R17: no `size` here — heroSlots.json (position/rotation/scale) is the only
+        // authority for the hero slot, matching tools/models/hero.py verbatim. `size` only
+        // scales the chapter placement above.
+        b.heroScale = Math.min(w.scaleW, w.scaleH) / 2;
         b.heroX = heroCentre.x;
         b.heroY = heroCentre.y;
       }
