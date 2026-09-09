@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Group, MathUtils, MeshStandardMaterial, type Mesh, type Object3D } from 'three';
 import { useModel } from '../loaders';
 import { useSceneSelector } from '../store';
-import { chapterPhaseFromRect, explodeAmount } from '../math';
+import { chapterPhaseFromRect, explodeAmount, heroExit, heroExplode } from '../math';
 import { ipcamPose } from './ipcamPose';
 import type { IpcamState } from '../../flows/ipcam/steps';
 
@@ -73,7 +73,10 @@ export function IpCamera() {
   // scroll tick, but the pose only actually differs once it crosses a ~0.001 threshold — this
   // keeps IpCamera from even re-rendering outside the explode window (P2-R2).
   const phase = useSceneSelector((s) => Math.round(chapterPhaseFromRect(s.rects.ipcam?.chapter, s.viewport.h) * 1000) / 1000);
-  const explode = Math.round(explodeAmount(phase) * 1000) / 1000;
+  // P3-R20/F12b: see Card.tsx — the hero fly-out explodes the sculpture on top of the chapter's
+  // own explode window.
+  const heroExplodeAmt = useSceneSelector((s) => Math.round(heroExplode(heroExit(s.scrollY, s.viewport.h)) * 1000) / 1000);
+  const explode = Math.max(Math.round(explodeAmount(phase) * 1000) / 1000, heroExplodeAmt);
   const target = useMemo(() => ipcamPose(state, explode), [state, explode]);
   useEffect(() => { invalidate(); }, [target, invalidate]);
 

@@ -119,6 +119,13 @@ export function flightTarget(rect: Rect, vh: number, t: number, out: Rect = { x:
   return out;
 }
 
+// P3-R20/F12b: sin(π·t) so the fly-out explosion rises from 0 as the hero starts to exit, peaks
+// at heroExit's midpoint (t=0.5), and eases back to 0 once the sculpture has fully handed off to
+// the chapter (t=1) — the objects blow apart mid-flight instead of snapping open or shut.
+export function heroExplode(t: number): number {
+  return Math.sin(Math.PI * t);
+}
+
 // Rises 0→1 over phase 0.05–0.25, holds, falls back to 0 by 0.45; 0 elsewhere.
 export function explodeAmount(phase: number): number {
   const ease = (u: number) => 1 - Math.pow(1 - u, 3);

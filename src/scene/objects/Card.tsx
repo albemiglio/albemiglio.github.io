@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Vector3 } from 'three';
 import { useModel } from '../loaders';
 import { useSceneSelector } from '../store';
-import { chapterPhaseFromRect, explodeAmount, heroExit } from '../math';
+import { chapterPhaseFromRect, explodeAmount, heroExit, heroExplode } from '../math';
 import { cardPose } from './cardPose';
 import { PartObject } from './PartObject';
 import type { Vec3 } from './pose';
@@ -28,7 +28,11 @@ export function Card() {
   // Rounded to 3 decimals inside the selector, same as IpCamera.tsx (P2-R2): the phase changes
   // every scroll tick but the pose only differs once it crosses a ~0.001 threshold.
   const phase = useSceneSelector((s) => Math.round(chapterPhaseFromRect(s.rects.asd?.chapter, s.viewport.h) * 1000) / 1000);
-  const explode = Math.round(explodeAmount(phase) * 1000) / 1000;
+  // P3-R20/F12b: the hero fly-out explodes the sculpture on top of the chapter's own explode
+  // window — rounded in the selector like `phase` above, so this only re-renders while heroExit
+  // is actually moving (t in (0,1)), not on every scroll pixel outside that window.
+  const heroExplodeAmt = useSceneSelector((s) => Math.round(heroExplode(heroExit(s.scrollY, s.viewport.h)) * 1000) / 1000);
+  const explode = Math.max(Math.round(explodeAmount(phase) * 1000) / 1000, heroExplodeAmt);
   const pose = useMemo(() => cardPose(state, explode, normal), [state, explode, normal]);
   return <PartObject name="card" pose={pose} />;
 }
