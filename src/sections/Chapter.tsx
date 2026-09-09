@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, type CSSProperties, type JSX, type RefCallback } from 'react';
+import { Suspense, useCallback, useEffect, useRef, type ComponentType, type CSSProperties, type RefCallback } from 'react';
 import type { Step } from '../flows/types';
 import { useFlowPlayer } from '../flows/player';
 import { DeviceFrame } from '../flows/DeviceFrame';
@@ -11,7 +11,7 @@ import type { ChapterMeta } from '../chapters';
 
 export type ChapterDef<S> = {
   id: string; title: string; audience: string; blurb: string; fact: string; color: string;
-  object: ChapterMeta['object']; device: 'laptop' | 'phone'; steps: Step<S>[]; Scene: (p: { state: S }) => JSX.Element;
+  object: ChapterMeta['object']; device: 'laptop' | 'phone'; steps: Step<S>[]; Scene: ComponentType<{ state: S }>;
 };
 
 export type AnyChapterDef = ChapterDef<any>;
@@ -82,7 +82,9 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
           onBlur={player.resume}
         >
           <DeviceFrame ref={frameRef} kind={def.device} label={`${def.id} — ${def.title}`}>
-            <Scene state={player.state} />
+            <Suspense fallback={null}>
+              <Scene state={player.state} />
+            </Suspense>
           </DeviceFrame>
           <StepBar steps={def.steps} index={player.index} playing={player.playing} color={def.color} onSelect={player.goTo} />
         </div>

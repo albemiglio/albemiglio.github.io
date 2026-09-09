@@ -1,17 +1,38 @@
-import { useEffect, useRef } from 'react';
+import { lazy, useEffect, useRef } from 'react';
 import { Chapter, type AnyChapterDef, type ChapterDef } from './Chapter';
 import { useActiveChapter } from '../flows/useActiveChapter';
-import { IpcamScene } from '../flows/ipcam/Scene';
 import { ipcamSteps, type IpcamState } from '../flows/ipcam/steps';
-import { AsdScene } from '../flows/asd/Scene';
 import { asdSteps, type AsdState } from '../flows/asd/steps';
-import { PastisScene } from '../flows/pastis/Scene';
 import { pastisSteps, type PastisState } from '../flows/pastis/steps';
-import { MedScene } from '../flows/med/Scene';
 import { medSteps, type MedState } from '../flows/med/steps';
 import { useSceneProgress } from '../scene/useSceneProgress';
 import { sceneStore } from '../scene/store';
+import { afterLoad, onIdle } from '../scene/useSceneGate';
 import './work.css';
+
+// Lazy: each Scene is animation-heavy (motion/react + its own CSS) and only needed once its
+// chapter scrolls into view — splitting it into the 'flows' chunk (vite.config.ts) keeps it off
+// the initial JS path, same reasoning as SceneMount's SceneCanvas split (P3-R14/F4).
+const IpcamScene = lazy(() => import('../flows/ipcam/Scene').then((m) => ({ default: m.IpcamScene })));
+const AsdScene = lazy(() => import('../flows/asd/Scene').then((m) => ({ default: m.AsdScene })));
+const PastisScene = lazy(() => import('../flows/pastis/Scene').then((m) => ({ default: m.PastisScene })));
+const MedScene = lazy(() => import('../flows/med/Scene').then((m) => ({ default: m.MedScene })));
+
+// Idle-time prefetch, same after-load-then-idle timing as F1's useSceneGate: once the page has
+// painted and gone idle, warm the 'flows' chunk so the first chapter scrolled to doesn't pay for
+// a cold dynamic import.
+function prefetchScenes(): () => void {
+  let cancelIdle = () => {};
+  const cancelLoad = afterLoad(() => {
+    cancelIdle = onIdle(() => {
+      import('../flows/ipcam/Scene');
+      import('../flows/asd/Scene');
+      import('../flows/pastis/Scene');
+      import('../flows/med/Scene');
+    });
+  });
+  return () => { cancelLoad(); cancelIdle(); };
+}
 
 const ipcam: ChapterDef<IpcamState> = {
   id: 'ipcam',
@@ -52,6 +73,7 @@ export function Work() {
   useSceneProgress(ref);
   const { activeId, register } = useActiveChapter(ids);
   useEffect(() => { sceneStore.set({ activeId }); }, [activeId]);
+  useEffect(prefetchScenes, []);
   return (
     <section ref={ref} id="work" className="section" aria-label="Work">
       <div className="rail"><h2 className="section-title">Work</h2></div>
