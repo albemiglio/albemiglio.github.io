@@ -4,6 +4,7 @@ coverage
 e2e/screenshots
 playwright-report
 test-results
+.lighthouseci
 tools/models/.blender-cache
 tools/models/__pycache__
 .worktrees
