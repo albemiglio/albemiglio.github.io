@@ -57,6 +57,11 @@ export function IpCamera() {
     const status = parts.get('status_led') as Mesh | undefined;
     if (status) status.material = (status.material as MeshStandardMaterial).clone();
   }, [parts]);
+  // <primitive> does not dispose on unmount; the clone above is ours to free.
+  useEffect(() => () => {
+    const status = parts.get('status_led') as Mesh | undefined;
+    (status?.material as MeshStandardMaterial | undefined)?.dispose();
+  }, [parts]);
   // Captured once, before any useFrame lerp mutates these — head's own rest position is needed
   // separately since it isn't a member of `parts` (it's the group the head parts live under).
   const { rest, restHeadY } = useMemo(
