@@ -1,5 +1,4 @@
 import { Canvas } from '@react-three/fiber';
-import { ContactShadows } from '@react-three/drei';
 import { Lights } from './Lights';
 import { CameraRig, CAMERA_FOV, CAMERA_DIST } from './CameraRig';
 import { ChapterObjects } from './ChapterObjects';
@@ -19,7 +18,6 @@ export default function SceneCanvas() {
         <Lights shadows={!small} />
         <CameraRig />
         <ChapterObjects />
-        {!small && <ContactShadows position={[0, -2.2, 0]} opacity={0.35} scale={12} blur={2.5} far={4} />}
       </Canvas>
     </div>
   );

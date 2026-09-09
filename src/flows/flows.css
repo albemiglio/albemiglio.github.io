@@ -1,4 +1,6 @@
-.device { position: relative; background: var(--surface); border: 1px solid var(--border); overflow: hidden; }
+/* transform-origin 0 0: the handoff matrix maps the frame's own layout box onto the projected
+   3D screen plane, and that mapping is written in the element's local corner-anchored space. */
+.device { position: relative; background: var(--surface); border: 1px solid var(--border); overflow: hidden; transform-origin: 0 0; will-change: transform; backface-visibility: hidden; }
 .device--laptop { border-radius: 14px; aspect-ratio: 16 / 10; }
 .device--phone { border-radius: 32px; aspect-ratio: 9 / 19.5; max-width: 320px; margin: 0 auto; }
 .device__bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); }

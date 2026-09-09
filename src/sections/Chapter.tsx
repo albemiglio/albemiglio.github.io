@@ -5,6 +5,7 @@ import { DeviceFrame } from '../flows/DeviceFrame';
 import { StepBar } from '../flows/StepBar';
 import { useMotionPrefs } from '../MotionProvider';
 import { sceneStore, useSceneSelector } from '../scene/store';
+import { isNearIdentity, quadToMatrix3d } from '../scene/math';
 import { useRectRegistration } from '../scene/useRectRegistration';
 
 export type ChapterDef<S> = {
@@ -19,13 +20,25 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
   const player = useFlowPlayer(def.steps, { active, reduced });
   const sceneOpen = useSceneSelector((s) => s.sceneOpen);
   const objectRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
   useEffect(() => { sceneStore.set((s) => ({ stepState: { ...s.stepState, [def.id]: player.state } })); }, [def.id, player.state]);
   useRectRegistration(def.id, 'object', objectRef);
+  useRectRegistration(def.id, 'frame', frameRef);
+  // The frame rides the 3D screen plane in CSS 3D: still DOM, still crisp, still clickable. The
+  // quad arrives outside the reactive state (P2-R2), so this writes the transform straight to the
+  // node — no React render per scroll frame. No scene, no quad, no matrix: the frame stays in
+  // normal flow, and so does the frontal pose, where the projection is the layout rect itself.
+  useEffect(() => sceneStore.subscribeQuad(def.id, (quad) => {
+    const el = frameRef.current;
+    if (!el) return;
+    const rect = sceneStore.get().rects[def.id]?.frame;
+    el.style.transform = !rect || !quad || isNearIdentity(rect, quad) ? '' : quadToMatrix3d(rect, quad);
+  }), [def.id]);
   const { Scene } = def;
   return (
     <article id={`work-${def.id}`} className="chapter" ref={register} style={{ '--chapter-color': def.color } as CSSProperties}>
       <div className="rail chapter__grid">
-        <div>
+        <div className="chapter__text">
           <p className="chapter__kicker">{def.id} · {def.audience}</p>
           <h3 className="chapter__title">{def.title}</h3>
           <p className="chapter__blurb">{def.blurb}</p>
@@ -46,7 +59,7 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
           onFocus={player.pause}
           onBlur={player.resume}
         >
-          <DeviceFrame kind={def.device} label={`${def.id} — ${def.title}`}>
+          <DeviceFrame ref={frameRef} kind={def.device} label={`${def.id} — ${def.title}`}>
             <Scene state={player.state} />
           </DeviceFrame>
           <StepBar steps={def.steps} index={player.index} playing={player.playing} color={def.color} onSelect={player.goTo} />

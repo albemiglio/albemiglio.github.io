@@ -1,5 +1,8 @@
-.chapter { min-height: 150vh; display: grid; align-items: center; scroll-margin-top: 2rem; }
-.chapter__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; }
+/* The chapter is taller than the viewport and both columns are sticky inside it: the scroll
+   travel is what drives the device's rotation in and out of the frontal pose. */
+.chapter { min-height: 150vh; display: block; scroll-margin-top: 2rem; }
+.chapter__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 4vw, 4rem); min-height: 150vh; align-items: start; padding-top: 12vh; }
+.chapter__text { position: sticky; top: 12vh; }
 .chapter__kicker { font-family: var(--font-mono); font-size: 0.8rem; color: var(--chapter-color); margin: 0 0 0.75rem; }
 .chapter__title { font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 1rem; }
 .chapter__blurb { color: var(--muted); max-width: 42ch; margin: 0 0 1rem; }
@@ -9,6 +12,6 @@
 .chapter__stage { position: sticky; top: 12vh; }
 @media (max-width: 900px) {
   .chapter { min-height: auto; padding: 4rem 0; }
-  .chapter__grid { grid-template-columns: 1fr; }
-  .chapter__stage { position: static; }
+  .chapter__grid { grid-template-columns: 1fr; min-height: auto; padding-top: 0; }
+  .chapter__text, .chapter__stage { position: static; }
 }
