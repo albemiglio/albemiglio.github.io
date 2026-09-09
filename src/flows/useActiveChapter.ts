@@ -22,11 +22,17 @@ export function useActiveChapter(ids: string[]) {
 
   useEffect(() => {
     compute();
-    window.addEventListener('scroll', compute, { passive: true });
-    window.addEventListener('resize', compute);
+    let raf = 0;
+    // Coalesce scroll/resize bursts to at most one compute() per animation frame.
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; compute(); });
+    };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
     return () => {
-      window.removeEventListener('scroll', compute);
-      window.removeEventListener('resize', compute);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      cancelAnimationFrame(raf);
     };
   }, [compute]);
 
