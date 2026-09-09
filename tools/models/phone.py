@@ -44,8 +44,10 @@ subtract(frame, rounded_box("frame_cut", (0.905, 1.985, 0.24), 0.083, corner, al
 bevel(frame, 0.005, 3)
 smooth(frame)
 
-# 9:19.5 panel, inside the rail and clear of the body's front face.
-screen = rounded_box("screen", (0.86, 1.86, 0.0015), 0.07, corner + 2, screen_off,
+# I1: height derived from `.device--phone`'s `aspect-ratio: 9 / 19.5` in src/flows/flows.css —
+# the rounded 1.86 this used before drifted past isNearIdentity's 0.5px tolerance at small sizes.
+SCREEN_W, SCREEN_H = 0.86, 0.86 * 19.5 / 9
+screen = rounded_box("screen", (SCREEN_W, SCREEN_H, 0.0015), 0.07, corner + 2, screen_off,
                      location=(0, 0, FRONT + 0.0015))
 notch = rounded_box("notch", (0.24, 0.07, 0.002), 0.035, corner, black,
                     location=(0, 0.83, FRONT + 0.0033))
