@@ -14,6 +14,14 @@ test.describe('desktop', () => {
         const box = await steps.nth(i).boundingBox();
         expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
       }
+      const tracks = page.locator(`#work-${c.id} .step__track`);
+      const trackCount = await tracks.count();
+      const ys: number[] = [];
+      for (let i = 0; i < trackCount; i++) {
+        const box = await tracks.nth(i).boundingBox();
+        ys.push(Math.round(box?.y ?? 0));
+      }
+      expect(new Set(ys).size).toBe(1);
       for (const i of c.shots) {
         await steps.nth(i).click();
         await expect(steps.nth(i)).toHaveAttribute('aria-current', 'step');
@@ -44,6 +52,14 @@ test.describe('mobile 390', () => {
       const box = await steps.nth(i).boundingBox();
       expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
     }
+    const tracks = frame.locator('#work-ipcam .step__track');
+    const trackCount = await tracks.count();
+    const ys: number[] = [];
+    for (let i = 0; i < trackCount; i++) {
+      const box = await tracks.nth(i).boundingBox();
+      ys.push(Math.round(box?.y ?? 0));
+    }
+    expect(new Set(ys).size).toBe(1);
     await page.waitForTimeout(700);
     await page.screenshot({ path: 'e2e/screenshots/ipcam-mobile.png' });
   });
