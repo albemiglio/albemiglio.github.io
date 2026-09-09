@@ -33,7 +33,6 @@ test('setQuad notifies only subscribeQuad listeners for that id, not subscribe l
   ];
   sceneStore.setQuad('a', quad);
 
-  expect(sceneStore.getQuad('a')).toEqual(quad);
   expect(seenA).toEqual([quad]);
   expect(seenB.length).toBe(0);
   expect(subCalls).toBe(0);

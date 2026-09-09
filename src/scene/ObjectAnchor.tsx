@@ -43,9 +43,12 @@ export function ObjectAnchor({ id, size = 0.8, pose = [-0.35, 0.5, 0], shadows =
       invalidate();
     };
     apply();
+    // M4: no separate scroll listener — the rect this reads only ever changes via
+    // useRectRegistration's rAF-scheduled `setRect`, which already goes through the store
+    // subscription below, so a direct scroll listener here would only ever re-run `apply()`
+    // against a still-stale rect and bail on the signature check.
     const off = sceneStore.subscribe(apply);
-    window.addEventListener('scroll', apply, { passive: true });
-    return () => { off(); window.removeEventListener('scroll', apply); };
+    return () => { off(); };
   }, [id, size, camera, invalidate, view.width, view.height]);
   return (
     <group ref={g}>

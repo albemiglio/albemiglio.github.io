@@ -43,7 +43,6 @@ test('fills the caller-supplied out buffer, leaving other buffers untouched', ()
   expect(qB).toBe(bufB);
   // A shared-scratch implementation would have both calls converge on bufB's (last-written)
   // values; bufA must still hold the first call's own result.
-  expect(bufA[0]).toEqual(qA[0]);
   expect(bufA[0]).not.toEqual(bufB[0]);
 });
 

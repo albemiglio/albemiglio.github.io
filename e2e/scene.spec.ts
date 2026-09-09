@@ -35,7 +35,10 @@ test.describe('scene off', () => {
   test.use({ reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
   test('no canvas and the picture fallback under reduced motion', async ({ page }) => {
     await page.goto('/');
-    await page.waitForTimeout(1500);
+    // M3: matches useSceneGate's worst-case onIdle gate (requestIdleCallback(..., { timeout:
+    // 2000 })) plus margin; 1500ms was shorter than that and could assert "no canvas" on a slow
+    // runner before the gate had a chance to open one.
+    await page.waitForTimeout(2500);
     await expect(page.locator('.scene canvas')).toHaveCount(0);
     await expect(page.locator('#work-ipcam .chapter__object img')).toHaveAttribute('src', '/fallback/ipcam.png');
   });
