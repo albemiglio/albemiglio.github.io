@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Color, type DirectionalLight } from 'three';
 import { useSceneSelector } from './store';
@@ -23,6 +23,10 @@ export function Lights({ shadows }: { shadows: boolean }) {
   const { invalidate } = useThree();
   const activeId = useSceneSelector((s) => s.activeId);
   const target = useMemo(() => chapterKeyColor(CHAPTER_KEY[activeId ?? ''] ?? NEUTRAL), [activeId]);
+  // M1: frameloop="demand" only renders on invalidate(). A chapter change with the scroll
+  // position otherwise unchanged (e.g. a click on a StepBar step) never invalidates on its own,
+  // so the tint lerp above would never get a frame to run in.
+  useEffect(() => { invalidate(); }, [target, invalidate]);
   useFrame((_, dt) => {
     if (!key.current) return;
     key.current.color.lerp(target, Math.min(1, dt * 4));

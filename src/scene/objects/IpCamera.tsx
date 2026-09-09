@@ -19,7 +19,12 @@ const HEAD_NAME = 'head-pivot';
 const HEAD_PARTS = ['cradle', 'leds', 'lens'];
 
 export function IpCamera() {
-  const { scene } = useModel('ipcam');
+  const cached = useModel('ipcam');
+  // I3 (same fix as Device.tsx F1): useGLTF caches the scene per URL. The code below reparents
+  // nodes into a new group and writes emissiveIntensity on a material — mutating the cached
+  // scene in place would corrupt it for every other consumer sharing the cache. Clone per
+  // instance; only the one material actually written to needs its own clone (see below).
+  const scene = useMemo(() => cached.scene.clone(true), [cached.scene]);
   const root = useRef<Group>(null);
   const { invalidate } = useThree();
 
@@ -45,6 +50,13 @@ export function IpCamera() {
     for (const o of head.children) map.set(o.name, o);
     return { parts: map, head };
   }, [scene]);
+  // I3: clone status_led's material once (idempotent — see the `!head` guard above for why this
+  // memo is safe to run more than once) so the emissiveIntensity write in useFrame below lands on
+  // this instance's own material, not the one every other `useModel('ipcam')` consumer shares.
+  useMemo(() => {
+    const status = parts.get('status_led') as Mesh | undefined;
+    if (status) status.material = (status.material as MeshStandardMaterial).clone();
+  }, [parts]);
   // Captured once, before any useFrame lerp mutates these — head's own rest position is needed
   // separately since it isn't a member of `parts` (it's the group the head parts live under).
   const { rest, restHeadY } = useMemo(
