@@ -90,6 +90,7 @@ p.add_argument("--color", required=True)
 p.add_argument("--out", required=True)
 p.add_argument("--size", type=int, default=1600)
 p.add_argument("--samples", type=int, default=192)
+p.add_argument("--quality", type=int, default=85)
 a = p.parse_args(argv)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -148,3 +149,15 @@ area_light("rim", centre - right * 1.2 + up * 2.4 + forward * 3.0, centre, 240, 
 
 scene.render.filepath = a.out
 bpy.ops.render.render(write_still=True)
+
+# WebP beside the PNG, saved from the same render result rather than rendered
+# twice. save_render writes with the scene's current image settings, so the
+# format has to be switched before the call and put back after it.
+webp = a.out.rsplit(".", 1)[0] + ".webp"
+scene.render.image_settings.file_format = "WEBP"
+scene.render.image_settings.color_mode = "RGBA"
+scene.render.image_settings.quality = a.quality
+bpy.data.images["Render Result"].save_render(webp, scene=scene)
+scene.render.image_settings.file_format = "PNG"
+print(f"render_fallback: wrote {webp} at quality {a.quality}, "
+      f"{bpy.data.images.load(webp).channels} channels")

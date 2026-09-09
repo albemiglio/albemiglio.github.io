@@ -8,6 +8,9 @@ const BUDGET_BYTES = 2.5 * 1024 * 1024;
 
 const objects = [
   { name: 'ipcam', color: '#F0B24A', fallback: true },
+  { name: 'card', color: '#6CCB8A', fallback: true },
+  { name: 'cake', color: '#F3A9B9', fallback: true },
+  { name: 'capsule', color: '#5BC8C4', fallback: true },
   { name: 'laptop', color: '#E8E0D0', fallback: false },
   { name: 'phone', color: '#E8E0D0', fallback: false },
 ];
@@ -17,12 +20,12 @@ function blender(script, extra) {
 }
 
 function optimize(file) {
-  // --join and --flatten default to true and merge/rename the named nodes
-  // (ipcam/dome/lens/body/base/board) that later tasks load by name, so they
-  // are disabled here; everything else (meshopt, simplify, prune) still applies.
-  // --palette also defaults to true and bakes the 5 named PBR materials
-  // (shell/dark/metal/glass/board) into 2 generic PaletteMaterial textures,
-  // breaking the material-name contract and merging colors, so it is disabled too.
+  // --join and --flatten default to true and merge/rename the per-part nodes
+  // (dome, lens, tier1, shell_a, ...) that the exploded views move by name, so
+  // they are disabled here; everything else (meshopt, simplify, prune) applies.
+  // --palette also defaults to true and bakes the named PBR materials into
+  // generic PaletteMaterial textures, breaking the material-name contract and
+  // merging colors, so it is disabled too.
   execFileSync('npx', ['gltf-transform', 'optimize', file, file, '--compress', 'meshopt', '--texture-size', '1024', '--join', 'false', '--flatten', 'false', '--palette', 'false'], { stdio: 'inherit' });
 }
 
