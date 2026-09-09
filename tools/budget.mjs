@@ -20,10 +20,10 @@ for (const ref of new Set(refs)) {
 }
 console.log(`initial JS: ${kb(initial)} KB gz (limit ${kb(INITIAL_LIMIT)} KB)`);
 
-// Every entry HTML (main + style tile) references its own initial JS; anything not referenced by
-// either is only reachable through a lazy import (SceneMount's, or a chapter object's own) and
-// counts as part of the lazily-loaded scene payload.
-const referenced = new Set([...refs, ...jsRefs(resolve(DIST, 'style/index.html'))]);
+// The entry HTML references its own initial JS; anything not referenced is only reachable
+// through a lazy import (SceneMount's, or a chapter object's own) and counts as part of the
+// lazily-loaded scene payload.
+const referenced = new Set(refs);
 const allJs = readdirSync(resolve(DIST, 'assets')).filter((f) => f.endsWith('.js'));
 let lazySize = 0;
 for (const f of allJs) {
