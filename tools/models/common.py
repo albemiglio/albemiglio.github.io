@@ -156,7 +156,7 @@ def export(root, path):
         export_format="GLB",
         use_selection=True,
         export_apply=True,
-        export_draco_mesh_compression_enable=True,
+        export_draco_mesh_compression_enable=False,
         export_yup=True,
     )
 

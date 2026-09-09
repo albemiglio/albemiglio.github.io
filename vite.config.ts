@@ -11,6 +11,12 @@ export default defineConfig({
         main: resolve(import.meta.dirname, 'index.html'),
         style: resolve(import.meta.dirname, 'style/index.html'),
       },
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) return 'scene';
+          return undefined;
+        },
+      },
     },
   },
   test: {
