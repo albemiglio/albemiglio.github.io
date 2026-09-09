@@ -59,10 +59,11 @@ test.describe('scene off', () => {
   test.use({ reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
   test('no canvas and the picture fallback under reduced motion', async ({ page }) => {
     await page.goto('/');
-    // M3: matches useSceneGate's worst-case onIdle gate (requestIdleCallback(..., { timeout:
-    // 2000 })) plus margin; 1500ms was shorter than that and could assert "no canvas" on a slow
-    // runner before the gate had a chance to open one.
-    await page.waitForTimeout(2500);
+    // F3/M3: useSceneGate's worst case after `load` (which page.goto already waits for) is the
+    // 1500ms afterPaint settle plus the requestIdleCallback(..., { timeout: 2000 }) gate itself
+    // — 3500ms — so wait past that with margin, or a slow runner could assert "no canvas" before
+    // the gate had a chance to open one.
+    await page.waitForTimeout(4000);
     await expect(page.locator('.scene canvas')).toHaveCount(0);
     await expect(page.locator('#work-ipcam .chapter__object img')).toHaveAttribute('src', '/fallback/ipcam.png');
     await expect(page.locator('#work-pastis .chapter__object img')).toHaveAttribute('src', '/fallback/cake.png');
