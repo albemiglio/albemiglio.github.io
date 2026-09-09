@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type JSX, type RefCallback } from 'react';
+import { useCallback, useEffect, useRef, type CSSProperties, type JSX, type RefCallback } from 'react';
 import type { Step } from '../flows/types';
 import { useFlowPlayer } from '../flows/player';
 import { DeviceFrame } from '../flows/DeviceFrame';
@@ -49,11 +49,13 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
     if (!sceneOpen) frameRef.current?.parentElement?.setAttribute('data-flat', '');
   }, [sceneOpen]);
   const { Scene } = def;
+  // A stable callback: a fresh closure per render would re-register the article on every step tick.
+  const articleRef_ = useCallback((el: HTMLElement | null) => { articleRef.current = el; register(el); }, [register]);
   return (
     <article
       id={`work-${def.id}`}
       className="chapter"
-      ref={(el) => { articleRef.current = el; register(el); }}
+      ref={articleRef_}
       style={{ '--chapter-color': def.color } as CSSProperties}
     >
       <div className="rail chapter__grid">
