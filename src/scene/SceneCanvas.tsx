@@ -17,7 +17,7 @@ export default function SceneCanvas() {
       >
         <Lights shadows={!small} />
         <CameraRig />
-        <ChapterObjects />
+        <ChapterObjects shadows={!small} />
       </Canvas>
     </div>
   );

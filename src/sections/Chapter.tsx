@@ -54,6 +54,7 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
         </div>
         <div
           className="chapter__stage"
+          data-scene={sceneOpen ? '' : undefined}
           onMouseEnter={player.pause}
           onMouseLeave={player.resume}
           onFocus={player.pause}

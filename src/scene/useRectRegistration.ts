@@ -12,8 +12,10 @@ export function useRectRegistration(id: string, kind: 'object' | 'frame', ref: R
       // matrix the scene wrote onto it, and feeding that back in would leave the projection
       // chasing its own output (it has no restoring force — every scale is a fixed point).
       // Clearing and restoring within one task never reaches the screen, and `transform` is not
-      // a layout property, so this costs a style recalc rather than a reflow.
-      const inline = (el as HTMLElement).style.transform;
+      // a layout property, so this costs a style recalc rather than a reflow. F5: only `frame`
+      // elements ever carry that inline transform — `object` elements never do, so skip the
+      // recalc there.
+      const inline = kind === 'frame' ? (el as HTMLElement).style.transform : '';
       if (inline) (el as HTMLElement).style.transform = 'none';
       const r = el.getBoundingClientRect();
       if (inline) (el as HTMLElement).style.transform = inline;

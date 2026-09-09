@@ -11,13 +11,13 @@ export const CAMERA_DIST = 8;
 // camera only drifts slightly on the way in; Part 3 adds a keyframe per chapter.
 const POSITION = [
   { at: 0, v: [0, 0.6, CAMERA_DIST + 1.5] },
-  { at: 0.2, v: [0, 0, CAMERA_DIST] },
-  { at: 1, v: [0, 0, CAMERA_DIST] },
+  { at: 0.2, v: [0, 1.6, CAMERA_DIST] },
+  { at: 1, v: [0, 1.6, CAMERA_DIST] },
 ];
 const TARGET = [
   { at: 0, v: [0, 0.4, 0] },
-  { at: 0.2, v: [0, 0, 0] },
-  { at: 1, v: [0, 0, 0] },
+  { at: 0.2, v: [0, -0.2, 0] },
+  { at: 1, v: [0, -0.2, 0] },
 ];
 
 export function CameraRig() {

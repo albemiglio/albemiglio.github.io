@@ -40,6 +40,8 @@ body {
   font-family: var(--font-sans);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  /* F6: a rotated device frame can otherwise push the layout box wider than the viewport. */
+  overflow-x: clip;
 }
 a { color: inherit; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; appearance: none; }

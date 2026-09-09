@@ -1,4 +1,5 @@
 import { Vector3, type Camera, type Matrix4 } from 'three';
+import type { Pt, Rect } from '../math';
 import type { Quad } from '../store';
 
 // Page-pixel positions of a screen plane's corners (tl, tr, br, bl) given its world matrix.
@@ -11,4 +12,16 @@ export function screenCorners(box: { w: number; h: number }, matrixWorld: Matrix
     const p = v.applyMatrix4(matrixWorld).project(camera);
     return { x: ((p.x + 1) / 2) * viewport.w, y: ((1 - p.y) / 2) * viewport.h };
   }) as Quad;
+}
+
+// Where a page rect's centre sits on the world z=0 plane, for the ACTUAL camera — unlike
+// `rectToWorld` (which only holds for a camera looking straight down -Z), this works for any
+// camera position/orientation by unprojecting the rect's NDC centre and intersecting the ray
+// from the camera with the z=0 plane (fix-round-1, F3b: the chapter camera is now pitched).
+export function rectCenterOnZPlane(rect: Rect, viewport: { w: number; h: number }, camera: Camera): Pt {
+  const ndcX = ((rect.x + rect.w / 2) / viewport.w) * 2 - 1;
+  const ndcY = -(((rect.y + rect.h / 2) / viewport.h) * 2 - 1);
+  const ray = new Vector3(ndcX, ndcY, 0.5).unproject(camera).sub(camera.position).normalize();
+  const t = -camera.position.z / ray.z;
+  return { x: camera.position.x + ray.x * t, y: camera.position.y + ray.y * t };
 }

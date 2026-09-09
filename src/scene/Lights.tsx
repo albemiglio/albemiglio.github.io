@@ -25,8 +25,8 @@ export function Lights({ shadows }: { shadows: boolean }) {
   });
   return (
     <>
-      <directionalLight ref={key} position={[4, 6, 5]} intensity={2.6} castShadow={shadows} shadow-mapSize={[1024, 1024]} />
-      <directionalLight position={[-5, 2, 3]} intensity={0.5} color="#dbe4f0" />
+      <directionalLight ref={key} position={[4, 6, 5]} intensity={2.0} castShadow={shadows} shadow-mapSize={[1024, 1024]} />
+      <directionalLight position={[-5, 2, 3]} intensity={0.8} color="#dbe4f0" />
       <directionalLight position={[-2, 4, -6]} intensity={1.2} color="#ffffff" />
       <ambientLight intensity={0.25} />
     </>

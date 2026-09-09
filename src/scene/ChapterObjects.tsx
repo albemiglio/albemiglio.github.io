@@ -7,10 +7,10 @@ import { Device } from './devices/Device';
 // SceneMount already uses for SceneCanvas itself.
 const IpCamera = lazy(() => import('./objects/IpCamera').then((m) => ({ default: m.IpCamera })));
 
-export function ChapterObjects() {
+export function ChapterObjects({ shadows }: { shadows: boolean }) {
   return (
     <Suspense fallback={null}>
-      <ObjectAnchor id="ipcam"><IpCamera /></ObjectAnchor>
+      <ObjectAnchor id="ipcam" shadows={shadows}><IpCamera /></ObjectAnchor>
       <Device id="ipcam" kind="laptop" />
     </Suspense>
   );

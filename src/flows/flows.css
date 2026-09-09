@@ -1,7 +1,7 @@
 /* transform-origin 0 0: the handoff matrix maps the frame's own layout box onto the projected
    3D screen plane, and that mapping is written in the element's local corner-anchored space. */
 .device { position: relative; background: var(--surface); border: 1px solid var(--border); overflow: hidden; transform-origin: 0 0; will-change: transform; backface-visibility: hidden; }
-.device--laptop { border-radius: 14px; aspect-ratio: 16 / 10; }
+.device--laptop { border-radius: 14px; aspect-ratio: 16 / 10; max-width: 520px; margin: 0 auto; }
 .device--phone { border-radius: 32px; aspect-ratio: 9 / 19.5; max-width: 320px; margin: 0 auto; }
 .device__bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
 .device__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
@@ -11,6 +11,9 @@
 .device--phone .device__screen { top: 38px; }
 
 .stepbar { display: flex; gap: 6px; margin-top: 14px; }
+/* F3a: over the 3D deck the bar needs a solid backing to stay readable; in normal flow (fallback
+   image, no scene) the transparent bar is fine as-is. */
+.chapter__stage[data-scene] .stepbar { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
 .stepbar:focus-visible { outline-offset: 6px; }
 .step { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 6px; text-align: left; min-height: 44px; padding-top: 6px; }
 .step__track { display: block; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
