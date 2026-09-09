@@ -1,4 +1,4 @@
-import { chapterIndex, chapterPhaseFromRect, explodeAmount, isNearIdentity, lerpKeyframes, quadToMatrix3d, rectToWorld } from '../src/scene/math';
+import { chapterIndex, chapterPhaseFromRect, explodeAmount, heroExit, isNearIdentity, lerpKeyframes, quadToMatrix3d, rectToWorld } from '../src/scene/math';
 
 const rect = { x: 100, y: 50, w: 400, h: 250 };
 const corners = (r: typeof rect) => [
@@ -83,4 +83,12 @@ test('chapterPhaseFromRect: 0 below the viewport, 0.5 centred, 1 above', () => {
 test('chapterIndex sums the phases of chapters in order', () => {
   const rects = { a: { chapter: { x: 0, y: -1350, w: 1, h: 1350 } }, b: { chapter: { x: 0, y: -225, w: 1, h: 1350 } }, c: { chapter: { x: 0, y: 2000, w: 1, h: 1350 } } };
   expect(chapterIndex(rects, ['a', 'b', 'c'], 900)).toBeCloseTo(1.5, 5);
+});
+
+test('heroExit: 0 at the top, 0.5 a quarter viewport down, 1 by half a viewport (P3-R8)', () => {
+  expect(heroExit(0, 900)).toBe(0);
+  expect(heroExit(225, 900)).toBeCloseTo(0.5, 5);
+  expect(heroExit(900, 900)).toBe(1);
+  expect(heroExit(1800, 900)).toBe(1);
+  expect(heroExit(0, 0)).toBe(0);
 });

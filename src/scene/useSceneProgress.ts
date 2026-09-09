@@ -12,4 +12,15 @@ export function useSceneProgress(target: RefObject<HTMLElement | null>) {
     window.addEventListener('resize', read);
     return () => window.removeEventListener('resize', read);
   }, []);
+  // heroExit (P3-R8) reads scrollY straight from the store — rAF-gated so a scroll fling doesn't
+  // fan out into more than one store emit per frame. useSceneSelector subscribers already bail on
+  // their own signature, so the extra emits this adds cost nothing beyond this one.
+  useEffect(() => {
+    let raf = 0;
+    const read = () => { raf = 0; sceneStore.set({ scrollY: window.scrollY }); };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(read); };
+    read();
+    window.addEventListener('scroll', schedule, { passive: true });
+    return () => { window.removeEventListener('scroll', schedule); if (raf) cancelAnimationFrame(raf); };
+  }, []);
 }

@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { statSync } from 'node:fs';
+import { mkdirSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const BLENDER = '/Applications/Blender.app/Contents/MacOS/Blender';
@@ -17,6 +17,24 @@ const objects = [
 
 function blender(script, extra) {
   execFileSync(BLENDER, ['-b', '--python', resolve(import.meta.dirname, script), '--', ...extra], { stdio: 'inherit' });
+}
+
+// The hero sculpture: the same four objects (high LOD), placed per heroSlots.json and combined
+// into one GLB, rendered once as the fallback still for the hero box. The combined GLB is a
+// build-time-only intermediate, not something the site ever loads — it lives under the
+// git-ignored .blender-cache, not public/models.
+function buildHero() {
+  const cache = resolve(ROOT, 'tools/models/.blender-cache');
+  mkdirSync(cache, { recursive: true });
+  const combined = resolve(cache, 'hero.glb');
+  blender('hero.py', ['--out', combined]);
+  blender('render_fallback.py', ['--glb', combined, '--color', '#E8E0D0', '--out', resolve(ROOT, 'public/fallback/hero.png')]);
+  console.log('hero: fallback rendered');
+}
+
+if (process.argv.includes('--hero-only')) {
+  buildHero();
+  process.exit(0);
 }
 
 function optimize(file) {
@@ -51,3 +69,4 @@ if (total > BUDGET_BYTES) {
   console.error(`models exceed the ${BUDGET_BYTES / 1024 / 1024} MB budget`);
   process.exit(1);
 }
+buildHero();

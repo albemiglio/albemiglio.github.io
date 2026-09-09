@@ -1,7 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { CHAPTERS } from '../chapters';
-import { ObjectAnchor } from './ObjectAnchor';
+import { ObjectAnchor, type HeroSlot, type HeroTilt } from './ObjectAnchor';
 import { Device } from './devices/Device';
+import heroSlotsJson from './heroSlots.json';
 
 // Lazy: each object's own code (and its useGLTF call) only loads once a chapter's object
 // actually mounts, rather than up front with the rest of the scene — the same lazy-boundary
@@ -15,15 +16,22 @@ const OBJECTS = {
 // The cake is taller than it is wide: at the default size its cherry pokes above the object box
 // into the chapter's text column.
 const SIZE: Record<string, number> = { cake: 0.62 };
+// Where each object starts inside the hero sculpture box before it flies out to its chapter — see
+// heroSlots.json; shared with tools/models/hero.py so the fallback render matches these numbers.
+const HERO_SLOTS = heroSlotsJson as unknown as Record<string, HeroSlot>;
 
-export function ChapterObjects({ shadows }: { shadows: boolean }) {
+export function ChapterObjects({ shadows, heroTilt }: { shadows: boolean; heroTilt?: { current: HeroTilt } }) {
   return (
     <Suspense fallback={null}>
       {CHAPTERS.map((c) => {
         const Obj = OBJECTS[c.object as keyof typeof OBJECTS];
         return (
           <group key={c.id}>
-            {Obj && <ObjectAnchor id={c.id} size={SIZE[c.object] ?? 0.8} shadows={shadows}><Obj /></ObjectAnchor>}
+            {Obj && (
+              <ObjectAnchor id={c.id} size={SIZE[c.object] ?? 0.8} shadows={shadows} heroSlot={HERO_SLOTS[c.object]} heroTilt={heroTilt}>
+                <Obj />
+              </ObjectAnchor>
+            )}
             <Device id={c.id} kind={c.device} />
           </group>
         );

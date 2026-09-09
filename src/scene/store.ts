@@ -10,6 +10,7 @@ export type SceneState = {
   stepState: Record<string, unknown>;
   viewport: { w: number; h: number };
   sceneOpen: boolean;
+  scrollY: number;
 };
 
 let state: SceneState = {
@@ -19,6 +20,7 @@ let state: SceneState = {
   stepState: {},
   viewport: { w: 0, h: 0 },
   sceneOpen: false,
+  scrollY: 0,
 };
 const listeners = new Set<(s: SceneState) => void>();
 

@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { Lights } from './Lights';
 import { CameraRig, CAMERA_FOV, CAMERA_DIST } from './CameraRig';
-import { ChapterObjects } from './ChapterObjects';
+import { HeroSculpture } from './HeroSculpture';
 import { isSoftwareRenderer } from './useSceneGate';
 import { sceneStore } from './store';
 import './scene.css';
@@ -26,7 +26,7 @@ export default function SceneCanvas() {
       >
         <Lights shadows={!lite} />
         <CameraRig />
-        <ChapterObjects shadows={!lite} />
+        <HeroSculpture shadows={!lite} />
       </Canvas>
     </div>
   );

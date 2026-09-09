@@ -1,5 +1,6 @@
 export type Pt = { x: number; y: number };
 export type Rect = { x: number; y: number; w: number; h: number };
+export type Vec3 = [number, number, number];
 type Quad = [Pt, Pt, Pt, Pt];
 
 // Solve the 8 homography coefficients mapping the unit square (0,0),(1,0),(1,1),(0,1) to
@@ -97,6 +98,13 @@ export function chapterIndex(rects: Record<string, { chapter?: Rect }>, ids: rea
   let c = 0;
   for (const id of ids) c += chapterPhaseFromRect(rects[id]?.chapter, vh);
   return c;
+}
+
+// P3-R8: how far the hero sculpture has exited towards the chapters — 0 at the top of the page,
+// 1 once the visitor has scrolled half a viewport (P3-R3: the fly-out spans that first half).
+export function heroExit(scrollY: number, vh: number): number {
+  if (vh <= 0) return 0;
+  return Math.min(1, Math.max(0, scrollY / (0.5 * vh)));
 }
 
 // Rises 0→1 over phase 0.05–0.25, holds, falls back to 0 by 0.45; 0 elsewhere.
