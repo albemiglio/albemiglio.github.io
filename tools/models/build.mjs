@@ -7,7 +7,9 @@ const ROOT = resolve(import.meta.dirname, '../..');
 const BUDGET_BYTES = 2.5 * 1024 * 1024;
 
 const objects = [
-  { name: 'ipcam', color: '#F0B24A' },
+  { name: 'ipcam', color: '#F0B24A', fallback: true },
+  { name: 'laptop', color: '#E8E0D0', fallback: false },
+  { name: 'phone', color: '#E8E0D0', fallback: false },
 ];
 
 function blender(script, extra) {
@@ -32,7 +34,12 @@ for (const o of objects) {
   blender(`${o.name}.py`, ['--out', low, '--lod', 'low']);
   optimize(high);
   optimize(low);
-  blender('render_fallback.py', ['--glb', high, '--color', o.color, '--out', resolve(ROOT, `public/fallback/${o.name}.png`)]);
+  // Only the objects the site shows as a static image need the Cycles pass; the
+  // devices are always drawn by the 3D scene, so rendering them would just cost
+  // build time and ship a PNG nothing loads.
+  if (o.fallback) {
+    blender('render_fallback.py', ['--glb', high, '--color', o.color, '--out', resolve(ROOT, `public/fallback/${o.name}.png`)]);
+  }
   total += statSync(high).size + statSync(low).size;
   console.log(`${o.name}: ${(statSync(high).size / 1024).toFixed(1)} KB high, ${(statSync(low).size / 1024).toFixed(1)} KB low`);
 }

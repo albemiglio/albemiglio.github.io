@@ -4,6 +4,7 @@ import math
 import sys
 
 import bpy
+import mathutils
 
 
 def args():
@@ -118,6 +119,64 @@ def box(name, size, location, material):
     return o
 
 
+def rounded_box(name, size, radius, corner_segs, material, location=(0, 0, 0), rim=0.0, rim_segs=2):
+    """Rectangle with real corner arcs in XY, extruded along Z and centred on its origin.
+
+    A cube bevelled by the corner radius is not the same shape: a 0.09 radius on
+    a 0.08-thick phone body would eat the flat faces entirely. Here the arcs live
+    in the profile, the two flat faces keep their full area, and only `rim`
+    softens the edge between them and the side wall.
+    """
+    w, h, d = size
+    r = min(radius, w / 2, h / 2)
+    ax, ay = w / 2 - r, h / 2 - r
+    pts = []
+    for cx, cy, start in ((ax, ay, 0.0), (-ax, ay, 90.0), (-ax, -ay, 180.0), (ax, -ay, 270.0)):
+        for i in range(corner_segs + 1):
+            t = math.radians(start + 90.0 * i / corner_segs)
+            p = (cx + r * math.cos(t), cy + r * math.sin(t), 0.0)
+            # A capsule (radius == half the short side) makes consecutive arcs meet
+            # on the same point; a repeated vertex would give the ngon a zero-length edge.
+            if not pts or math.dist(p[:2], pts[-1][:2]) > 1e-6:
+                pts.append(p)
+    if len(pts) > 2 and math.dist(pts[0][:2], pts[-1][:2]) < 1e-6:
+        pts.pop()
+
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(pts, [], [list(range(len(pts)))])
+    mesh.update()
+    o = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(o)
+    bpy.ops.object.select_all(action="DESELECT")
+    bpy.context.view_layer.objects.active = o
+    o.select_set(True)
+    mod = o.modifiers.new("extrude", "SOLIDIFY")
+    mod.thickness = d
+    mod.offset = 0.0  # grow both ways, so the slab straddles the origin
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    o.location = location
+    o.data.materials.append(material)
+    if rim:
+        bevel(o, rim, rim_segs)
+    smooth(o)
+    return o
+
+
+def subtract(obj, cutter):
+    """Boolean-difference `cutter` out of `obj`, applied at once and the cutter removed.
+    Call it before any bevel: the bevel has to see the edges the cut leaves behind."""
+    mod = obj.modifiers.new("cut", "BOOLEAN")
+    mod.operation = "DIFFERENCE"
+    mod.object = cutter
+    mod.solver = "EXACT"
+    bpy.ops.object.select_all(action="DESELECT")
+    bpy.context.view_layer.objects.active = obj
+    obj.select_set(True)
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    bpy.data.objects.remove(cutter, do_unlink=True)
+    return obj
+
+
 def join(name, parts):
     """Merge parts into one mesh named `name`; the first part keeps its origin."""
     bpy.ops.object.select_all(action="DESELECT")
@@ -144,6 +203,20 @@ def group(name, children):
     for c in children:
         c.parent = root
     return root
+
+
+def yup_plane(obj):
+    """Pre-turn a flat mesh so the exporter's Z-up to Y-up pass leaves it in its own
+    local XY plane facing +Z. That pass rewrites vertex data as well as node
+    matrices, so a plane authored in Blender's XY lands in the file's XZ with its
+    normal on Y — and consumers that read the node's local bounding box as
+    width x height would read the thickness instead. Turning the mesh 90 degrees
+    about X and taking the same turn back out of the object rotation cancels the
+    conversion exactly, leaving the plane's world pose untouched."""
+    turn = mathutils.Matrix.Rotation(math.radians(90), 4, "X")
+    obj.data.transform(turn)
+    obj.rotation_euler = (obj.rotation_euler.to_matrix() @ turn.to_3x3().inverted()).to_euler()
+    return obj
 
 
 def export(root, path):
