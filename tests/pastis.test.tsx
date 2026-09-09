@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { MotionProvider } from '../src/MotionProvider';
 import { PastisScene } from '../src/flows/pastis/Scene';
-import { pastisSteps } from '../src/flows/pastis/steps';
+import { pastisSteps, type PastisState } from '../src/flows/pastis/steps';
+import { sceneStore } from '../src/scene/store';
 
 const at = (id: string) => pastisSteps.find((s) => s.id === id)!.state;
 const mount = (state: Parameters<typeof PastisScene>[0]['state']) =>
@@ -20,6 +21,20 @@ test('configure shows the sheet with 3 tiers and the full lettering (reduced)', 
   expect(screen.getByTestId('configure-sheet')).toBeInTheDocument();
   expect(screen.getByTestId('tiers')).toHaveTextContent('3');
   expect(screen.getByTestId('lettering')).toHaveTextContent('Happy 30th, Giulia');
+});
+
+test('configure publishes the tier counter into the scene store so the 3D cake follows it (F4/P3-R18)', () => {
+  vi.useFakeTimers();
+  const configureState = at('configure') as PastisState;
+  sceneStore.set({ stepState: { pastis: configureState } });
+  render(<MotionProvider><PastisScene state={configureState} /></MotionProvider>);
+  const tiersOf = () => (sceneStore.get().stepState.pastis as PastisState).tiers;
+  expect(tiersOf()).toBe(1);
+  act(() => { vi.advanceTimersByTime(350); });
+  expect(tiersOf()).toBe(2);
+  act(() => { vi.advanceTimersByTime(350); });
+  expect(tiersOf()).toBe(3);
+  vi.useRealTimers();
 });
 
 test('produce moves the order card into the production column', () => {
