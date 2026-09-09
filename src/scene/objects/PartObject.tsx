@@ -33,13 +33,19 @@ export function PartObject({ name, pose }: Props) {
       if (!t) continue;
       const tx = base.p.x + t.offset[0], ty = base.p.y + t.offset[1], tz = base.p.z + t.offset[2];
       const ts = base.s * (t.scale ?? 1);
-      moving ||= Math.abs(tx - o.position.x) + Math.abs(ty - o.position.y) + Math.abs(tz - o.position.z) > 1e-4 || Math.abs(ts - o.scale.x) > 1e-4;
-      o.position.set(MathUtils.lerp(o.position.x, tx, k), MathUtils.lerp(o.position.y, ty, k), MathUtils.lerp(o.position.z, tz, k));
-      o.scale.setScalar(MathUtils.lerp(o.scale.x, ts, k));
+      // `moving` measures the step taken this frame, not the remaining gap: with dt = 0 (coarse
+      // timestamps, throttled tabs) k is 0 and nothing moves — a gap-based check would then
+      // invalidate forever. Same discipline as IpCamera.
+      const nx = MathUtils.lerp(o.position.x, tx, k), ny = MathUtils.lerp(o.position.y, ty, k), nz = MathUtils.lerp(o.position.z, tz, k);
+      const ns = MathUtils.lerp(o.scale.x, ts, k);
+      moving ||= Math.abs(nx - o.position.x) + Math.abs(ny - o.position.y) + Math.abs(nz - o.position.z) > 1e-4 || Math.abs(ns - o.scale.x) > 1e-4;
+      o.position.set(nx, ny, nz);
+      o.scale.setScalar(ns);
       if (t.rotation) {
         const rx = base.r.x + t.rotation[0], ry = base.r.y + t.rotation[1], rz = base.r.z + t.rotation[2];
-        moving ||= Math.abs(rx - o.rotation.x) + Math.abs(ry - o.rotation.y) + Math.abs(rz - o.rotation.z) > 1e-4;
-        o.rotation.set(MathUtils.lerp(o.rotation.x, rx, k), MathUtils.lerp(o.rotation.y, ry, k), MathUtils.lerp(o.rotation.z, rz, k));
+        const nrx = MathUtils.lerp(o.rotation.x, rx, k), nry = MathUtils.lerp(o.rotation.y, ry, k), nrz = MathUtils.lerp(o.rotation.z, rz, k);
+        moving ||= Math.abs(nrx - o.rotation.x) + Math.abs(nry - o.rotation.y) + Math.abs(nrz - o.rotation.z) > 1e-4;
+        o.rotation.set(nrx, nry, nrz);
       }
     }
     if (moving) invalidate();
