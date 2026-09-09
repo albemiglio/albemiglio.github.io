@@ -31,14 +31,16 @@ export function onIdle(fn: () => void): () => void {
   return () => clearTimeout(t);
 }
 
-// Two rAFs = one full paint has happened, so the scene chunk's fetch never lands inside
-// Lantern's LCP dependency graph (P3-R14/F1). jsdom's rAF is a macrotask with nothing driving
-// the clock in these tests, so test mode resolves synchronously, same trick as onIdle above.
+// A settle delay after load: the LCP image paints a frame or two after `load`, and any request
+// that starts before that paint lands inside Lighthouse's LCP dependency graph (P3-R14). Two
+// rAFs proved too short — the frame that runs them is the one that paints — so wait a real
+// moment instead; the static hero snapshot covers the gap. Test mode resolves synchronously,
+// same trick as onIdle above.
+const SETTLE_MS = 1500;
 function afterPaint(fn: () => void): () => void {
   if (import.meta.env.MODE === 'test') { fn(); return () => {}; }
-  let raf2 = 0;
-  const raf1 = requestAnimationFrame(() => { raf2 = requestAnimationFrame(fn); });
-  return () => { cancelAnimationFrame(raf1); cancelAnimationFrame(raf2); };
+  const t = setTimeout(fn, SETTLE_MS);
+  return () => clearTimeout(t);
 }
 
 export function afterLoad(fn: () => void): () => void {

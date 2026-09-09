@@ -8,7 +8,7 @@ const LAZY_LIMIT = 300 * 1024;
 // The four chapter Scenes (vite.config.ts's 'flows' manualChunks entry) are their own lazy
 // chunk, separate from the three.js 'scene' chunk they share the stage with (P3-R14/F4) — small
 // budget of its own, not folded into the scene sum below.
-const FLOWS_LIMIT = 40 * 1024;
+const FLOWS_LIMIT = 60 * 1024; // the four Scenes carry motion's layout/gesture code with them
 
 const gz = (file) => gzipSync(readFileSync(file)).length;
 const kb = (n) => (n / 1024).toFixed(1);
