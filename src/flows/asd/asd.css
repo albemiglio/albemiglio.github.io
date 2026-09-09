@@ -28,6 +28,10 @@
 .asd__caret { width: 1px; height: 12px; background: #1f1f1f; margin-left: 1px; animation: asd-caret 900ms step-end infinite; }
 @keyframes asd-caret { 50% { opacity: 0; } }
 
+.asd__members-strip { display: flex; align-items: center; gap: 8px; padding-top: 6px; border-top: 1px dashed #ebebeb; }
+.asd__strip-label { font-size: 0.66rem; color: #717171; text-transform: uppercase; letter-spacing: 0.05em; }
+.asd__strip-row { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 8px; font-size: 0.7rem; background: #f7f7f7; border: 1px solid #ebebeb; }
+
 .asd__family { display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px dashed #ebebeb; }
 .asd__family-row, .asd__family-card { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 8px; font-size: 0.7rem; }
 .asd__family-row { background: #fff; border: 1px solid #ebebeb; }

@@ -22,11 +22,21 @@ test('form shows the sign-up form with the name already typed (reduced)', () => 
   expect(screen.getByText(newMember.name)).toBeInTheDocument();
 });
 
-test('family shows the parent card positioned after the new member row', () => {
+test('form keeps the parent row in the members strip (layoutId source for F2)', () => {
+  mount(at('form'));
+  const strip = screen.getByTestId('members-strip');
+  const parentRow = screen.getByTestId('parent-row');
+  expect(strip).toContainElement(parentRow);
+  expect(screen.queryByTestId('family-card')).not.toBeInTheDocument();
+});
+
+test('family shows the parent card positioned after the new member row and empties the strip', () => {
   mount(at('family'));
   const newRow = screen.getByTestId('new-row');
   const familyCard = screen.getByTestId('family-card');
   expect(newRow.compareDocumentPosition(familyCard) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(screen.queryByTestId('members-strip')).not.toBeInTheDocument();
+  expect(screen.queryByTestId('parent-row')).not.toBeInTheDocument();
 });
 
 test('fee shows the paid badge and the counted amount (reduced -> instant)', () => {

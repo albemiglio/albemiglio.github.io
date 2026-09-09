@@ -8,16 +8,23 @@ import './asd.css';
 export function AsdScene({ state }: { state: AsdState }) {
   const { dur, reduced } = useMotionPrefs();
 
+  // F12a: one counter drives both fields — the name types out first, then the date of birth
+  // picks up where it left off, so the two never race and there's nothing to chain/cancel.
   const [typed, setTyped] = useState(reduced ? newMember.name.length : 0);
+  const [typedBirth, setTypedBirth] = useState(reduced ? newMember.birth.length : 0);
   useEffect(() => {
-    if (state.typed === 0) { setTyped(0); return; }
-    if (reduced) { setTyped(newMember.name.length); return; }
+    if (state.typed === 0) { setTyped(0); setTypedBirth(0); return; }
+    if (reduced) { setTyped(newMember.name.length); setTypedBirth(newMember.birth.length); return; }
     setTyped(0);
+    setTypedBirth(0);
+    const nameLen = newMember.name.length;
+    const total = nameLen + newMember.birth.length;
     let i = 0;
     const id = setInterval(() => {
       i += 1;
-      setTyped(i);
-      if (i >= newMember.name.length) clearInterval(id);
+      setTyped(Math.min(i, nameLen));
+      setTypedBirth(Math.min(Math.max(i - nameLen, 0), newMember.birth.length));
+      if (i >= total) clearInterval(id);
     }, (dur.fast * 1000) / 2);
     return () => clearInterval(id);
   }, [state.typed, reduced, dur.fast]);
@@ -76,9 +83,26 @@ export function AsdScene({ state }: { state: AsdState }) {
                 </label>
                 <label className="asd__label">
                   Date of birth
-                  <div role="textbox" aria-readonly="true" className="asd__field">{newMember.birth}</div>
+                  <div role="textbox" aria-readonly="true" className="asd__field">
+                    {newMember.birth.slice(0, typedBirth)}
+                    <span className="asd__caret" aria-hidden="true" />
+                  </div>
                 </label>
               </form>
+              {/* F2/§9: the parent's row keeps the same layoutId="parent" from the list step
+                  through here — this strip is the only place it lives while the form is up —
+                  so that once `family` flips, the shared-layout transition has a real source to
+                  animate from into the family card below (exactly one layoutId="parent" node
+                  mounted at any time). */}
+              {!state.family && (
+                <div className="asd__members-strip" data-testid="members-strip">
+                  <span className="asd__strip-label">Members</span>
+                  <motion.div layoutId="parent" className="asd__strip-row" data-testid="parent-row">
+                    <span className="asd__avatar" aria-hidden="true" />
+                    {parentName}
+                  </motion.div>
+                </div>
+              )}
               {state.family && (
                 <div className="asd__family">
                   <div className="asd__family-row" data-testid="new-row">
