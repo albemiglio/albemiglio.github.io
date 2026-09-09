@@ -5,31 +5,41 @@ const corners = (r: typeof rect) => [
   { x: r.x, y: r.y }, { x: r.x + r.w, y: r.y }, { x: r.x + r.w, y: r.y + r.h }, { x: r.x, y: r.y + r.h },
 ] as [any, any, any, any];
 
-function apply(m: string, p: { x: number; y: number }) {
+// Local corners of the element itself (transform-origin: 0 0), as the browser sees them.
+const localCorners = (r: typeof rect) => [
+  { x: 0, y: 0 }, { x: r.w, y: 0 }, { x: r.w, y: r.h }, { x: 0, y: r.h },
+] as [any, any, any, any];
+
+// Mirrors what a browser does: apply the matrix3d to a LOCAL point, then place the
+// (already-perspective-divided) result at the element's page position P.
+function applyLocal(m: string, P: { x: number; y: number }, L: { x: number; y: number }) {
   const v = m.replace(/^matrix3d\(|\)$/g, '').split(',').map(Number); // column-major 4x4
-  const X = v[0] * p.x + v[4] * p.y + v[12];
-  const Y = v[1] * p.x + v[5] * p.y + v[13];
-  const W = v[3] * p.x + v[7] * p.y + v[15];
-  return { x: X / W, y: Y / W };
+  const X = v[0] * L.x + v[4] * L.y + v[12];
+  const Y = v[1] * L.x + v[5] * L.y + v[13];
+  const W = v[3] * L.x + v[7] * L.y + v[15];
+  return { x: P.x + X / W, y: P.y + Y / W };
 }
 
 test('identity when the quad equals the rect corners', () => {
   const m = quadToMatrix3d(rect, corners(rect));
-  for (const c of corners(rect)) {
-    const p = apply(m, c);
+  const P = { x: rect.x, y: rect.y };
+  localCorners(rect).forEach((L, i) => {
+    const p = applyLocal(m, P, L);
+    const c = corners(rect)[i];
     expect(p.x).toBeCloseTo(c.x, 3);
     expect(p.y).toBeCloseTo(c.y, 3);
-  }
+  });
   expect(isNearIdentity(rect, corners(rect))).toBe(true);
 });
 
 test('maps the corners onto a perspective quad', () => {
   const dst = [{ x: 120, y: 80 }, { x: 460, y: 60 }, { x: 470, y: 300 }, { x: 110, y: 280 }] as [any, any, any, any];
   const m = quadToMatrix3d(rect, dst);
-  corners(rect).forEach((c, i) => {
-    const p = apply(m, c);
-    expect(p.x).toBeCloseTo(dst[i].x, 2);
-    expect(p.y).toBeCloseTo(dst[i].y, 2);
+  const P = { x: rect.x, y: rect.y };
+  localCorners(rect).forEach((L, i) => {
+    const p = applyLocal(m, P, L);
+    expect(Math.abs(p.x - dst[i].x)).toBeLessThanOrEqual(1e-3);
+    expect(Math.abs(p.y - dst[i].y)).toBeLessThanOrEqual(1e-3);
   });
   expect(isNearIdentity(rect, dst)).toBe(false);
 });

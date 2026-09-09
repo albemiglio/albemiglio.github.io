@@ -26,9 +26,19 @@ function multiply(a: number[], b: number[]): number[] {
   return out;
 }
 
+function translate(vx: number, vy: number): number[] {
+  return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vx, vy, 0, 1];
+}
+
 // Maps `src` (page pixel rect) onto `dst` (page pixel quad, tl/tr/br/bl) as a CSS matrix3d
-// string. H = squareToQuad(dst) after translating+scaling src onto the unit square, so it
-// operates directly on page coordinates: H(src corner) = matching dst corner, for any src/dst.
+// string, for an element with `transform-origin: 0 0`.
+//
+// The browser does NOT apply this matrix to page points: it applies it to the element's own
+// LOCAL points (top-left at local (0,0)), then places the perspective-divided result at the
+// element's page position P = (src.x, src.y). So for a local point L, the browser computes
+// P + M·L — not M·(P+L). H = squareToQuad(dst)∘toUnit(src) is the homography in PAGE space
+// (H(P+L) = matching dst corner); to get the matrix the browser must apply to L we need
+// M = T(-P)·H·T(P), so that P + M·L = H(P+L) for every local corner.
 export function quadToMatrix3d(src: Rect, dst: Quad): string {
   const toUnit = [
     1 / src.w, 0, 0, 0,
@@ -37,7 +47,8 @@ export function quadToMatrix3d(src: Rect, dst: Quad): string {
     -src.x / src.w, -src.y / src.h, 0, 1,
   ];
   const h = multiply(squareToQuad(dst), toUnit);
-  return `matrix3d(${h.join(',')})`;
+  const m = multiply(translate(-src.x, -src.y), multiply(h, translate(src.x, src.y)));
+  return `matrix3d(${m.join(',')})`;
 }
 
 export function isNearIdentity(src: Rect, dst: Quad, tolPx = 0.5): boolean {

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
-import type { Pt } from './math';
+import type { Pt, Rect } from './math';
 
-export type Rect = { x: number; y: number; w: number; h: number };
+export type { Rect } from './math';
 export type ChapterRects = { object?: Rect; frame?: Rect };
 export type SceneState = {
   progress: number;
@@ -63,7 +63,10 @@ export const sceneStore = {
       quadListeners.set(id, set);
     }
     set.add(fn);
-    return () => { set!.delete(fn); };
+    return () => {
+      set!.delete(fn);
+      if (set!.size === 0) quadListeners.delete(id);
+    };
   },
 };
 
