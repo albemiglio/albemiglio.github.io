@@ -1,6 +1,6 @@
 import { Component, lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { useSceneGate } from './useSceneGate';
-import { sceneStore } from './store';
+import { sceneStore, useSceneSelector } from './store';
 
 const SceneCanvas = lazy(() => import('./SceneCanvas'));
 
@@ -23,7 +23,10 @@ export function SceneMount() {
   // P2-R4: mirror the gate into the store so other components read `sceneOpen` from there
   // instead of each calling useSceneGate() themselves.
   useEffect(() => { sceneStore.set({ sceneOpen: open }); }, [open]);
-  if (!open) return null;
+  // I2: the store can close the scene on its own (context loss, boundary) — unmounting the canvas
+  // here is what makes Device clear its quad and Chapter drop the transform.
+  const storeOpen = useSceneSelector((s) => s.sceneOpen);
+  if (!open || !storeOpen) return null;
   return (
     <SceneBoundary>
       <Suspense fallback={null}>

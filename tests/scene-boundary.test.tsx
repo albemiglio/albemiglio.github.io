@@ -20,3 +20,24 @@ test('falls back to the DOM path and clears quads when the scene throws', () => 
   expect(sceneStore.getQuad('ipcam')).toBeNull();
   spy.mockRestore();
 });
+
+// I2: when the store closes the scene on its own (WebGL context lost), SceneMount must unmount
+// the canvas — that unmount is what clears the device quad and drops the DOM transform.
+test('SceneMount unmounts the scene once the store closes it', async () => {
+  const { SceneMount } = await import('../src/scene/SceneMount');
+  const orig = HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = (() => ({})) as any;
+  vi.doMock('../src/scene/SceneCanvas', () => ({ default: () => <div data-testid="canvas" /> }));
+  const { act, screen } = await import('@testing-library/react');
+  const { unmount } = render(<SceneMount />);
+  act(() => { (globalThis as any).__idle?.(); });
+  await screen.findByTestId('canvas');
+  expect(sceneStore.get().sceneOpen).toBe(true);
+
+  act(() => { sceneStore.set({ sceneOpen: false }); });
+  expect(screen.queryByTestId('canvas')).toBeNull();
+
+  unmount();
+  HTMLCanvasElement.prototype.getContext = orig;
+  vi.doUnmock('../src/scene/SceneCanvas');
+});
