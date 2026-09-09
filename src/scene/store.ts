@@ -56,6 +56,15 @@ export const sceneStore = {
   getQuad(id: string): Quad | null {
     return quads.get(id) ?? null;
   },
+  // C1: called from the scene's error boundary when the WebGL tree unmounts abnormally (a
+  // rejected/malformed GLB) — every chapter that ever registered a quad listener gets nulled out
+  // so Chapter's subscribeQuad callback clears its stale DOM transform instead of freezing it.
+  clearQuads() {
+    for (const id of new Set([...quads.keys(), ...quadListeners.keys()])) {
+      quads.set(id, null);
+      quadListeners.get(id)?.forEach((fn) => fn(null));
+    }
+  },
   subscribeQuad(id: string, fn: (q: Quad | null) => void): () => void {
     let set = quadListeners.get(id);
     if (!set) {
