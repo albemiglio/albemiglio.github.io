@@ -102,9 +102,13 @@ export function chapterIndex(rects: Record<string, { chapter?: Rect }>, ids: rea
 
 // P3-R8: how far the hero sculpture has exited towards the chapters — 0 at the top of the page,
 // 1 once the visitor has scrolled half a viewport (P3-R3: the fly-out spans that first half).
-export function heroExit(scrollY: number, vh: number): number {
-  if (vh <= 0) return 0;
-  return Math.min(1, Math.max(0, scrollY / (0.5 * vh)));
+// How far the visitor has scrolled the hero sculpture out: 0 while its box still sits below 20 %
+// of the viewport height, 1 once the box top has climbed another half viewport. Keyed on the
+// box rather than scrollY so the objects never leave while the sculpture is still in view — on
+// phones the box sits below the text, far from the top. No box registered = already gone.
+export function heroExitFromRect(heroTop: number | undefined, vh: number): number {
+  if (heroTop === undefined || vh <= 0) return 1;
+  return Math.min(1, Math.max(0, (0.2 * vh - heroTop) / (0.5 * vh)));
 }
 
 // P3-R12 fix-round-1 F1: while flying out of the hero (t < 1), blending toward a chapter's REAL

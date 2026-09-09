@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useSceneSelector } from '../store';
-import { chapterPhaseFromRect, explodeAmount, heroExit, heroExplode } from '../math';
+import { heroExitOf, useSceneSelector } from '../store';
+import { chapterPhaseFromRect, explodeAmount, heroExplode } from '../math';
 import { capsulePose } from './capsulePose';
 import { PartObject } from './PartObject';
 import type { MedState } from '../../flows/med/steps';
@@ -12,7 +12,7 @@ export function Capsule() {
   const phase = useSceneSelector((s) => Math.round(chapterPhaseFromRect(s.rects.med?.chapter, s.viewport.h) * 1000) / 1000);
   // P3-R20/F12b: see Card.tsx — the hero fly-out explodes the sculpture on top of the chapter's
   // own explode window.
-  const heroExplodeAmt = useSceneSelector((s) => Math.round(heroExplode(heroExit(s.scrollY, s.viewport.h)) * 1000) / 1000);
+  const heroExplodeAmt = useSceneSelector((s) => Math.round(heroExplode(heroExitOf(s)) * 1000) / 1000);
   const explode = Math.max(Math.round(explodeAmount(phase) * 1000) / 1000, heroExplodeAmt);
   const pose = useMemo(() => capsulePose(state, explode), [state, explode]);
   return <PartObject name="capsule" pose={pose} />;

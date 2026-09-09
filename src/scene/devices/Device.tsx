@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, Matrix4, Quaternion, Vector3, type Group, type Mesh, type Object3D } from 'three';
 import { useModel } from '../loaders';
 import { chapterPhaseFromRect } from '../math';
-import { sceneStore, type Quad } from '../store';
+import { isNarrow, sceneStore, type Quad } from '../store';
 import { rectCenterOnZPlane, screenCorners } from './screenAnchor';
 
 const YAW = MathUtils.degToRad(35);
@@ -119,7 +119,8 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
     lookTarget.copy(p.position).sub(forward);
     p.lookAt(lookTarget);
 
-    const targetYaw = yawFor(chapterPhaseFromRect(s.rects[id]?.chapter, s.viewport.h));
+    // Phones have no sticky stage to make the rotation read as a scene: the device stays frontal.
+    const targetYaw = isNarrow(s) ? 0 : yawFor(chapterPhaseFromRect(s.rects[id]?.chapter, s.viewport.h));
     yaw.current = MathUtils.lerp(yaw.current, targetYaw, 0.25);
     p.rotateY(yaw.current);
 

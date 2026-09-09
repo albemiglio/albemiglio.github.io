@@ -4,24 +4,26 @@ import { content } from '../content';
 import { Button } from '../ui/Button';
 import { useMotionPrefs } from '../MotionProvider';
 import { useRectRegistration } from '../scene/useRectRegistration';
-import { useSceneSelector } from '../scene/store';
+import { isNarrow, useSceneSelector } from '../scene/store';
 
 // Fades out over `dur.slow` once the scene takes over, then unmounts — mirrors the chapters'
 // `!sceneOpen` fallback (Chapter.tsx), but this one needs to stay on screen through its own fade
 // instead of disappearing the instant the scene opens, since the sculpture blends in over the
 // same box rather than snapping in.
 function HeroFallback() {
-  const sceneOpen = useSceneSelector((s) => s.sceneOpen);
+  // On phones the sculpture stays a picture: the 3D objects live in the chapters as badges and
+  // the hero image is the crisp 900 px render (see isNarrow).
+  const takeover = useSceneSelector((s) => s.sceneOpen && !isNarrow(s));
   const { dur } = useMotionPrefs();
-  const [mounted, setMounted] = useState(!sceneOpen);
+  const [mounted, setMounted] = useState(!takeover);
   useEffect(() => {
-    if (!sceneOpen) { setMounted(true); return; }
+    if (!takeover) { setMounted(true); return; }
     const t = setTimeout(() => setMounted(false), dur.slow * 1000);
     return () => clearTimeout(t);
-  }, [sceneOpen, dur.slow]);
+  }, [takeover, dur.slow]);
   if (!mounted) return null;
   return (
-    <motion.picture animate={{ opacity: sceneOpen ? 0 : 1 }} transition={{ duration: dur.slow }}>
+    <motion.picture animate={{ opacity: takeover ? 0 : 1 }} transition={{ duration: dur.slow }}>
       <source srcSet="/fallback/hero.webp" type="image/webp" />
       <img
         src="/fallback/hero.png"

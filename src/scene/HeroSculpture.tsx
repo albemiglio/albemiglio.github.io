@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { ChapterObjects } from './ChapterObjects';
-import { heroExit } from './math';
-import { sceneStore } from './store';
+import {  } from './math';
+import { heroExitOf, sceneStore } from './store';
 import type { HeroTilt } from './ObjectAnchor';
 
 const YAW = 0.15; // rotation.y per unit of normalised pointer x
@@ -27,7 +27,7 @@ export function HeroSculpture({ shadows }: { shadows: boolean }) {
     };
     const sync = () => {
       const s = sceneStore.get();
-      const exiting = heroExit(s.scrollY, s.viewport.h) < 1;
+      const exiting = heroExitOf(s) < 1;
       if (exiting === listening.current) return;
       listening.current = exiting;
       if (exiting) window.addEventListener('pointermove', onMove, { passive: true });

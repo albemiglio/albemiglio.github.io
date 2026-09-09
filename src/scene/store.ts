@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { Pt, Rect } from './math';
+import { heroExitFromRect, type Pt, type Rect } from './math';
 
 export type { Rect } from './math';
 export type ChapterRects = { object?: Rect; frame?: Rect; chapter?: Rect };
@@ -10,7 +10,6 @@ export type SceneState = {
   stepState: Record<string, unknown>;
   viewport: { w: number; h: number };
   sceneOpen: boolean;
-  scrollY: number;
 };
 
 let state: SceneState = {
@@ -20,7 +19,6 @@ let state: SceneState = {
   stepState: {},
   viewport: { w: 0, h: 0 },
   sceneOpen: false,
-  scrollY: 0,
 };
 const listeners = new Set<(s: SceneState) => void>();
 
@@ -84,3 +82,11 @@ export const sceneStore = {
 export function useSceneSelector<T>(sel: (s: SceneState) => T): T {
   return useSyncExternalStore(sceneStore.subscribe, () => sel(state), () => sel(state));
 }
+
+// Below this width the page drops the sticky stage and the sculpture (work.css / sections.css);
+// the scene follows: no hero mode, no device rotation, objects only as chapter badges.
+export const NARROW_MAX = 900;
+export const isNarrow = (s: SceneState) => s.viewport.w > 0 && s.viewport.w < NARROW_MAX;
+
+// One reading of the hero exit for every subscriber (objects, anchors, the sculpture's tilt).
+export const heroExitOf = (s: SceneState) => (isNarrow(s) ? 1 : heroExitFromRect(s.rects.hero?.object?.y, s.viewport.h));

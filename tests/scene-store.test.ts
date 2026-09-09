@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { sceneStore, useSceneSelector } from '../src/scene/store';
+import { heroExitOf, sceneStore, useSceneSelector } from '../src/scene/store';
 
 test('setRect stores and clears rects per chapter and notifies subscribers', () => {
   const seen: number[] = [];
@@ -40,4 +40,15 @@ test('setQuad notifies only subscribeQuad listeners for that id, not subscribe l
   offA();
   offB();
   offSub();
+});
+
+test('heroExitOf: phones never enter hero mode; wide viewports follow the sculpture box', () => {
+  sceneStore.set({ viewport: { w: 390, h: 844 } });
+  sceneStore.setRect('hero', 'object', { x: 0, y: 400, w: 260, h: 260 });
+  expect(heroExitOf(sceneStore.get())).toBe(1);
+  sceneStore.set({ viewport: { w: 1440, h: 900 } });
+  sceneStore.setRect('hero', 'object', { x: 0, y: 225, w: 420, h: 420 });
+  expect(heroExitOf(sceneStore.get())).toBe(0);
+  sceneStore.setRect('hero', 'object', null);
+  expect(heroExitOf(sceneStore.get())).toBe(1);
 });

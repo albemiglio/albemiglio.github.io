@@ -3,9 +3,9 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows } from '@react-three/drei';
 import { MathUtils, Vector3, type Group } from 'three';
 import { CAMERA_DIST, CAMERA_FOV } from './CameraRig';
-import { flightTarget, heroExit, rectToWorld, type Rect, type Vec3 } from './math';
+import { flightTarget, rectToWorld, type Rect, type Vec3 } from './math';
 import { rectCenterOnZPlane } from './devices/screenAnchor';
-import { sceneStore } from './store';
+import { heroExitOf, sceneStore } from './store';
 
 export type HeroSlot = { position: Vec3; rotation: Vec3; scale: number };
 export type HeroTilt = { x: number; y: number };
@@ -64,7 +64,7 @@ export function ObjectAnchor({
         base.current.visible = false;
         return;
       }
-      const t = heroSlot ? heroExit(s.scrollY, s.viewport.h) : 1;
+      const t = heroSlot ? heroExitOf(s) : 1;
       // P2-R2: the store emits for reasons unrelated to this chapter's rect (progress, other
       // chapters' stepState, …); bail unless a rect, the viewport or heroExit actually moved, so
       // we don't redo the projection math and invalidate() on every scroll frame.

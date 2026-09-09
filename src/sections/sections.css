@@ -19,6 +19,8 @@
 .hero__sculpture { width: 100%; aspect-ratio: 1; max-width: 420px; justify-self: end; }
 .hero__sculpture picture, .hero__sculpture img { display: block; width: 100%; height: 100%; object-fit: contain; }
 @media (max-width: 900px) {
+  /* Phones: the hero is as tall as its content, so no dead band before "Work". */
+  .hero { min-height: auto; padding: clamp(4rem, 12vh, 6rem) 0 1.5rem; }
   .hero__grid { grid-template-columns: 1fr; }
   .hero__sculpture { max-width: 260px; justify-self: center; margin: 0 auto; }
 }

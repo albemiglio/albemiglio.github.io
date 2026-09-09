@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { Vector3 } from 'three';
 import { useModel } from '../loaders';
-import { useSceneSelector } from '../store';
-import { chapterPhaseFromRect, explodeAmount, heroExit, heroExplode } from '../math';
+import { heroExitOf, useSceneSelector } from '../store';
+import { chapterPhaseFromRect, explodeAmount, heroExplode } from '../math';
 import { cardPose } from './cardPose';
 import { PartObject } from './PartObject';
 import type { Vec3 } from './pose';
@@ -22,7 +22,7 @@ export function Card() {
   // P3-R11 fix-round-1 F3: the hero sculpture always shows the finished card (printed receipt),
   // regardless of the asd chapter's own step state — the chapter state only applies once the
   // hero has flown out. Boolean selector, so it only re-renders once per crossing (P2-R2).
-  const inHero = useSceneSelector((s) => heroExit(s.scrollY, s.viewport.h) < 1);
+  const inHero = useSceneSelector((s) => heroExitOf(s) < 1);
   const rawState = useSceneSelector((s) => (s.stepState.asd as AsdState | undefined) ?? IDLE);
   const state = inHero ? { ...rawState, receipt: true } : rawState;
   // Rounded to 3 decimals inside the selector, same as IpCamera.tsx (P2-R2): the phase changes
@@ -31,7 +31,7 @@ export function Card() {
   // P3-R20/F12b: the hero fly-out explodes the sculpture on top of the chapter's own explode
   // window — rounded in the selector like `phase` above, so this only re-renders while heroExit
   // is actually moving (t in (0,1)), not on every scroll pixel outside that window.
-  const heroExplodeAmt = useSceneSelector((s) => Math.round(heroExplode(heroExit(s.scrollY, s.viewport.h)) * 1000) / 1000);
+  const heroExplodeAmt = useSceneSelector((s) => Math.round(heroExplode(heroExitOf(s)) * 1000) / 1000);
   const explode = Math.max(Math.round(explodeAmount(phase) * 1000) / 1000, heroExplodeAmt);
   const pose = useMemo(() => cardPose(state, explode, normal), [state, explode, normal]);
   return <PartObject name="card" pose={pose} />;
