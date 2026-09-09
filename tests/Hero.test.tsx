@@ -34,6 +34,14 @@ test('fades the fallback out and unmounts it once the scene opens', () => {
 });
 
 test('does not remount the fallback while the scene stays closed', () => {
-  const { container } = render(<MotionProvider forceReduced><Hero /></MotionProvider>);
-  expect(container.querySelector('.hero__sculpture img')).not.toBeNull();
+  const { container, rerender } = render(<MotionProvider forceReduced><Hero /></MotionProvider>);
+  const img = container.querySelector('.hero__sculpture img');
+  expect(img).not.toBeNull();
+
+  // An unrelated store emit with sceneOpen unchanged, then a forced re-render: the fallback
+  // must keep the same <img> instance, not tear down and recreate it.
+  act(() => { sceneStore.set({ sceneOpen: false }); });
+  rerender(<MotionProvider forceReduced><Hero /></MotionProvider>);
+
+  expect(container.querySelector('.hero__sculpture img')).toBe(img);
 });

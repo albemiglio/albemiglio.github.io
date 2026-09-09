@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows } from '@react-three/drei';
 import { MathUtils, Vector3, type Group } from 'three';
 import { CAMERA_DIST, CAMERA_FOV } from './CameraRig';
-import { heroExit, rectToWorld, type Vec3 } from './math';
+import { flightTarget, heroExit, rectToWorld, type Rect, type Vec3 } from './math';
 import { rectCenterOnZPlane } from './devices/screenAnchor';
 import { sceneStore } from './store';
 
@@ -47,6 +47,7 @@ export function ObjectAnchor({
   const centre = useMemo(() => new Vector3(), []);
   const heroCentre = useMemo(() => new Vector3(), []);
   const slotVec = useMemo(() => new Vector3(), []);
+  const targetRect = useMemo<Rect>(() => ({ x: 0, y: 0, w: 0, h: 0 }), []);
   const base = useRef<Base>({
     visible: false, haveChapter: false, haveHero: false, t: 1,
     heroX: 0, heroY: 0, heroScale: 0, chapterX: 0, chapterY: 0, chapterScale: 0,
@@ -92,8 +93,11 @@ export function ObjectAnchor({
       b.haveHero = haveHero;
       b.t = t;
       if (haveChapter) {
-        rectCenterOnZPlane(rect!, s.viewport, camera, centre);
-        const w = rectToWorld(rect!, s.viewport, CAMERA_FOV, CAMERA_DIST, view.width / view.height);
+        // P3-R12 fix-round-1 F1: clamp how far below the fold the blend target can be while
+        // still mid-flight (t < 1) — see flightTarget in math.ts. At t >= 1 this is a no-op copy.
+        const target = flightTarget(rect!, s.viewport.h, t, targetRect);
+        rectCenterOnZPlane(target, s.viewport, camera, centre);
+        const w = rectToWorld(target, s.viewport, CAMERA_FOV, CAMERA_DIST, view.width / view.height);
         b.chapterScale = (Math.min(w.scaleW, w.scaleH) * size) / 2; // models are ~2 units wide
         b.chapterX = centre.x;
         b.chapterY = centre.y;
@@ -113,7 +117,7 @@ export function ObjectAnchor({
     // rAF-scheduled listener; both already go through the store subscription below.
     const off = sceneStore.subscribe(apply);
     return () => { off(); };
-  }, [id, size, camera, invalidate, view.width, view.height, heroSlot, centre, heroCentre]);
+  }, [id, size, camera, invalidate, view.width, view.height, heroSlot, centre, heroCentre, targetRect]);
 
   // Runs on every rendered frame (R3F only renders one on demand — via the store-driven
   // invalidate() above, or HeroSculpture's own pointer-convergence loop), blending the cached

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Vector3 } from 'three';
 import { useModel } from '../loaders';
 import { useSceneSelector } from '../store';
-import { chapterPhaseFromRect, explodeAmount } from '../math';
+import { chapterPhaseFromRect, explodeAmount, heroExit } from '../math';
 import { cardPose } from './cardPose';
 import { PartObject } from './PartObject';
 import type { Vec3 } from './pose';
@@ -19,7 +19,12 @@ export function Card() {
     const n = new Vector3(0, 0, 1).applyQuaternion(plate.quaternion);
     return [n.x, n.y, n.z];
   }, [cached.scene]);
-  const state = useSceneSelector((s) => (s.stepState.asd as AsdState | undefined) ?? IDLE);
+  // P3-R11 fix-round-1 F3: the hero sculpture always shows the finished card (printed receipt),
+  // regardless of the asd chapter's own step state — the chapter state only applies once the
+  // hero has flown out. Boolean selector, so it only re-renders once per crossing (P2-R2).
+  const inHero = useSceneSelector((s) => heroExit(s.scrollY, s.viewport.h) < 1);
+  const rawState = useSceneSelector((s) => (s.stepState.asd as AsdState | undefined) ?? IDLE);
+  const state = inHero ? { ...rawState, receipt: true } : rawState;
   // Rounded to 3 decimals inside the selector, same as IpCamera.tsx (P2-R2): the phase changes
   // every scroll tick but the pose only differs once it crosses a ~0.001 threshold.
   const phase = useSceneSelector((s) => Math.round(chapterPhaseFromRect(s.rects.asd?.chapter, s.viewport.h) * 1000) / 1000);

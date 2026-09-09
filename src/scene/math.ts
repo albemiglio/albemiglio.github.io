@@ -107,6 +107,18 @@ export function heroExit(scrollY: number, vh: number): number {
   return Math.min(1, Math.max(0, scrollY / (0.5 * vh)));
 }
 
+// P3-R12 fix-round-1 F1: while flying out of the hero (t < 1), blending toward a chapter's REAL
+// rect sends far-below-the-fold chapters thousands of px off-screen in the first few px of
+// scroll — the object appears to vanish rather than fly. Clamp the target's y instead; at t >= 1
+// (today's behaviour) both endpoints are already off-screen, so the switch back to the real rect
+// is invisible. Mutates and returns `out` (default a fresh rect, for tests) so callers on a hot
+// path can pass a reused scratch rect instead of allocating one per call.
+export function flightTarget(rect: Rect, vh: number, t: number, out: Rect = { x: 0, y: 0, w: 0, h: 0 }): Rect {
+  out.x = rect.x; out.w = rect.w; out.h = rect.h;
+  out.y = t < 1 ? Math.min(rect.y, vh * 1.4) : rect.y;
+  return out;
+}
+
 // Rises 0→1 over phase 0.05–0.25, holds, falls back to 0 by 0.45; 0 elsewhere.
 export function explodeAmount(phase: number): number {
   const ease = (u: number) => 1 - Math.pow(1 - u, 3);
