@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Group, MathUtils, MeshStandardMaterial, type Mesh, type Object3D } from 'three';
-import { preloadModel, useModel } from '../loaders';
+import { useModel } from '../loaders';
 import { useSceneSelector } from '../store';
 import { chapterPhase, explodeAmount } from '../math';
 import { ipcamPose } from './ipcamPose';
@@ -23,6 +23,8 @@ export function IpCamera() {
   const root = useRef<Group>(null);
   const { invalidate } = useThree();
 
+  // Reparents cradle/leds/lens into `head` on first use; idempotent via the `!head` guard above
+  // (see the file-top comment) so StrictMode's double-invoke and useGLTF's cached scene are safe.
   const { parts, head } = useMemo(() => {
     const rootNode = scene.children[0];
     const map = new Map<string, Object3D>();
@@ -43,7 +45,12 @@ export function IpCamera() {
     for (const o of head.children) map.set(o.name, o);
     return { parts: map, head };
   }, [scene]);
-  const rest = useMemo(() => new Map([...parts].map(([n, o]) => [n, { p: o.position.clone() }])), [parts]);
+  // Captured once, before any useFrame lerp mutates these — head's own rest position is needed
+  // separately since it isn't a member of `parts` (it's the group the head parts live under).
+  const { rest, restHeadY } = useMemo(
+    () => ({ rest: new Map([...parts].map(([n, o]) => [n, { p: o.position.clone() }])), restHeadY: head.position.y }),
+    [parts, head],
+  );
 
   const state = useSceneSelector((s) => (s.stepState.ipcam as IpcamState | undefined) ?? IDLE);
   const progress = useSceneSelector((s) => s.progress);
@@ -58,6 +65,9 @@ export function IpCamera() {
     let moving = false;
     const k = 1 - Math.exp(-dt * 6);
     for (const [name, o] of parts) {
+      // Head parts (cradle/leds/lens) stay put in local space — they rise and turn as one rigid
+      // body via `head`'s own position/rotation below (P2-R8), not individually.
+      if (HEAD_PARTS.includes(name)) continue;
       const base = rest.get(name);
       const t = target.parts[name];
       if (!base || !t) continue;
@@ -67,6 +77,10 @@ export function IpCamera() {
       moving ||= Math.abs(ny - o.position.y) > 1e-4;
       o.position.set(nx, ny, nz);
     }
+    const headLift = target.parts.cradle.offset[1];
+    const nhy = MathUtils.lerp(head.position.y, restHeadY + headLift, k);
+    moving ||= Math.abs(nhy - head.position.y) > 1e-4;
+    head.position.y = nhy;
     const [pitch, yaw] = target.parts.cradle.rotation!;
     const nrx = MathUtils.lerp(head.rotation.x, pitch, k);
     const nry = MathUtils.lerp(head.rotation.y, yaw, k);
@@ -74,16 +88,13 @@ export function IpCamera() {
     head.rotation.set(nrx, nry, 0);
     const status = parts.get('status_led') as Mesh | undefined;
     const mat = status?.material as MeshStandardMaterial | undefined;
-    if (mat) mat.emissiveIntensity = MathUtils.lerp(mat.emissiveIntensity, target.statusOn ? 3 : 0.4, 0.2);
+    if (mat) {
+      const nextEmissive = MathUtils.lerp(mat.emissiveIntensity, target.statusOn ? 3 : 0.4, 0.2);
+      moving ||= Math.abs(nextEmissive - mat.emissiveIntensity) > 1e-3;
+      mat.emissiveIntensity = nextEmissive;
+    }
     if (moving) invalidate();
   });
 
   return <primitive ref={root} object={scene} />;
-}
-
-export function useIpcamPrefetch() {
-  // ponytail: `loaders` is already statically imported above (for useModel), so a dynamic
-  // import here would just be dead weight — Vite even warns it can't split it into another
-  // chunk. Plain call gets the same "prefetch once, from an effect" behavior.
-  useEffect(() => { preloadModel('ipcam'); }, []);
 }
