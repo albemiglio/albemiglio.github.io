@@ -28,7 +28,7 @@ function buildHero() {
   mkdirSync(cache, { recursive: true });
   const combined = resolve(cache, 'hero.glb');
   blender('hero.py', ['--out', combined]);
-  blender('render_fallback.py', ['--glb', combined, '--color', '#E8E0D0', '--out', resolve(ROOT, 'public/fallback/hero.png')]);
+  blender('render_fallback.py', ['--glb', combined, '--color', '#E8E0D0', '--out', resolve(ROOT, 'public/fallback/hero.png'), '--size', '900']);
   console.log('hero: fallback rendered');
 }
 

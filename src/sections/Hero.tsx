@@ -23,7 +23,15 @@ function HeroFallback() {
   return (
     <motion.picture animate={{ opacity: sceneOpen ? 0 : 1 }} transition={{ duration: dur.slow }}>
       <source srcSet="/fallback/hero.webp" type="image/webp" />
-      <img src="/fallback/hero.png" alt="" loading="lazy" />
+      <img
+        src="/fallback/hero.png"
+        alt=""
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+        width={900}
+        height={900}
+      />
     </motion.picture>
   );
 }
