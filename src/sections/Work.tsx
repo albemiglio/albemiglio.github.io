@@ -7,6 +7,8 @@ import { AsdScene } from '../flows/asd/Scene';
 import { asdSteps, type AsdState } from '../flows/asd/steps';
 import { PastisScene } from '../flows/pastis/Scene';
 import { pastisSteps, type PastisState } from '../flows/pastis/steps';
+import { MedScene } from '../flows/med/Scene';
+import { medSteps, type MedState } from '../flows/med/steps';
 import { useSceneProgress } from '../scene/useSceneProgress';
 import { sceneStore } from '../scene/store';
 import './work.css';
@@ -36,7 +38,13 @@ const pastis: ChapterDef<PastisState> = {
   fact: 'In production at pastis.albemiglio.it', color: 'var(--c-pastis)', device: 'phone', steps: pastisSteps, Scene: PastisScene,
 };
 
-export const chapters: AnyChapterDef[] = [ipcam, asd, pastis];
+const med: ChapterDef<MedState> = {
+  id: 'med', object: 'capsule', title: 'Timed practice for the admission test', audience: 'medical school candidates',
+  blurb: 'A quiz platform for the Italian medical school entrance exam: timed questions, instant review with explanations, and a running score.',
+  fact: 'Live at med.albemiglio.it', color: 'var(--c-med)', device: 'phone', steps: medSteps, Scene: MedScene,
+};
+
+export const chapters: AnyChapterDef[] = [ipcam, asd, pastis, med];
 const ids = chapters.map((c) => c.id);
 
 export function Work() {

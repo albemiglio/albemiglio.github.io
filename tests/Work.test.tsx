@@ -20,6 +20,13 @@ test('renders the asd chapter alongside ipcam', () => {
   expect(screen.getByRole('figure', { name: /^asd —/i })).toBeInTheDocument();
 });
 
+test('renders all four chapters', () => {
+  render(<MotionProvider forceReduced><Work /></MotionProvider>);
+  expect(screen.getAllByRole('figure')).toHaveLength(4);
+  expect(screen.getByRole('heading', { name: /timed practice for the admission test/i })).toBeInTheDocument();
+  expect(screen.getByRole('figure', { name: /^med —/i })).toBeInTheDocument();
+});
+
 test('hovering the stage pauses the chapter player; unhovering resumes it', () => {
   vi.useFakeTimers();
   const { container } = render(

@@ -1,0 +1,47 @@
+/* Palette lifted from med.albemiglio.it's own CSS bundle (P3-R6, entry page only, no login):
+   :root{--bg:#fff;--surface:#fff;--subtle:#f7f7f7;--ink:#222;--ink-2:#5e5e5e;--ink-3:#717171;
+   --line:#ddd;--line-soft:#ebebeb;--accent:#0f6fbf;--accent-soft:#e8f2fb;
+   --ok:#1f7a43;--ok-soft:#e9f4ed;--warn:#756a1a;--warn-soft:#f4f0d9;--bad:#b23c25;--bad-soft:#fbeae6;
+   radius: --radius-lg:.75rem (12px), --radius-xl:1rem (16px), pills at 999px. Light UI inside the
+   dark phone shell (per spec), same convention as pastis. Right/wrong text-on-soft-bg pairs
+   measured at 4.75:1 (ok) and 5.05:1 (bad) — both clear the WCAG AA 4.5:1 floor. */
+.med { position: absolute; inset: 0; background: #fff; color: #222; font-family: var(--font-sans); overflow: hidden; }
+.med__panel { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 14px 14px 16px; gap: 10px; }
+
+.med__topbar { display: flex; align-items: center; justify-content: space-between; flex: none; }
+.med__question-count { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: #717171; }
+.med__timer-box { display: flex; align-items: baseline; gap: 3px; padding: 3px 9px; border-radius: 999px; background: #e8f2fb; color: #0f6fbf; }
+.med__timer { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; }
+.med__timer[data-low] { color: #b23c25; }
+.med__timer-box:has(.med__timer[data-low]) { background: #fbeae6; }
+.med__timer-unit { font-size: 0.6rem; color: inherit; opacity: 0.8; }
+
+.med__prompt { margin: 0; font-size: 0.86rem; font-weight: 600; line-height: 1.35; flex: none; }
+
+.med__options { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; flex: none; }
+.med__option { appearance: none; -webkit-appearance: none; width: 100%; min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; border: 1px solid #ddd; background: #f7f7f7; color: #222; text-align: left; font-family: inherit; font-size: 0.74rem; }
+.med__option-letter { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ddd; background: #fff; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; color: #5e5e5e; }
+.med__option-text { flex: 1; }
+.med__option-tag { flex: none; font-family: var(--font-mono); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+.med__option[data-selected]:not([data-result]) { border-color: #0f6fbf; background: #e8f2fb; }
+.med__option[data-selected]:not([data-result]) .med__option-letter { border-color: #0f6fbf; color: #0f6fbf; }
+
+.med__option[data-result="right"] { border-color: #1f7a43; background: #e9f4ed; color: #1f7a43; }
+.med__option[data-result="right"] .med__option-letter { border-color: #1f7a43; background: #1f7a43; color: #fff; }
+.med__option[data-result="right"] .med__option-tag { color: #1f7a43; }
+
+.med__option[data-result="wrong"] { border-color: #b23c25; background: #fbeae6; color: #b23c25; }
+.med__option[data-result="wrong"] .med__option-letter { border-color: #b23c25; background: #b23c25; color: #fff; }
+.med__option[data-result="wrong"] .med__option-tag { color: #b23c25; }
+
+.med__explanation { flex: none; overflow: hidden; border-radius: 12px; background: #f7f7f7; border: 1px solid #ebebeb; padding: 10px 12px; font-size: 0.7rem; line-height: 1.4; color: #5e5e5e; }
+
+.med__times-up { flex: none; margin-top: auto; align-self: center; padding: 4px 12px; border-radius: 999px; background: #fbeae6; color: #b23c25; font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.med__score-panel { align-items: center; justify-content: center; gap: 14px; text-align: center; }
+.med__score-label { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; color: #717171; }
+.med__score-value { font-size: 2.4rem; font-weight: 700; color: #0f6fbf; line-height: 1; }
+.med__score-max { font-size: 1.1rem; font-weight: 500; color: #717171; }
+.med__progress-track { width: 78%; height: 8px; border-radius: 999px; background: #ebebeb; overflow: hidden; }
+.med__progress-bar { width: 100%; height: 100%; border-radius: inherit; background: #0f6fbf; transform-origin: left center; }
