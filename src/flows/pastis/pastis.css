@@ -12,7 +12,7 @@
 .pastis__board { position: relative; flex: 1; overflow: hidden; min-height: 0; }
 .pastis__columns { position: absolute; inset: 0; display: flex; width: 300%; height: 100%; }
 .pastis__column { flex: 0 0 calc(100% / 3); display: flex; flex-direction: column; gap: 8px; padding: 10px; min-width: 0; }
-.pastis__column-label { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: #767672; padding-bottom: 4px; border-bottom: 2px solid #DDDDDD; }
+.pastis__column-label { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: #5a5a57; padding-bottom: 4px; border-bottom: 2px solid #DDDDDD; }
 .pastis__column-label[data-status="production"] { color: #9A5F0B; border-color: #9A5F0B; }
 .pastis__column-label[data-status="ready"] { color: #256B45; border-color: #256B45; }
 

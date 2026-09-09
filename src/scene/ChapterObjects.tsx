@@ -12,6 +12,9 @@ const OBJECTS = {
   cake: lazy(() => import('./objects/Cake').then((m) => ({ default: m.Cake }))),
   capsule: lazy(() => import('./objects/Capsule').then((m) => ({ default: m.Capsule }))),
 } as const;
+// The cake is taller than it is wide: at the default size its cherry pokes above the object box
+// into the chapter's text column.
+const SIZE: Record<string, number> = { cake: 0.62 };
 
 export function ChapterObjects({ shadows }: { shadows: boolean }) {
   return (
@@ -20,7 +23,7 @@ export function ChapterObjects({ shadows }: { shadows: boolean }) {
         const Obj = OBJECTS[c.object as keyof typeof OBJECTS];
         return (
           <group key={c.id}>
-            {Obj && <ObjectAnchor id={c.id} shadows={shadows}><Obj /></ObjectAnchor>}
+            {Obj && <ObjectAnchor id={c.id} size={SIZE[c.object] ?? 0.8} shadows={shadows}><Obj /></ObjectAnchor>}
             <Device id={c.id} kind={c.device} />
           </group>
         );
