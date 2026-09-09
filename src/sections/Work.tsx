@@ -5,6 +5,8 @@ import { IpcamScene } from '../flows/ipcam/Scene';
 import { ipcamSteps, type IpcamState } from '../flows/ipcam/steps';
 import { AsdScene } from '../flows/asd/Scene';
 import { asdSteps, type AsdState } from '../flows/asd/steps';
+import { PastisScene } from '../flows/pastis/Scene';
+import { pastisSteps, type PastisState } from '../flows/pastis/steps';
 import { useSceneProgress } from '../scene/useSceneProgress';
 import { sceneStore } from '../scene/store';
 import './work.css';
@@ -28,7 +30,13 @@ const asd: ChapterDef<AsdState> = {
   fact: '36 organisations live · asd.albemiglio.it', color: 'var(--c-asd)', device: 'laptop', steps: asdSteps, Scene: AsdScene,
 };
 
-export const chapters: AnyChapterDef[] = [ipcam, asd];
+const pastis: ChapterDef<PastisState> = {
+  id: 'pastis', object: 'cake', title: 'Custom cakes from order to pick-up', audience: 'pastry shops',
+  blurb: 'Order management for a pastry lab: each cake configured tier by tier, moved across the board as it is produced, and marked ready for pick-up.',
+  fact: 'In production at pastis.albemiglio.it', color: 'var(--c-pastis)', device: 'phone', steps: pastisSteps, Scene: PastisScene,
+};
+
+export const chapters: AnyChapterDef[] = [ipcam, asd, pastis];
 const ids = chapters.map((c) => c.id);
 
 export function Work() {

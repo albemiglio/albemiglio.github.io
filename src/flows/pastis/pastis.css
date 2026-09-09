@@ -1,0 +1,47 @@
+/* Palette lifted from pastis.albemiglio.it's own CSS bundle (P3-R6, entry page only, no login):
+   :root{--bg:#FFFFFF;--bg-2:#F7F7F7;--bg-3:#F0F0F0;--line:#DDDDDD;--line-2:#EBEBEB;
+   --ink:#1D1D1B;--ink-2:#5A5A57;--ink-3:#767672;--btn:#1D1D1B;--btn-ink:#FFFFFF;
+   --brand:#4A6B3A (pistachio green, used sparingly as the rare accent);
+   --ok:#256B45/--ok-bg:#E8F2EC; --warn:#9A5F0B/--warn-bg:#FBF0DF; --r:12px, .btn radius 9px,
+   pill radius 99px. Light UI inside the dark phone shell (per spec). */
+.pastis { position: absolute; inset: 0; background: #F7F7F7; color: #1D1D1B; font-family: var(--font-sans); display: flex; flex-direction: column; overflow: hidden; }
+.pastis__topbar { display: flex; align-items: baseline; justify-content: space-between; padding: 10px 12px; background: #fff; border-bottom: 1px solid #EBEBEB; flex: none; }
+.pastis__heading { font-size: 0.82rem; font-weight: 600; letter-spacing: -0.01em; }
+.pastis__order-id { font-family: var(--font-mono); font-size: 0.66rem; color: #767672; }
+
+.pastis__board { position: relative; flex: 1; overflow: hidden; min-height: 0; }
+.pastis__columns { position: absolute; inset: 0; display: flex; width: 300%; height: 100%; }
+.pastis__column { flex: 0 0 calc(100% / 3); display: flex; flex-direction: column; gap: 8px; padding: 10px; min-width: 0; }
+.pastis__column-label { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: #767672; padding-bottom: 4px; border-bottom: 2px solid #DDDDDD; }
+.pastis__column-label[data-status="production"] { color: #9A5F0B; border-color: #9A5F0B; }
+.pastis__column-label[data-status="ready"] { color: #256B45; border-color: #256B45; }
+
+.pastis__card { background: #fff; border: 1px solid #EBEBEB; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 1px 2px rgba(29, 29, 27, 0.06); }
+.pastis__card-id { font-family: var(--font-mono); font-size: 0.62rem; color: #767672; }
+.pastis__card-name { font-size: 0.78rem; font-weight: 600; }
+.pastis__check { align-self: flex-end; width: 20px; height: 20px; border-radius: 50%; background: #E8F2EC; color: #256B45; display: grid; place-items: center; margin-top: 4px; }
+
+.pastis__sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid #EBEBEB; border-radius: 16px 16px 0 0; padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 -4px 16px rgba(29, 29, 27, 0.1); }
+.pastis__sheet-handle { width: 32px; height: 4px; border-radius: 99px; background: #DDDDDD; align-self: center; }
+.pastis__sheet-title { margin: 0; font-size: 0.82rem; font-weight: 600; }
+.pastis__field-row { display: flex; flex-direction: column; gap: 6px; }
+.pastis__field-label { font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; color: #767672; }
+
+.pastis__tiers { display: flex; align-items: center; gap: 6px; }
+.pastis__tier-dot { appearance: none; -webkit-appearance: none; width: 44px; height: 44px; min-width: 44px; padding: 0; border-radius: 50%; border: 1px solid #DDDDDD; background: #F0F0F0; }
+.pastis__tier-dot[data-filled="true"] { background: #4A6B3A; border-color: #4A6B3A; }
+.pastis__tiers-count { font-family: var(--font-mono); font-size: 0.76rem; font-weight: 600; margin-left: 4px; }
+
+.pastis__flavours { display: flex; flex-wrap: wrap; gap: 6px; }
+.pastis__flavour { appearance: none; -webkit-appearance: none; min-height: 44px; padding: 0 12px; border-radius: 99px; border: 1px solid #EBEBEB; background: #F7F7F7; color: #1D1D1B; font-size: 0.7rem; }
+.pastis__flavour[data-active="true"] { background: #4A6B3A; border-color: #4A6B3A; color: #fff; }
+
+.pastis__lettering { min-height: 30px; display: flex; align-items: center; padding: 0 10px; border: 1px solid #EBEBEB; border-radius: 8px; background: #F7F7F7; font-size: 0.76rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pastis__caret { width: 1px; height: 12px; background: #1D1D1B; margin-left: 1px; flex: none; animation: pastis-caret 900ms step-end infinite; }
+@keyframes pastis-caret { 50% { opacity: 0; } }
+
+.pastis__receipt { position: absolute; left: 12px; right: 12px; bottom: 14px; background: #1D1D1B; color: #fff; border-radius: 10px; padding: 10px 12px; font-size: 0.74rem; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pastis__caret { animation: none; }
+}
