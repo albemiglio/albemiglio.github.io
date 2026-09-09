@@ -59,14 +59,34 @@ def fit_distance(points, centre, right, up, forward, half_fov):
                - (pt - centre) @ forward for pt in points)
 
 
+def transmissive(material):
+    bsdf = material.node_tree and material.node_tree.nodes.get("Principled BSDF")
+    return bool(bsdf) and bsdf.inputs["Transmission Weight"].default_value > 0
+
+
 def drop_fallback_alpha():
     """glTF carries Alpha as the fallback for viewers without KHR_materials_transmission.
     Cycles renders the transmission itself, so keeping both would blend the surface
     twice and turn clear glass milky."""
     for material in bpy.data.materials:
-        bsdf = material.node_tree and material.node_tree.nodes.get("Principled BSDF")
-        if bsdf and bsdf.inputs["Transmission Weight"].default_value > 0:
-            bsdf.inputs["Alpha"].default_value = 1.0
+        if transmissive(material):
+            material.node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value = 1.0
+
+
+def light_through_clear_parts():
+    """Let the key light reach whatever is sealed behind a clear part.
+
+    Cycles cannot sample a light through a refractive surface: a shadow ray that
+    hits one is blocked outright. Anything enclosed in clear plastic — the beads
+    inside the capsule, the optics under the dome — is then lit only by the paths
+    that happen to refract their way to a lamp, which is caustic noise at any
+    sample count this build can afford, and it renders as a dark tunnel. Taking
+    the clear parts out of the shadow pass is the studio answer: they keep their
+    own reflections and refraction, they stop casting a ground shadow (invisible
+    anyway on the page's near-black background), and the interior gets lit."""
+    for obj in bpy.data.objects:
+        if obj.type == "MESH" and any(m and transmissive(m) for m in obj.data.materials):
+            obj.visible_shadow = False
 
 
 def area_light(name, location, aim_at, energy, color, size):
@@ -118,6 +138,7 @@ world.node_tree.nodes["Background"].inputs["Color"].default_value = (0, 0, 0, 1)
 scene.world = world
 
 drop_fallback_alpha()
+light_through_clear_parts()
 points, centre, floor_z, radius = bounds(imported)
 
 # Ground: invisible except for the shadow it catches, so the object sits on
