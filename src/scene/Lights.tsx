@@ -11,11 +11,18 @@ function colorDistance(a: Color, b: Color): number {
   return Math.hypot(a.r - b.r, a.g - b.g, a.b - b.b);
 }
 
+// A fully saturated chapter color reads as a paint on the metallic PBR device materials (see
+// fix-device-front.png — brushed aluminium reads as gold). Lerping 60% toward white keeps the
+// hue as a cast on the metal rather than a full repaint.
+export function chapterKeyColor(hex: string): Color {
+  return new Color(hex).lerp(new Color('#ffffff'), 0.6);
+}
+
 export function Lights({ shadows }: { shadows: boolean }) {
   const key = useRef<DirectionalLight>(null);
   const { invalidate } = useThree();
   const activeId = useSceneSelector((s) => s.activeId);
-  const target = useMemo(() => new Color(CHAPTER_KEY[activeId ?? ''] ?? NEUTRAL), [activeId]);
+  const target = useMemo(() => chapterKeyColor(CHAPTER_KEY[activeId ?? ''] ?? NEUTRAL), [activeId]);
   useFrame((_, dt) => {
     if (!key.current) return;
     key.current.color.lerp(target, Math.min(1, dt * 4));
