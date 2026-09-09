@@ -21,6 +21,10 @@ export function isSoftwareRenderer(gl: WebGLRenderingContext | null = probeConte
   return names.some((n) => SOFTWARE_RENDERER.test(String(n ?? '')));
 }
 
+// Probing creates a throwaway context; the answer never changes within a page, so ask once.
+let softwareGL: boolean | undefined;
+export const isSoftwareGL = () => (softwareGL ??= isSoftwareRenderer());
+
 export function onIdle(fn: () => void): () => void {
   if (typeof requestIdleCallback === 'function') {
     const id = requestIdleCallback(fn, { timeout: 2000 });

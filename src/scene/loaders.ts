@@ -1,9 +1,11 @@
 import { useGLTF } from '@react-three/drei';
+import { isSoftwareGL } from './useSceneGate';
+import { sceneTier } from './tier';
 
-const isSmall = () => typeof window !== 'undefined' && window.innerWidth < 768;
+const lowLod = () => typeof window !== 'undefined' && sceneTier(window.innerWidth, isSoftwareGL()).lod === 'low';
 
 export function modelUrl(name: string) {
-  return `/models/${name}${isSmall() ? '.low' : ''}.glb`;
+  return `/models/${name}${lowLod() ? '.low' : ''}.glb`;
 }
 
 // Meshopt-compressed GLBs; drei wires three's MeshoptDecoder when useMeshOpt is true.

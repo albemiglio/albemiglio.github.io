@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 // Scrolls so the #work-<id> article sits at `phase` through its own entering/frontal/leaving
 // window: phase 0 is the article's bottom edge reaching the viewport top (about to enter from
@@ -6,6 +6,13 @@ import { expect, test, type Page } from '@playwright/test';
 // passing the viewport top (fully left). The `vh` buffer on each side mirrors useSceneProgress's
 // useScroll offset (['start end', 'end start']), just anchored to this one article instead of
 // the whole #work section.
+// Hovering the frame pauses the chapter's player, so the 3D poses stop changing and the software
+// rasteriser in CI gets a still frame to capture instead of chasing a moving one.
+async function settle(page: Page, frame: Locator) {
+  await frame.hover();
+  await page.waitForTimeout(1500);
+}
+
 async function scrollToPhase(page: Page, id: string, phase: number) {
   const article = page.locator(`#work-${id}`);
   const top = await article.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
@@ -29,6 +36,7 @@ test.describe('scene', () => {
       // wait is needed before it (fix-round-1, F4).
       await scrollToPhase(page, id, 0.15);
       await expect(frame).toHaveCSS('transform', /matrix3d/);
+      await settle(page, frame);
       await page.screenshot({ path: `e2e/screenshots/scene-${id}-enter.png` });
       // frontal: identity. Under SwiftShader the device's yaw/scale lerp converges slowly — CI
       // runs on SwiftShader and is roughly 3x slower than a local GPU, so this needs a longer
@@ -36,10 +44,12 @@ test.describe('scene', () => {
       // (fix-round-1, F3).
       await scrollToPhase(page, id, 0.5);
       await expect(frame).toHaveCSS('transform', 'none', { timeout: 15_000 });
+      await settle(page, frame);
       await page.screenshot({ path: `e2e/screenshots/scene-${id}-front.png` });
       // leaving: rotated the other way
       await scrollToPhase(page, id, 0.85);
       await expect(frame).toHaveCSS('transform', /matrix3d/);
+      await settle(page, frame);
       await page.screenshot({ path: `e2e/screenshots/scene-${id}-leave.png` });
     }
   });
