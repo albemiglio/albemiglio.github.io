@@ -6,6 +6,12 @@ import { resolve } from 'node:path';
 export default defineConfig({
   plugins: [react()],
   build: {
+    modulePreload: {
+      // The scene chunk is only ever reached through SceneMount's lazy() import, gated behind
+      // useSceneGate; it must stay off the initial-JS path, so don't let Vite modulepreload it
+      // from either entry HTML.
+      resolveDependencies: (_filename, deps) => deps.filter((d) => !d.includes('/scene-')),
+    },
     rollupOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),

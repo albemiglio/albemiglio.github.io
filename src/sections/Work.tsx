@@ -1,7 +1,10 @@
+import { useEffect, useRef } from 'react';
 import { Chapter, type AnyChapterDef, type ChapterDef } from './Chapter';
 import { useActiveChapter } from '../flows/useActiveChapter';
 import { IpcamScene } from '../flows/ipcam/Scene';
 import { ipcamSteps, type IpcamState } from '../flows/ipcam/steps';
+import { useSceneProgress } from '../scene/useSceneProgress';
+import { sceneStore } from '../scene/store';
 import './work.css';
 
 const ipcam: ChapterDef<IpcamState> = {
@@ -20,9 +23,12 @@ export const chapters: AnyChapterDef[] = [ipcam];
 const ids = chapters.map((c) => c.id);
 
 export function Work() {
+  const ref = useRef<HTMLElement>(null);
+  useSceneProgress(ref);
   const { activeId, register } = useActiveChapter(ids);
+  useEffect(() => { sceneStore.set({ activeId }); }, [activeId]);
   return (
-    <section id="work" className="section" aria-label="Work">
+    <section ref={ref} id="work" className="section" aria-label="Work">
       <div className="rail"><h2 className="section-title">Work</h2></div>
       {chapters.map((c) => (
         <Chapter key={c.id} def={c} active={activeId === c.id} register={register(c.id)} />

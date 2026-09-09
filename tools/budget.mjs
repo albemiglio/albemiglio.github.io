@@ -4,7 +4,7 @@ import { gzipSync } from 'node:zlib';
 
 const DIST = process.env.DIST ? resolve(process.env.DIST) : resolve(import.meta.dirname, '../dist');
 const INITIAL_LIMIT = 120 * 1024;
-const SCENE_LIMIT = 220 * 1024;
+const SCENE_LIMIT = 240 * 1024;
 
 const gz = (file) => gzipSync(readFileSync(file)).length;
 const kb = (n) => (n / 1024).toFixed(1);

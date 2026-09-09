@@ -5,10 +5,12 @@ import { Work } from './sections/Work';
 import { MoreWork } from './sections/MoreWork';
 import { About } from './sections/About';
 import { Contact } from './sections/Contact';
+import { SceneMount } from './scene/SceneMount';
 
 export function App() {
   return (
     <>
+      <SceneMount />
       <main>
         <Hero />
         <Work />
