@@ -4,6 +4,8 @@
 .chapter__title { font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 1rem; }
 .chapter__blurb { color: var(--muted); max-width: 42ch; margin: 0 0 1rem; }
 .chapter__fact { font-family: var(--font-mono); font-size: 0.85rem; margin: 0; }
+.chapter__object { margin-top: 2rem; aspect-ratio: 1; max-width: 360px; }
+.chapter__object img { width: 100%; height: auto; display: block; }
 .chapter__stage { position: sticky; top: 12vh; }
 @media (max-width: 900px) {
   .chapter { min-height: auto; padding: 4rem 0; }

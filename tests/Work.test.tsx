@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MotionProvider } from '../src/MotionProvider';
 import { Work, chapters } from '../src/sections/Work';
 import { Chapter } from '../src/sections/Chapter';
+import { sceneStore } from '../src/scene/store';
 
 test('renders the ipcam chapter with text, device and step bar', () => {
   render(<MotionProvider forceReduced><Work /></MotionProvider>);
@@ -32,4 +33,12 @@ test('hovering the stage pauses the chapter player; unhovering resumes it', () =
   expect(currentStep()).not.toBe(initial);
 
   vi.useRealTimers();
+});
+
+test('with the scene gated off, the chapter falls back to the static image', () => {
+  // The store is module-level and can carry state across tests in this file — pin it explicitly.
+  sceneStore.set({ sceneOpen: false });
+  const { container } = render(<MotionProvider forceReduced><Work /></MotionProvider>);
+  const img = container.querySelector('.chapter__object img');
+  expect(img).toHaveAttribute('src', '/fallback/ipcam.png');
 });
