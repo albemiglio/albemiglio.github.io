@@ -58,6 +58,11 @@ test('next shows the second question', () => {
   expect(screen.getByTestId('question-title')).toHaveTextContent(questions[1].prompt);
 });
 
+test('next shows the running score chip so the resting frame is not empty (F6)', () => {
+  mountReduced(at('next'));
+  expect(screen.getByTestId('score-chip')).toHaveTextContent('8');
+});
+
 test('the timer keeps counting through the question -> answer transition (no restart)', () => {
   vi.useFakeTimers();
   const setIntervalSpy = vi.spyOn(global, 'setInterval');

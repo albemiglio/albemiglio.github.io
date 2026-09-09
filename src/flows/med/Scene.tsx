@@ -88,7 +88,12 @@ export function MedScene({ state }: { state: MedState }) {
             transition={{ duration: dur.base }}
           >
             <div className="med__topbar">
-              <span className="med__question-count">Question {state.question} of {questions.length}</span>
+              <span className="med__topbar-left">
+                <span className="med__question-count">Question {state.question} of {questions.length}</span>
+                {/* F6: the running score, shown at every non-score step (including the reduced-
+                    motion resting frame on `next`, which would otherwise be a blank question 2). */}
+                <span className="med__score-chip" data-testid="score-chip">Score {state.score}/{maxScore}</span>
+              </span>
               {state.timer && (
                 <span className="med__timer-box">
                   <span className="med__timer" data-testid="timer" data-low={seconds <= 10 ? '' : undefined}>{seconds}</span>

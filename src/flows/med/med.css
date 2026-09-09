@@ -9,7 +9,9 @@
 .med__panel { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 14px 14px 16px; gap: 10px; }
 
 .med__topbar { display: flex; align-items: center; justify-content: space-between; flex: none; }
+.med__topbar-left { display: flex; align-items: center; gap: 8px; }
 .med__question-count { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: #717171; }
+.med__score-chip { font-family: var(--font-mono); font-size: 0.62rem; padding: 3px 9px; border-radius: 999px; background: #f7f7f7; color: #4a4a4a; }
 .med__timer-box { display: flex; align-items: baseline; gap: 3px; padding: 3px 9px; border-radius: 999px; background: #e8f2fb; color: #0f6fbf; }
 .med__timer { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; }
 .med__timer[data-low] { color: #b23c25; }
