@@ -27,7 +27,7 @@ test('rectCenterOnZPlane matches rectToWorld for a camera looking straight down 
   const viewport = { w: 1000, h: 500 };
   const rect = { x: 750, y: 0, w: 250, h: 125 };
   const world = rectToWorld(rect, viewport, 40, 10, 2);
-  const p = rectCenterOnZPlane(rect, viewport, cam);
+  const p = rectCenterOnZPlane(rect, viewport, cam, new Vector3());
   expect(p.x).toBeCloseTo(world.x, 3);
   expect(p.y).toBeCloseTo(world.y, 3);
 });
@@ -37,7 +37,7 @@ test('rectCenterOnZPlane finds the z=0 point that re-projects onto the rect cent
   cam.position.set(0, 1.6, 8); cam.lookAt(0, -0.2, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
   const viewport = { w: 1440, h: 900 };
   const rect = { x: 800, y: 300, w: 200, h: 150 };
-  const p = rectCenterOnZPlane(rect, viewport, cam);
+  const p = rectCenterOnZPlane(rect, viewport, cam, new Vector3());
   const ndc = new Vector3(p.x, p.y, 0).project(cam);
   const px = ((ndc.x + 1) / 2) * viewport.w;
   const py = ((1 - ndc.y) / 2) * viewport.h;

@@ -1,7 +1,7 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { useThree } from '@react-three/fiber';
 import { ContactShadows } from '@react-three/drei';
-import type { Group } from 'three';
+import { Vector3, type Group } from 'three';
 import { CAMERA_DIST, CAMERA_FOV } from './CameraRig';
 import { rectToWorld } from './math';
 import { rectCenterOnZPlane } from './devices/screenAnchor';
@@ -15,6 +15,7 @@ export function ObjectAnchor({ id, size = 0.8, pose = [-0.35, 0.5, 0], shadows =
   const g = useRef<Group>(null);
   const { camera, invalidate, size: view } = useThree();
   const last = useRef<Signature | null>(null);
+  const centre = useMemo(() => new Vector3(), []);
   useEffect(() => {
     const apply = () => {
       const s = sceneStore.get();
@@ -33,7 +34,7 @@ export function ObjectAnchor({ id, size = 0.8, pose = [-0.35, 0.5, 0], shadows =
       // held to the DOM-handoff's identity tolerance.
       camera.updateMatrixWorld();
       camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
-      const centre = rectCenterOnZPlane(rect, s.viewport, camera);
+      rectCenterOnZPlane(rect, s.viewport, camera, centre);
       const w = rectToWorld(rect, s.viewport, CAMERA_FOV, CAMERA_DIST, view.width / view.height);
       const scale = (Math.min(w.scaleW, w.scaleH) * size) / 2; // models are ~2 units wide
       g.current.position.set(centre.x, centre.y, 0);

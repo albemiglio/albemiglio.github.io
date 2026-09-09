@@ -65,6 +65,7 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
 
   const forward = useMemo(() => new Vector3(), []);
   const lookTarget = useMemo(() => new Vector3(), []);
+  const centre = useMemo(() => new Vector3(), []);
 
   useFrame(() => {
     // F4: the renderer only refreshes the camera's view matrix once per render; CameraRig moves
@@ -81,7 +82,7 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
     // F3b: the chapter keyframes now pitch the camera, so `rectToWorld` (which assumes a camera
     // looking straight down -Z) can no longer place the device. Unproject the rect's centre
     // through the real camera onto the z=0 plane instead.
-    const centre = rectCenterOnZPlane(rect, s.viewport, camera);
+    rectCenterOnZPlane(rect, s.viewport, camera, centre);
     p.visible = true;
     p.position.set(centre.x, centre.y, 0);
 
