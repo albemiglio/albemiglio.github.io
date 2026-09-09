@@ -53,4 +53,5 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm run psi
-        env: { PSI_API_KEY: ${{ secrets.PSI_API_KEY }} }
+        env:
+          PSI_API_KEY: ${{ secrets.PSI_API_KEY }}
