@@ -20,7 +20,17 @@
 .stepbar { display: flex; gap: 6px; margin-top: 14px; }
 /* F3a: over the 3D deck the bar needs a solid backing to stay readable; in normal flow (fallback
    image, no scene) the transparent bar is fine as-is. */
-.chapter__stage[data-scene] .stepbar { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+/* Over the 3D deck the bar needs its own ground to stay readable. A translucent layer with the
+   page blurred behind it separates without stamping an opaque slab over the render. */
+.chapter__stage[data-scene] .stepbar {
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: 14px; padding: 10px 12px;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .chapter__stage[data-scene] .stepbar { background: var(--bg); backdrop-filter: none; }
+}
 /* M2: hide the pill while the 3D handoff hasn't reached the flat DOM pose yet (data-flat unset),
    so it doesn't clutter the view mid-rotation; keep it up under focus so keyboard users never
    lose the control. `[data-scene]` only exists while the scene is open, which itself requires
@@ -29,7 +39,8 @@
 .chapter__stage[data-scene]:not([data-flat]) .stepbar { opacity: 0; transition: opacity 200ms var(--ease); }
 .chapter__stage[data-scene]:not([data-flat]):focus-within .stepbar { opacity: 1; }
 .stepbar:focus-visible { outline-offset: 6px; }
-.step { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 6px; text-align: left; min-height: 44px; padding-top: 6px; }
+.step { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 6px; text-align: left; min-height: 44px; padding-top: 6px; transition: opacity 120ms ease-out; }
+.step:active { opacity: 0.6; }
 .step__track { display: block; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
 .step__fill { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--step-color); }
 .step__fill--done { transform: scaleX(1); }

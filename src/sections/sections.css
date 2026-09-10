@@ -5,6 +5,10 @@
   transition: border-color 150ms var(--ease), background-color 150ms var(--ease);
 }
 .btn:hover { border-color: var(--accent); }
+/* Feedback belongs on the press, not on the release: the highlight has to be there the instant
+   the finger lands, or the control reads as dead on touch. */
+.btn:active { transform: scale(0.97); }
+.btn { transition: border-color 150ms var(--ease), background-color 150ms var(--ease), transform 100ms ease-out; }
 .btn--primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 .btn--primary:hover { background: #fff; }
 .btn--static { color: var(--muted); cursor: default; }
@@ -13,35 +17,42 @@
 .hero { min-height: 100svh; display: grid; align-items: center; }
 .hero__grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(1.5rem, 4vw, 4rem); }
 .hero__name { font-size: clamp(2.6rem, 7vw, 5.5rem); line-height: 1; letter-spacing: -0.03em; margin: 0; }
-.hero__title { font-size: clamp(1.1rem, 2.2vw, 1.5rem); margin: 1rem 0 0.5rem; }
-.hero__sub { color: var(--muted); max-width: 40ch; margin: 0 0 1.75rem; }
+.hero__title { font-size: clamp(1.15rem, 2.2vw, 1.5rem); line-height: 1.3; letter-spacing: -0.01em; margin: 1rem 0 0.5rem; }
+.hero__sub { color: var(--muted); max-width: 40ch; line-height: 1.55; margin: 0 0 1.75rem; }
 .hero__cta { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 .hero__sculpture { width: 100%; aspect-ratio: 1; max-width: 420px; justify-self: end; }
 .hero__sculpture picture, .hero__sculpture img { display: block; width: 100%; height: 100%; object-fit: contain; }
 @media (max-width: 900px) {
   /* Phones: the hero is as tall as its content, so no dead band before "Work". */
-  .hero { min-height: auto; padding: clamp(4rem, 12vh, 6rem) 0 1.5rem; }
-  .hero__grid { grid-template-columns: 1fr; }
-  .hero__sculpture { max-width: 260px; justify-self: center; margin: 0 auto; }
+  .hero { min-height: auto; padding: clamp(3.5rem, 10vh, 5rem) 0 0.5rem; }
+  .hero__grid { grid-template-columns: 1fr; gap: 0.5rem; }
+  .hero__sculpture { max-width: 268px; justify-self: center; margin: 0.5rem auto 0; }
 }
 
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.9rem; }
+@media (max-width: 640px) { .cards { gap: 0.7rem; } }
 .card {
   display: flex; flex-direction: column; gap: 0.5rem; padding: 1.1rem;
   background: var(--surface); border: 1px solid var(--border); border-radius: 14px; text-decoration: none;
   transition: border-color 150ms var(--ease);
 }
 .card:hover { border-color: var(--accent); }
-.card__name { margin: 0; font-size: 1.05rem; font-weight: 600; }
-.card__desc { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.card__name { margin: 0; font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
+.card__desc { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
 .card__tags { margin-top: auto; font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
 
-.about__prose { max-width: 62ch; }
-.timeline { list-style: none; margin: 1.5rem 0; padding: 0; display: grid; gap: 0.5rem; }
-.timeline li { display: grid; grid-template-columns: 11rem 1fr; gap: 1rem; }
-.timeline__when { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); }
-@media (max-width: 640px) { .timeline li { grid-template-columns: 1fr; gap: 0.15rem; } }
+/* The prose is context, the timeline is the record: giving the prose the muted colour and a
+   narrower measure lets the eye go to the record first instead of reading a wall at full weight. */
+.about__prose { max-width: 58ch; color: var(--muted); line-height: 1.6; }
+.timeline { list-style: none; margin: 2rem 0 1.75rem; padding: 0; display: grid; gap: 1rem; }
+.timeline li { display: grid; grid-template-columns: 11rem 1fr; gap: 1rem; align-items: baseline; }
+.timeline__when { font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); }
+@media (max-width: 640px) {
+  .timeline { gap: 1.15rem; }
+  .timeline li { grid-template-columns: 1fr; gap: 0.2rem; }
+  .about__prose { font-size: 0.95rem; }
+}
 
-.contact__primary { font-family: var(--font-mono); font-size: clamp(1.25rem, 3.2vw, 2.05rem); text-decoration: none; }
+.contact__primary { display: inline-block; font-family: var(--font-mono); font-size: clamp(1.15rem, 3.2vw, 2.05rem); letter-spacing: -0.01em; text-decoration: none; min-height: 44px; }
 .contact__rest { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.25rem; }
 .footer { padding: 2rem 0; color: var(--muted); font-size: 0.85rem; }
