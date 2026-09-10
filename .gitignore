@@ -9,3 +9,4 @@ tools/models/.blender-cache
 tools/models/__pycache__
 .worktrees
 *.tsbuildinfo
+.archivio
