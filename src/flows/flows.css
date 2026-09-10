@@ -11,6 +11,9 @@
 .device__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
 .device__notch { width: 90px; height: 22px; margin: 8px auto 0; border-radius: 12px; background: var(--bg); }
 .device__screen { position: absolute; inset: 0; }
+.device--bare .device__screen { top: 0; }
+/* The capture fills the frame and is scaled/panned to the step's region by ShotScene. */
+.shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .device--laptop .device__screen { top: 35px; }
 .device--phone .device__screen { top: 38px; }
 
@@ -33,5 +36,11 @@
 .step__fill--active { animation: stepfill linear forwards; }
 @keyframes stepfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .step__label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); transition: color 150ms var(--ease); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+/* Below the label breakpoint only the current step is named, so the name belongs to the bar as a
+   whole and centres under it — pinned to its own segment it reads as a stray caption. */
+@media (max-width: 640px) {
+  .stepbar { position: relative; padding-bottom: 1.35rem; }
+  .step__label { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; color: var(--text); }
+}
 .step[aria-current="step"] .step__label { color: var(--text); }
 @media (max-width: 640px) { .step__label { visibility: hidden; } .step[aria-current="step"] .step__label { visibility: visible; } }

@@ -3,20 +3,34 @@
 .chapter { min-height: 150vh; display: block; scroll-margin-top: 2rem; }
 .chapter__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 4vw, 4rem); min-height: 150vh; align-items: start; padding-top: 12vh; }
 .chapter__text { position: sticky; top: 12vh; }
-.chapter__kicker { font-family: var(--font-mono); font-size: 0.8rem; color: var(--chapter-color); margin: 0 0 0.75rem; }
-.chapter__title { font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 1rem; }
+.chapter__kicker { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.02em; color: var(--chapter-color); margin: 0 0 0.75rem; }
+/* Tracking is size-specific: display type reads too loose at the body default. */
+.chapter__title { font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.06; letter-spacing: -0.025em; text-wrap: balance; margin: 0 0 1rem; }
 .chapter__blurb { color: var(--muted); max-width: 42ch; margin: 0 0 1rem; }
 .chapter__fact { font-family: var(--font-mono); font-size: 0.85rem; margin: 0; }
 .chapter__object { margin-top: 2rem; aspect-ratio: 1; max-width: 360px; }
 .chapter__object img { width: 100%; height: auto; display: block; }
 .chapter__stage { position: sticky; top: 12vh; }
+
 @media (max-width: 900px) {
-  .chapter { min-height: auto; padding: 2.5rem 0; }
-  .chapter__grid { grid-template-columns: 1fr; min-height: auto; padding-top: 0; gap: 1.25rem; }
-  .chapter__text, .chapter__stage { position: static; }
-  /* Phones show the Cycles still of the object as a product shot between the text and the device
-     (the realtime scene never mounts below 900 px — see useSceneGate). */
-  .chapter__object { margin: 1.5rem auto 0; max-width: 220px; }
-  /* The 3D laptop body is wider than its screen: keep the frame narrow enough for the body to fit. */
+  .chapter { min-height: auto; padding: 3rem 0 3.5rem; }
+  /* `display: contents` lifts the text block's children into the chapter grid, so the running
+     product can sit between the title and the supporting copy — the order the eye wants — without
+     a second copy of the markup for one breakpoint. */
+  .chapter__grid { grid-template-columns: 1fr; min-height: auto; padding-top: 0; gap: 0; }
+  .chapter__text { display: contents; }
+  .chapter__stage { position: static; order: 3; }
+  .chapter__kicker { order: 1; font-size: 0.78rem; margin: 0 0 0.5rem; }
+  .chapter__title { order: 2; font-size: 1.6rem; line-height: 1.12; margin: 0 0 1.25rem; }
+  .chapter__blurb { order: 4; font-size: 0.95rem; line-height: 1.55; margin: 1.25rem 0 0; max-width: none; }
+  .chapter__fact { order: 5; font-size: 0.8rem; color: var(--muted); margin: 0.6rem 0 0; }
+  /* The object is an accent beside the supporting copy, not a second hero competing with the
+     product screen for the fold. */
+  .chapter__object { order: 6; margin: 1.75rem auto 0; max-width: 132px; }
+  /* The laptop body is wider than its screen, so the frame has to leave room for it. A capture
+     of a real product carries no 3D body, so it can run the full width. */
   .device--laptop { max-width: calc(100% - 2.5rem); }
+  /* A landscape interface cropped to a phone-friendly region wants a taller box than the 16:10
+     of the screen it came from, or the crop letterboxes inside the card. */
+  .device--laptop.device--bare { max-width: none; border-radius: 16px; aspect-ratio: 4 / 3; }
 }

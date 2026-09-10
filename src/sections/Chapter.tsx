@@ -7,11 +7,16 @@ import { useMotionPrefs } from '../MotionProvider';
 import { sceneStore, useSceneSelector, type QuadFrame } from '../scene/store';
 import { isNearIdentity, layoutRect, quadToMatrix3d } from '../scene/math';
 import { useRectRegistration } from '../scene/useRectRegistration';
+import { ShotScene, type Shot } from '../flows/ShotScene';
+import { useWide } from '../useWide';
 import type { ChapterMeta } from '../chapters';
 
 export type ChapterDef<S> = {
   id: string; title: string; audience: string; blurb: string; fact: string; color: string;
-  object: ChapterMeta['object']; device: 'laptop' | 'phone'; steps: Step<S>[]; Scene: ComponentType<{ state: S }>;
+  object: ChapterMeta['object']; device: 'laptop' | 'phone'; steps: Step<S>[];
+  /** Either a reconstruction of the interface, or — better — captures of the real product. */
+  Scene?: ComponentType<{ state: S }>;
+  shots?: boolean;
 };
 
 export type AnyChapterDef = ChapterDef<any>;
@@ -19,6 +24,7 @@ export type AnyChapterDef = ChapterDef<any>;
 export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; active: boolean; register: RefCallback<HTMLElement> }) {
   const { reduced } = useMotionPrefs();
   const player = useFlowPlayer(def.steps, { active, reduced });
+  const wide = useWide();
   const sceneOpen = useSceneSelector((s) => s.sceneOpen);
   const objectRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -95,10 +101,10 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
           onFocus={player.pause}
           onBlur={player.resume}
         >
-          <DeviceFrame ref={frameRef} kind={def.device} label={`${def.id} — ${def.title}`}>
-            <Suspense fallback={null}>
-              <Scene state={player.state} />
-            </Suspense>
+          <DeviceFrame ref={frameRef} kind={def.device} label={`${def.id} — ${def.title}`} bare={def.shots}>
+            {def.shots
+              ? <ShotScene shot={player.state as Shot} wide={wide} />
+              : Scene && <Suspense fallback={null}><Scene state={player.state} /></Suspense>}
           </DeviceFrame>
           <StepBar steps={def.steps} index={player.index} playing={player.playing} color={def.color} onSelect={player.goTo} />
         </div>
