@@ -11,7 +11,7 @@ const CONVERGE = 5; // k = 1 - exp(-dt * CONVERGE)
 // Owns the hero's pointer tilt: while the visitor hasn't started exiting the hero (heroExit < 1,
 // P3-R8), the ring of screens leans towards the pointer with inertia. The listener comes off
 // entirely once heroExit reaches 1, and the tilt relaxes back to 0 rather than snapping.
-export function HeroSculpture() {
+export function HeroSculpture({ still = false }: { still?: boolean }) {
   const { invalidate } = useThree();
   const heroTilt = useRef<HeroTilt>({ x: 0, y: 0 });
   const pointer = useRef({ x: 0, y: 0 });
@@ -52,7 +52,7 @@ export function HeroSculpture() {
 
   return (
     <Suspense fallback={null}>
-      <HeroScreens tilt={heroTilt} />
+      <HeroScreens tilt={heroTilt} still={still} />
     </Suspense>
   );
 }

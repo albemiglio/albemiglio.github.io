@@ -61,7 +61,7 @@ function Panel({ index, texture, aspect }: { index: number; texture: Texture; as
  * is anchored to the hero box on the page and inherits the pointer tilt, so it belongs to the
  * layout rather than floating in front of it.
  */
-export function HeroScreens({ tilt }: { tilt?: { current: HeroTilt } }) {
+export function HeroScreens({ tilt, still = false }: { tilt?: { current: HeroTilt }; still?: boolean }) {
   const ring = useRef<Group>(null);
   const { camera, invalidate, size: view } = useThree();
   const centre = useMemo(() => new Vector3(), []);
@@ -88,11 +88,11 @@ export function HeroScreens({ tilt }: { tilt?: { current: HeroTilt } }) {
 
   useEffect(() => {
     const mq = window.matchMedia(REDUCED);
-    const read = () => { reduced.current = mq.matches; invalidate(); };
+    const read = () => { reduced.current = still || mq.matches; invalidate(); };
     read();
     mq.addEventListener('change', read);
     return () => mq.removeEventListener('change', read);
-  }, [invalidate]);
+  }, [invalidate, still]);
 
   useEffect(() => {
     const apply = () => {
