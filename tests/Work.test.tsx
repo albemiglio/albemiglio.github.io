@@ -11,7 +11,7 @@ test('renders the ipcam chapter with text, device and step bar', () => {
   expect(scope.getByRole('heading', { name: /live video, without the vendor's cloud/i })).toBeInTheDocument();
   expect(scope.getByRole('figure', { name: /ipcam/i })).toBeInTheDocument();
   expect(scope.getByRole('group', { name: /flow steps/i })).toBeInTheDocument();
-  expect(scope.getByRole('button', { name: /Talk/ })).toHaveAttribute('aria-current', 'step');
+  expect(scope.getByRole('button', { name: /Recordings/ })).toHaveAttribute('aria-current', 'step');
 });
 
 test('renders the asd chapter alongside ipcam', () => {

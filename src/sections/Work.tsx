@@ -1,7 +1,7 @@
-import { lazy, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Chapter, type AnyChapterDef, type ChapterDef } from './Chapter';
 import { useActiveChapter } from '../flows/useActiveChapter';
-import { ipcamSteps, type IpcamState } from '../flows/ipcam/steps';
+import { ipcamShots } from '../flows/ipcam/shots';
 import { pastisShots } from '../flows/pastis/shots';
 import { medShots } from '../flows/med/shots';
 import { asdShots } from '../flows/asd/shots';
@@ -9,7 +9,6 @@ import type { Shot } from '../flows/ShotScene';
 import { CHAPTERS, type ChapterMeta } from '../chapters';
 import { useSceneProgress } from '../scene/useSceneProgress';
 import { sceneStore } from '../scene/store';
-import { afterLoad, onIdle } from '../scene/useSceneGate';
 import './work.css';
 
 // The scene places a 3D device per chapter from the registry; taking the DOM frame's kind from
@@ -17,25 +16,7 @@ import './work.css';
 // frame mapped onto it, which filled the viewport with a stretched interface).
 const deviceOf = (id: ChapterMeta['id']) => CHAPTERS.find((c) => c.id === id)!.device;
 
-// Lazy: each Scene is animation-heavy (motion/react + its own CSS) and only needed once its
-// chapter scrolls into view — splitting it into the 'flows' chunk (vite.config.ts) keeps it off
-// the initial JS path, same reasoning as SceneMount's SceneCanvas split (P3-R14/F4).
-const IpcamScene = lazy(() => import('../flows/ipcam/Scene').then((m) => ({ default: m.IpcamScene })));
-
-// Idle-time prefetch, same after-load-then-idle timing as F1's useSceneGate: once the page has
-// painted and gone idle, warm the 'flows' chunk so the first chapter scrolled to doesn't pay for
-// a cold dynamic import.
-function prefetchScenes(): () => void {
-  let cancelIdle = () => {};
-  const cancelLoad = afterLoad(() => {
-    cancelIdle = onIdle(() => {
-      import('../flows/ipcam/Scene');
-    });
-  });
-  return () => { cancelLoad(); cancelIdle(); };
-}
-
-const ipcam: ChapterDef<IpcamState> = {
+const ipcam: ChapterDef<Shot> = {
   id: 'ipcam',
   title: "Live video, without the vendor's cloud",
   audience: 'home cameras',
@@ -44,8 +25,8 @@ const ipcam: ChapterDef<IpcamState> = {
   color: 'var(--c-ipcam)',
   object: 'ipcam',
   device: deviceOf('ipcam'),
-  steps: ipcamSteps,
-  Scene: IpcamScene,
+  steps: ipcamShots,
+  shots: true,
 };
 
 const asd: ChapterDef<Shot> = {
@@ -75,7 +56,6 @@ export function Work() {
   useSceneProgress(ref);
   const { activeId, register } = useActiveChapter(ids);
   useEffect(() => { sceneStore.set({ activeId }); }, [activeId]);
-  useEffect(prefetchScenes, []);
   return (
     <section ref={ref} id="work" className="section" aria-label="Work">
       <div className="rail"><h2 className="section-title">Work</h2></div>

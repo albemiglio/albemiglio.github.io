@@ -80,14 +80,6 @@ test.describe('reduced motion', () => {
       await expect(page.locator(`#work-${c.id} .step`).last()).toHaveAttribute('aria-current', 'step');
       await page.waitForTimeout(2500);
       await expect(page.locator(`#work-${c.id} .step`).last()).toHaveAttribute('aria-current', 'step');
-      if (c.id === 'ipcam') {
-        const waveSpan = page.locator('#work-ipcam .ipcam__wave span').first();
-        const anim = await waveSpan.evaluate((el) => {
-          const cs = getComputedStyle(el);
-          return { name: cs.animationName, duration: parseFloat(cs.animationDuration) };
-        });
-        expect(anim.name === 'none' || anim.duration <= 0.001).toBe(true);
-      }
       await page.locator(`#work-${c.id}`).screenshot({ path: `e2e/screenshots/${c.id}-reduced.png` });
     }
   });
