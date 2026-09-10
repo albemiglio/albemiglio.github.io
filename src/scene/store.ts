@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react';
 import { heroExitFromRect, type Pt, type Rect } from './math';
 
 export type { Rect } from './math';
-export type ChapterRects = { object?: Rect; frame?: Rect; chapter?: Rect };
+export type ChapterRects = { object?: Rect; chapter?: Rect };
 export type SceneState = {
   progress: number;
   activeId: string | null;
@@ -29,8 +29,13 @@ function emit() {
 // Screen quads live outside the reactive state: they change every scroll frame and must not
 // trigger useSceneSelector re-renders. See P2-R2.
 export type Quad = [Pt, Pt, Pt, Pt];
-const quads = new Map<string, Quad | null>();
-const quadListeners = new Map<string, Set<(q: Quad | null) => void>>();
+// The rect the quad was measured against travels with it: both come from the same frame, so the
+// matrix can never map from a box the page has already scrolled away from.
+export type QuadFrame = { quad: Quad; rect: Rect } | null;
+const quads = new Map<string, QuadFrame>();
+const quadListeners = new Map<string, Set<(q: QuadFrame) => void>>();
+// The frame elements themselves, so the scene can measure their layout box per frame.
+const frameEls = new Map<string, HTMLElement>();
 
 export const sceneStore = {
   get: () => state,
@@ -39,7 +44,7 @@ export const sceneStore = {
     state = { ...state, ...p };
     emit();
   },
-  setRect(id: string, kind: 'object' | 'frame' | 'chapter', rect: Rect | null) {
+  setRect(id: string, kind: 'object' | 'chapter', rect: Rect | null) {
     const current = { ...(state.rects[id] ?? {}) };
     if (rect) current[kind] = rect; else delete current[kind];
     state = { ...state, rects: { ...state.rects, [id]: current } };
@@ -49,12 +54,18 @@ export const sceneStore = {
     listeners.add(fn);
     return () => { listeners.delete(fn); };
   },
-  setQuad(id: string, quad: Quad | null) {
-    quads.set(id, quad);
-    quadListeners.get(id)?.forEach((fn) => fn(quad));
+  setQuad(id: string, frame: QuadFrame) {
+    quads.set(id, frame);
+    quadListeners.get(id)?.forEach((fn) => fn(frame));
   },
-  getQuad(id: string): Quad | null {
+  getQuad(id: string): QuadFrame {
     return quads.get(id) ?? null;
+  },
+  setFrameEl(id: string, el: HTMLElement | null) {
+    if (el) frameEls.set(id, el); else frameEls.delete(id);
+  },
+  getFrameEl(id: string): HTMLElement | undefined {
+    return frameEls.get(id);
   },
   // C1: called from the scene's error boundary when the WebGL tree unmounts abnormally (a
   // rejected/malformed GLB) — every chapter that ever registered a quad listener gets nulled out
@@ -65,7 +76,7 @@ export const sceneStore = {
       quadListeners.get(id)?.forEach((fn) => fn(null));
     }
   },
-  subscribeQuad(id: string, fn: (q: Quad | null) => void): () => void {
+  subscribeQuad(id: string, fn: (q: QuadFrame) => void): () => void {
     let set = quadListeners.get(id);
     if (!set) {
       set = new Set();

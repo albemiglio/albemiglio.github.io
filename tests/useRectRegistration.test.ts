@@ -25,22 +25,6 @@ function makeEl(): HTMLDivElement {
 
 // F5 / M5: `kind: 'frame'` must clear its inline transform before measuring (so it reads the
 // layout box, not its own projected output) and put the transform back afterwards.
-test('kind "frame" measures the untransformed box and restores the inline transform', () => {
-  const el = makeEl();
-  const inline = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,5,5,0,1)';
-  el.style.transform = inline;
-  renderHook(() => {
-    const ref = useRef<HTMLElement | null>(el);
-    useRectRegistration('t-frame', 'frame', ref);
-  });
-  act(() => { window.dispatchEvent(new Event('resize')); });
-  act(() => vi.runAllTimers());
-
-  expect(sceneStore.get().rects['t-frame'].frame).toEqual({ x: 10, y: 20, w: 100, h: 50 });
-  expect(el.style.transform).toBe(inline);
-});
-
-// F5: `kind: 'object'` elements never carry that inline transform, so the hook must not touch it.
 test('kind "object" leaves the inline transform alone', () => {
   const el = makeEl();
   const inline = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,5,5,0,1)';

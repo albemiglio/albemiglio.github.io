@@ -1,24 +1,17 @@
 import { useEffect, type RefObject } from 'react';
 import { sceneStore } from './store';
 
-export function useRectRegistration(id: string, kind: 'object' | 'frame' | 'chapter', ref: RefObject<HTMLElement | null>) {
+export function useRectRegistration(id: string, kind: 'object' | 'chapter', ref: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     let raf = 0;
     const read = () => {
       raf = 0;
-      // Measure the layout box, not the painted one: the `frame` element carries the handoff
-      // matrix the scene wrote onto it, and feeding that back in would leave the projection
-      // chasing its own output (it has no restoring force — every scale is a fixed point).
-      // Clearing and restoring within one task never reaches the screen, and `transform` is not
-      // a layout property, so this costs a style recalc rather than a reflow. F5: only `frame`
-      // elements ever carry that inline transform — `object` elements never do, so skip the
-      // recalc there.
-      const inline = kind === 'frame' ? (el as HTMLElement).style.transform : '';
-      if (inline) (el as HTMLElement).style.transform = 'none';
+      // Decorative placement only (the object column, the chapter box): neither element ever
+      // carries a transform, and neither is on the handoff's critical path — the device frame
+      // measures its own box per render frame (see math.layoutRect).
       const r = el.getBoundingClientRect();
-      if (inline) (el as HTMLElement).style.transform = inline;
       sceneStore.setRect(id, kind, { x: r.left, y: r.top, w: r.width, h: r.height });
     };
     const schedule = () => { if (!raf) raf = requestAnimationFrame(read); };

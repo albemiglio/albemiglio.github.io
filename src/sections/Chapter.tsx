@@ -4,8 +4,8 @@ import { useFlowPlayer } from '../flows/player';
 import { DeviceFrame } from '../flows/DeviceFrame';
 import { StepBar } from '../flows/StepBar';
 import { useMotionPrefs } from '../MotionProvider';
-import { sceneStore, useSceneSelector } from '../scene/store';
-import { isNearIdentity, quadToMatrix3d } from '../scene/math';
+import { sceneStore, useSceneSelector, type QuadFrame } from '../scene/store';
+import { isNearIdentity, layoutRect, quadToMatrix3d } from '../scene/math';
 import { useRectRegistration } from '../scene/useRectRegistration';
 import type { ChapterMeta } from '../chapters';
 
@@ -25,23 +25,37 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
   const articleRef = useRef<HTMLElement>(null);
   useEffect(() => { sceneStore.set((s) => ({ stepState: { ...s.stepState, [def.id]: player.state } })); }, [def.id, player.state]);
   useRectRegistration(def.id, 'object', objectRef);
-  useRectRegistration(def.id, 'frame', frameRef);
+  useEffect(() => { sceneStore.setFrameEl(def.id, frameRef.current); return () => sceneStore.setFrameEl(def.id, null); }, [def.id]);
   useRectRegistration(def.id, 'chapter', articleRef);
   // The frame rides the 3D screen plane in CSS 3D: still DOM, still crisp, still clickable. The
   // quad arrives outside the reactive state (P2-R2), so this writes the transform straight to the
   // node — no React render per scroll frame. No scene, no quad, no matrix: the frame stays in
   // normal flow, and so does the frontal pose, where the projection is the layout rect itself.
-  useEffect(() => sceneStore.subscribeQuad(def.id, (quad) => {
-    const el = frameRef.current;
-    if (!el) return;
-    const rect = sceneStore.get().rects[def.id]?.frame;
-    const flat = !rect || !quad || isNearIdentity(rect, quad);
-    el.style.transform = flat ? '' : quadToMatrix3d(rect!, quad!);
-    // M2: `data-flat` gates the StepBar fade in flows.css — the pill only earns its keep once the
-    // device has actually handed off to the flat DOM pose; while it's still rotating in/out, the
-    // 3D shell is doing the talking and the pill would just clutter that.
-    el.parentElement?.toggleAttribute('data-flat', flat);
-  }), [def.id]);
+  useEffect(() => {
+    // The canvas is viewport-fixed, the frame scrolls with the page: between two renders the two
+    // drift apart by exactly the scroll delta. Re-applying the matrix from the frame's CURRENT
+    // layout box onto the last published corners keeps them together in the meantime — which is
+    // what an engine that scrolls asynchronously (Safari) needs, since its scroll event and our
+    // render can land a frame apart.
+    let last: QuadFrame = null;
+    const apply = () => {
+      const el = frameRef.current;
+      if (!el) return;
+      const rect = last && layoutRect(el);
+      const flat = !last || !rect || isNearIdentity(rect, last.quad);
+      el.style.transform = flat ? '' : quadToMatrix3d(rect!, last!.quad);
+      // Where the scene says the 3D screen is, in page pixels: the browser paints this element by
+      // applying the matrix above to its current layout box, so these corners and the painted box
+      // agree only while the two were measured together — the handoff's correctness condition,
+      // and what the end-to-end scroll test asserts.
+      if (last) el.dataset.quad = last.quad.map((p) => `${Math.round(p.x)},${Math.round(p.y)}`).join(' ');
+      else delete el.dataset.quad;
+      el.parentElement?.toggleAttribute('data-flat', flat);
+    };
+    const off = sceneStore.subscribeQuad(def.id, (f) => { last = f; apply(); });
+    window.addEventListener('scroll', apply, { passive: true });
+    return () => { off(); window.removeEventListener('scroll', apply); };
+  }, [def.id]);
   // M2: belt-and-suspenders for the fallback path — the CSS fade rule already requires
   // `[data-scene]` (only present while sceneOpen), so this never matters in practice, but keeps
   // the DOM attribute honest if that selector ever changes.

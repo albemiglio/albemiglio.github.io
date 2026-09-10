@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, Matrix4, Quaternion, Vector3, type Group, type Mesh, type Object3D } from 'three';
 import { useModel } from '../loaders';
-import { chapterPhaseFromRect } from '../math';
+import { chapterPhaseFromRect, layoutRect } from '../math';
 import { isNarrow, sceneStore, type Quad } from '../store';
 import { rectCenterOnZPlane, screenCorners } from './screenAnchor';
 
@@ -52,7 +52,8 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
     let last = '';
     const check = () => {
       const s = sceneStore.get();
-      const r = s.rects[id]?.frame;
+      const el = sceneStore.getFrameEl(id);
+      const r = el ? layoutRect(el) : undefined;
       const c = s.rects[id]?.chapter;
       const sig = `${r?.x},${r?.y},${r?.w},${r?.h},${c?.y},${c?.h},${s.viewport.w},${s.viewport.h},${Math.round(s.progress * 1000)}`;
       if (sig === last) return;
@@ -78,7 +79,11 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
 
   useFrame(() => {
     const s = sceneStore.get();
-    const rect = s.rects[id]?.frame;
+    // Measured here, in the frame that projects it: a rect cached on scroll events lags the page
+    // on engines that scroll asynchronously (Safari), and the matrix built from it drops the DOM
+    // UI off the 3D screen mid-scroll.
+    const el = sceneStore.getFrameEl(id);
+    const rect = el ? layoutRect(el) : undefined;
     const p = pivot.current;
     if (!p || !rect || !s.viewport.w) { if (p) p.visible = false; sceneStore.setQuad(id, null); return; }
 
@@ -136,7 +141,7 @@ export function Device({ id, kind }: { id: string; kind: 'laptop' | 'phone' }) {
       p.scale.setScalar(rect.w / probeW);
       p.updateMatrixWorld(true);
     }
-    sceneStore.setQuad(id, screenCorners(fit.box, screen.matrixWorld, camera, s.viewport, quad));
+    sceneStore.setQuad(id, { quad: screenCorners(fit.box, screen.matrixWorld, camera, s.viewport, quad), rect });
     // P2-R2: only while the yaw is still converging — an unconditional invalidate() here would
     // spin the render loop forever.
     if (Math.abs(yaw.current - targetYaw) > 1e-3) invalidate();

@@ -11,7 +11,7 @@ function Boom(): null {
 // a chapter might still be holding a stale transform for.
 test('falls back to the DOM path and clears quads when the scene throws', () => {
   sceneStore.set({ sceneOpen: true });
-  sceneStore.setQuad('ipcam', [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }]);
+  sceneStore.setQuad('ipcam', { quad: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }], rect: { x: 0, y: 0, w: 1, h: 1 } });
   const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
   expect(() => render(<SceneBoundary><Boom /></SceneBoundary>)).not.toThrow();

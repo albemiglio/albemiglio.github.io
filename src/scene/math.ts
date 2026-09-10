@@ -138,3 +138,17 @@ export function explodeAmount(phase: number): number {
   if (phase < 0.3) return 1;
   return 1 - ease((phase - 0.3) / 0.15);
 }
+
+// The frame element carries the handoff matrix, so its own getBoundingClientRect is the PAINTED
+// box, not the layout box the matrix must map from. offsetLeft/Top/Width/Height are layout
+// values that transforms never touch; measured against the (untransformed, possibly sticky)
+// offset parent's live rect they give the layout box at this exact instant. Reading it inside
+// the render frame — instead of caching it on scroll events — is what keeps the DOM frame glued
+// to the 3D screen on engines that scroll asynchronously (Safari).
+export function layoutRect(el: HTMLElement): Rect {
+  const parent = (el.offsetParent as HTMLElement | null) ?? el.parentElement;
+  const p = parent ? parent.getBoundingClientRect() : { x: 0, y: 0 };
+  const bl = parent ? parent.clientLeft : 0;
+  const bt = parent ? parent.clientTop : 0;
+  return { x: p.x + bl + el.offsetLeft, y: p.y + bt + el.offsetTop, w: el.offsetWidth, h: el.offsetHeight };
+}
