@@ -28,8 +28,13 @@ FACE = (0.0, 0.03, 0.60)
 TILT = (deg(20), 0.0, 0.0)
 
 shell = pbr("shell", (0.90, 0.90, 0.885), roughness=0.45)
-black = pbr("black", (0.045, 0.045, 0.05), roughness=0.7)
-dark = pbr("dark", (0.025, 0.025, 0.03), roughness=0.25)
+# Lifted off the spec sketch's near-black: through real glass the cradle is the
+# single biggest surface visible inside the dome, and at 0.045 it swallowed the
+# light the opened-up glass was letting in, reading as a void instead of a
+# moulded bowl. A dark warm grey still reads as the matte housing plastic but
+# takes a highlight.
+black = pbr("black", (0.075, 0.075, 0.08), roughness=0.7)
+dark = pbr("dark", (0.05, 0.05, 0.06), roughness=0.25)
 metal = pbr("metal", (0.84, 0.85, 0.88), roughness=0.28, metallic=1.0)
 # Smoke tint, not the near-black of the spec sketch: the Principled tint is applied
 # at every surface crossing, so a 0.05 base through a solidified shell renders as
@@ -102,6 +107,18 @@ status_led.rotation_euler = (deg(90), 0, 0)
 # Dome: an open hemisphere given real thickness by Solidify. Bisecting without a
 # fill keeps the rim clean; the earlier filled ngon shaded badly along the edge.
 dome = hemisphere("dome", radius=0.85, z=0.40, segs=s, material=glass, fill=False)
+# hemisphere() shades by dihedral angle, which is right for a moulded part with
+# real CAD edges but wrong for the one part that is a UV sphere with none: the
+# pole is a fan of long, thin triangles whose angle to each other can exceed
+# the 30-degree threshold, so a handful of them come back flat-shaded. Under
+# reflection that is invisible; under refraction, where the *geometric* normal
+# bends the ray, it is a starburst of dark slivers sitting on the one part of
+# the dome every render frames dead centre. A plain smooth shade has no
+# threshold to trip and leaves the rest of the shell exactly as it was.
+bpy.ops.object.select_all(action="DESELECT")
+bpy.context.view_layer.objects.active = dome
+dome.select_set(True)
+bpy.ops.object.shade_smooth()
 solidify(dome, 0.03)
 
 root = group("ipcam", [base, screws, body, ring, board, cradle, lens, leds, status_led, dome])
