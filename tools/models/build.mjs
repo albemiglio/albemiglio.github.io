@@ -29,6 +29,7 @@ function buildHero() {
   const combined = resolve(cache, 'hero.glb');
   blender('hero.py', ['--out', combined]);
   blender('render_fallback.py', ['--glb', combined, '--color', '#E8E0D0', '--out', resolve(ROOT, 'public/fallback/hero.png'), '--size', '900']);
+  execFileSync('python3', [resolve(import.meta.dirname, 'clean_alpha.py'), resolve(ROOT, 'public/fallback/hero.png')], { stdio: 'inherit' });
   console.log('hero: fallback rendered');
 }
 
@@ -60,6 +61,7 @@ for (const o of objects) {
   // build time and ship a PNG nothing loads.
   if (o.fallback) {
     blender('render_fallback.py', ['--glb', high, '--color', o.color, '--out', resolve(ROOT, `public/fallback/${o.name}.png`)]);
+    execFileSync('python3', [resolve(import.meta.dirname, 'clean_alpha.py'), resolve(ROOT, `public/fallback/${o.name}.png`)], { stdio: 'inherit' });
   }
   total += statSync(high).size + statSync(low).size;
   console.log(`${o.name}: ${(statSync(high).size / 1024).toFixed(1)} KB high, ${(statSync(low).size / 1024).toFixed(1)} KB low`);
