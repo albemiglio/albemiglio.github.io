@@ -55,14 +55,23 @@ export function afterLoad(fn: () => void): () => void {
   return () => { window.removeEventListener('load', onLoad); cancelPaint(); };
 }
 
+// Below this width the page has no sticky stage and the chapters show the Cycles stills of the
+// objects (work.css): the realtime scene — low-poly tier, no shadows, no antialias on a 3x
+// screen — would only look cheaper than those renders, so it never mounts on phones.
+export const NARROW_QUERY = '(max-width: 899px)';
+
 export function useSceneGate(): boolean {
   const { reduced } = useMotionPrefs();
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (reduced) { setOpen(false); return; }
+    const narrow = window.matchMedia(NARROW_QUERY);
     let cancelIdle = () => {};
-    const cancelLoad = afterLoad(() => { cancelIdle = onIdle(() => setOpen(hasWebGL())); });
-    return () => { cancelLoad(); cancelIdle(); };
+    const cancelLoad = afterLoad(() => { cancelIdle = onIdle(() => setOpen(!narrow.matches && hasWebGL())); });
+    // A phone rotating past the breakpoint, or a desktop window resized: follow the query.
+    const onChange = (e: MediaQueryListEvent) => setOpen(!e.matches && hasWebGL());
+    narrow.addEventListener('change', onChange);
+    return () => { cancelLoad(); cancelIdle(); narrow.removeEventListener('change', onChange); };
   }, [reduced]);
   return open;
 }

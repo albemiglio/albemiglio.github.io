@@ -14,10 +14,9 @@
   .chapter { min-height: auto; padding: 2.5rem 0; }
   .chapter__grid { grid-template-columns: 1fr; min-height: auto; padding-top: 0; gap: 1.25rem; }
   .chapter__text, .chapter__stage { position: static; }
-  /* Phones: the object is a small 3D badge beside the kicker and title, not a full-width box. */
-  .chapter__text { display: grid; grid-template-columns: minmax(0, 1fr) 96px; column-gap: 12px; align-items: start; }
-  .chapter__text > * { grid-column: 1; }
-  .chapter__object { grid-column: 2; grid-row: 1 / span 2; margin: 0; width: 96px; max-width: 96px; }
+  /* Phones show the Cycles still of the object as a product shot between the text and the device
+     (the realtime scene never mounts below 900 px — see useSceneGate). */
+  .chapter__object { margin: 1.5rem auto 0; max-width: 220px; }
   /* The 3D laptop body is wider than its screen: keep the frame narrow enough for the body to fit. */
   .device--laptop { max-width: calc(100% - 2.5rem); }
 }

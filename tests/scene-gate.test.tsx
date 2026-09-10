@@ -53,3 +53,24 @@ test('isSoftwareRenderer spots SwiftShader and llvmpipe, not a GPU', () => {
   expect(isSoftwareRenderer(fakeGL('ANGLE (Apple, ANGLE Metal Renderer: Apple M2)'))).toBe(false);
   expect(isSoftwareRenderer(null)).toBe(false);
 });
+
+test('stays closed on narrow viewports even with WebGL, and follows the media query', () => {
+  const origCtx = HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = (() => ({})) as any;
+  const origMM = window.matchMedia;
+  const listeners: Array<(e: { matches: boolean }) => void> = [];
+  window.matchMedia = ((query: string) => ({
+    matches: query.includes('max-width'), media: query, onchange: null,
+    addEventListener: (_: string, fn: (e: { matches: boolean }) => void) => { listeners.push(fn); },
+    removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent() { return false; },
+  })) as any;
+  const { result } = renderHook(() => useSceneGate(), { wrapper: wrap(false) });
+  act(() => { (globalThis as any).__idle?.(); });
+  expect(result.current).toBe(false);
+  act(() => { listeners.forEach((fn) => fn({ matches: false })); });
+  expect(result.current).toBe(true);
+  act(() => { listeners.forEach((fn) => fn({ matches: true })); });
+  expect(result.current).toBe(false);
+  window.matchMedia = origMM;
+  HTMLCanvasElement.prototype.getContext = origCtx;
+});
