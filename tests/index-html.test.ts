@@ -30,7 +30,7 @@ test('static hero snapshot has every CTA label and href', () => {
 // replaces this markup with <Hero/> wholesale on mount (P3-R13/F5), so the two need to match
 // attribute-for-attribute, not just contain the same words. This renders the real component and
 // diffs it against the static snapshot's own <img>/<source>/CTA-anchor attributes.
-const PICTURE_ATTRS = ['src', 'srcset', 'type', 'loading', 'fetchpriority', 'decoding', 'width', 'height'];
+const PICTURE_ATTRS = ['src', 'loading', 'fetchpriority', 'decoding', 'width', 'height', 'style'];
 function attrMap(el: Element): Record<string, string | null> {
   const map: Record<string, string | null> = {};
   for (const name of PICTURE_ATTRS) map[name] = el.getAttribute(name);
@@ -42,21 +42,22 @@ function renderHero() {
   return render(createElement(MotionProvider, { forceReduced: true, children: createElement(Hero) }));
 }
 
-test('static hero snapshot matches the rendered <img>/<source> attributes exactly', () => {
+test('static hero snapshot matches the rendered <img> attributes exactly', () => {
   const { container } = renderHero();
   const renderedImg = container.querySelector('img');
-  const renderedSource = container.querySelector('source');
   expect(renderedImg).toBeTruthy();
-  expect(renderedSource).toBeTruthy();
 
   const staticDoc = new DOMParser().parseFromString(html, 'text/html');
   const staticImg = staticDoc.querySelector('#root img');
-  const staticSource = staticDoc.querySelector('#root source');
   expect(staticImg).toBeTruthy();
-  expect(staticSource).toBeTruthy();
 
   expect(attrMap(renderedImg!)).toEqual(attrMap(staticImg!));
-  expect(attrMap(renderedSource!)).toEqual(attrMap(staticSource!));
+});
+
+test('the preloaded LCP image is the one the static hero actually shows', () => {
+  const staticDoc = new DOMParser().parseFromString(html, 'text/html');
+  const preload = staticDoc.querySelector('link[rel="preload"][as="image"]');
+  expect(preload?.getAttribute('href')).toBe(staticDoc.querySelector('#root img')?.getAttribute('src'));
 });
 
 test('static hero snapshot matches the rendered CTA anchors exactly', () => {

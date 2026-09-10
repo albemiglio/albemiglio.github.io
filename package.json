@@ -14,7 +14,6 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "models": "node tools/models/build.mjs",
-    "models:hero": "node tools/models/build.mjs --hero-only",
     "e2e": "playwright test -c e2e/playwright.config.ts",
     "budget": "node tools/budget.mjs",
     "lighthouse": "lhci autorun",

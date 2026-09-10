@@ -1,19 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { ChapterObjects } from './ChapterObjects';
-import {  } from './math';
+import { Suspense } from 'react';
+import { HeroScreens, type HeroTilt } from './HeroScreens';
 import { heroExitOf, sceneStore } from './store';
-import type { HeroTilt } from './ObjectAnchor';
 
 const YAW = 0.15; // rotation.y per unit of normalised pointer x
 const PITCH = 0.1; // rotation.x per unit of normalised pointer y (inverted: up tilts back)
 const CONVERGE = 5; // k = 1 - exp(-dt * CONVERGE)
 
-// Wraps the four chapter objects: while the visitor hasn't started exiting the hero (heroExit <
-// 1, P3-R8), the sculpture tilts towards the pointer with inertia; ObjectAnchor applies the tilt
-// to each object's slot offset and rotation. The listener comes off entirely once heroExit
-// reaches 1, and the tilt itself relaxes back to 0 rather than snapping.
-export function HeroSculpture({ shadows }: { shadows: boolean }) {
+// Owns the hero's pointer tilt: while the visitor hasn't started exiting the hero (heroExit < 1,
+// P3-R8), the ring of screens leans towards the pointer with inertia. The listener comes off
+// entirely once heroExit reaches 1, and the tilt relaxes back to 0 rather than snapping.
+export function HeroSculpture() {
   const { invalidate } = useThree();
   const heroTilt = useRef<HeroTilt>({ x: 0, y: 0 });
   const pointer = useRef({ x: 0, y: 0 });
@@ -53,8 +51,8 @@ export function HeroSculpture({ shadows }: { shadows: boolean }) {
   });
 
   return (
-    <group>
-      <ChapterObjects shadows={shadows} heroTilt={heroTilt} />
-    </group>
+    <Suspense fallback={null}>
+      <HeroScreens tilt={heroTilt} />
+    </Suspense>
   );
 }

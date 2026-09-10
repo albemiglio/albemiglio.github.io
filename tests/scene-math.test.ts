@@ -1,4 +1,4 @@
-import { chapterIndex, chapterPhaseFromRect, explodeAmount, flightTarget, heroExitFromRect, heroExplode, isNearIdentity, lerpKeyframes, quadToMatrix3d, rectToWorld } from '../src/scene/math';
+import { chapterIndex, chapterPhaseFromRect, explodeAmount, heroExitFromRect, heroExplode, isNearIdentity, lerpKeyframes, quadToMatrix3d, rectToWorld } from '../src/scene/math';
 
 const rect = { x: 100, y: 50, w: 400, h: 250 };
 const corners = (r: typeof rect) => [
@@ -100,9 +100,3 @@ test('heroExplode: 0 at the top and end of the fly-out, 1 at the midpoint (P3-R2
   expect(heroExplode(0.5)).toBeCloseTo(1, 10);
 });
 
-test('flightTarget: clamps y mid-flight, leaves near rects and the t=1 case alone (P3-R12)', () => {
-  const rect = { x: 10, y: 5000, w: 100, h: 200 };
-  expect(flightTarget(rect, 900, 0.5)).toEqual({ x: 10, y: 1260, w: 100, h: 200 });
-  expect(flightTarget(rect, 900, 1)).toEqual({ x: 10, y: 5000, w: 100, h: 200 });
-  expect(flightTarget({ ...rect, y: 300 }, 900, 0.5)).toEqual({ x: 10, y: 300, w: 100, h: 200 });
-});

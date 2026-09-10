@@ -5,14 +5,16 @@ import { Button } from '../ui/Button';
 import { useMotionPrefs } from '../MotionProvider';
 import { useRectRegistration } from '../scene/useRectRegistration';
 import { isNarrow, useSceneSelector } from '../scene/store';
+import { HERO_SCREENS, cropStyle } from '../heroScreens';
 
 // Fades out over `dur.slow` once the scene takes over, then unmounts — mirrors the chapters'
 // `!sceneOpen` fallback (Chapter.tsx), but this one needs to stay on screen through its own fade
 // instead of disappearing the instant the scene opens, since the sculpture blends in over the
 // same box rather than snapping in.
 function HeroFallback() {
-  // On phones the sculpture stays a picture: the 3D objects live in the chapters as badges and
-  // the hero image is the crisp 900 px render (see isNarrow).
+  // On phones this is the hero: no 3D there (see isNarrow), so the still has to carry the same
+  // message on its own — one real screen of one real product, cropped to the part that can be
+  // read at this size. Its numbers come from the same list the turning panels are built from.
   const takeover = useSceneSelector((s) => s.sceneOpen && !isNarrow(s));
   const { dur } = useMotionPrefs();
   const [mounted, setMounted] = useState(!takeover);
@@ -22,19 +24,20 @@ function HeroFallback() {
     return () => clearTimeout(t);
   }, [takeover, dur.slow]);
   if (!mounted) return null;
+  const [screen] = HERO_SCREENS;
   return (
-    <motion.picture animate={{ opacity: takeover ? 0 : 1 }} transition={{ duration: dur.slow }}>
-      <source srcSet="/fallback/hero.webp" type="image/webp" />
+    <motion.div className="hero__still" animate={{ opacity: takeover ? 0 : 1 }} transition={{ duration: dur.slow }}>
       <img
-        src="/fallback/hero.png"
+        src={screen.src}
         alt=""
         loading="eager"
         fetchPriority="high"
         decoding="async"
-        width={900}
-        height={900}
+        width={screen.px[0]}
+        height={screen.px[1]}
+        style={cropStyle(screen)}
       />
-    </motion.picture>
+    </motion.div>
   );
 }
 

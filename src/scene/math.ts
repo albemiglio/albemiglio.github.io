@@ -116,12 +116,6 @@ export function heroExitFromRect(heroTop: number | undefined, vh: number): numbe
 // scroll — the object appears to vanish rather than fly. Clamp the target's y instead; at t >= 1
 // (today's behaviour) both endpoints are already off-screen, so the switch back to the real rect
 // is invisible. Mutates and returns `out` (default a fresh rect, for tests) so callers on a hot
-// path can pass a reused scratch rect instead of allocating one per call.
-export function flightTarget(rect: Rect, vh: number, t: number, out: Rect = { x: 0, y: 0, w: 0, h: 0 }): Rect {
-  out.x = rect.x; out.w = rect.w; out.h = rect.h;
-  out.y = t < 1 ? Math.min(rect.y, vh * 1.4) : rect.y;
-  return out;
-}
 
 // P3-R20/F12b: sin(π·t) so the fly-out explosion rises from 0 as the hero starts to exit, peaks
 // at heroExit's midpoint (t=0.5), and eases back to 0 once the sculpture has fully handed off to
