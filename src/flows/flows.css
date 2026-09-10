@@ -11,11 +11,13 @@
 .device__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
 .device__notch { width: 90px; height: 22px; margin: 8px auto 0; border-radius: 12px; background: var(--bg); }
 .device__screen { position: absolute; inset: 0; }
-.device--bare .device__screen { top: 0; }
 /* The capture fills the frame and is scaled/panned to the step's region by ShotScene. */
 .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .device--laptop .device__screen { top: 35px; }
 .device--phone .device__screen { top: 38px; }
+/* A bare frame has no bar or notch to clear, so the capture starts at the top edge. Declared
+   after the two device rules because it has the same specificity as they do. */
+.device--bare .device__screen { top: 0; }
 
 .stepbar { display: flex; gap: 6px; margin-top: 14px; }
 /* F3a: over the 3D deck the bar needs a solid backing to stay readable; in normal flow (fallback

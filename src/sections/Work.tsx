@@ -4,9 +4,9 @@ import { useActiveChapter } from '../flows/useActiveChapter';
 import { ipcamSteps, type IpcamState } from '../flows/ipcam/steps';
 import { asdSteps, type AsdState } from '../flows/asd/steps';
 import { pastisShots } from '../flows/pastis/shots';
+import { medShots } from '../flows/med/shots';
 import type { Shot } from '../flows/ShotScene';
 import { CHAPTERS, type ChapterMeta } from '../chapters';
-import { medSteps, type MedState } from '../flows/med/steps';
 import { useSceneProgress } from '../scene/useSceneProgress';
 import { sceneStore } from '../scene/store';
 import { afterLoad, onIdle } from '../scene/useSceneGate';
@@ -22,7 +22,6 @@ const deviceOf = (id: ChapterMeta['id']) => CHAPTERS.find((c) => c.id === id)!.d
 // the initial JS path, same reasoning as SceneMount's SceneCanvas split (P3-R14/F4).
 const IpcamScene = lazy(() => import('../flows/ipcam/Scene').then((m) => ({ default: m.IpcamScene })));
 const AsdScene = lazy(() => import('../flows/asd/Scene').then((m) => ({ default: m.AsdScene })));
-const MedScene = lazy(() => import('../flows/med/Scene').then((m) => ({ default: m.MedScene })));
 
 // Idle-time prefetch, same after-load-then-idle timing as F1's useSceneGate: once the page has
 // painted and gone idle, warm the 'flows' chunk so the first chapter scrolled to doesn't pay for
@@ -33,7 +32,6 @@ function prefetchScenes(): () => void {
     cancelIdle = onIdle(() => {
       import('../flows/ipcam/Scene');
       import('../flows/asd/Scene');
-      import('../flows/med/Scene');
     });
   });
   return () => { cancelLoad(); cancelIdle(); };
@@ -65,10 +63,10 @@ const pastis: ChapterDef<Shot> = {
   fact: 'In production at pastis.albemiglio.it', color: 'var(--c-pastis)', device: deviceOf('pastis'), steps: pastisShots, shots: true,
 };
 
-const med: ChapterDef<MedState> = {
-  id: 'med', object: 'capsule', title: 'Timed practice for the admission test', audience: 'medical school candidates',
-  blurb: 'A quiz platform for the Italian medical school entrance exam: timed questions, instant review with explanations, and a running score.',
-  fact: 'Live at med.albemiglio.it', color: 'var(--c-med)', device: deviceOf('med'), steps: medSteps, Scene: MedScene,
+const med: ChapterDef<Shot> = {
+  id: 'med', object: 'capsule', title: 'The exam, with the clock running', audience: 'medical school candidates',
+  blurb: 'Simulations built like the real admission test, corrected the moment you answer, with the score broken down by subject.',
+  fact: 'Live at med.albemiglio.it', color: 'var(--c-med)', device: deviceOf('med'), steps: medShots, shots: true,
 };
 
 export const chapters: AnyChapterDef[] = [ipcam, asd, pastis, med];
