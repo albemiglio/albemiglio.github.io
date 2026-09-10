@@ -1,5 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { Lights } from './Lights';
+import { StudioEnvironment } from './StudioEnvironment';
 import { CameraRig, CAMERA_FOV, CAMERA_DIST } from './CameraRig';
 import { HeroSculpture } from './HeroSculpture';
 import { ScrollSync } from './ScrollSync';
@@ -27,6 +28,7 @@ export default function SceneCanvas() {
         )}
       >
         <ScrollSync />
+        <StudioEnvironment />
         <Lights shadows={tier.shadows} />
         <CameraRig />
         <HeroSculpture shadows={tier.shadows} />

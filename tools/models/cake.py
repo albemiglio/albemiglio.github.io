@@ -30,12 +30,18 @@ bead_count = 10 if low else 16
 berry_count = 2 if low else 4      # per cordon, on tiers 1 and 2
 
 COAT = 0.02        # how far the frosting stands proud of the sponge
-SKIRT = 0.08       # bare sponge left at the foot of each tier
+SKIRT = 0.11       # bare sponge left at the foot of each tier
 BEAD = 0.06
 
 metal = pbr("metal", (0.82, 0.83, 0.86), roughness=0.35, metallic=1.0)
-sponge = pbr("sponge", (0.93, 0.82, 0.60), roughness=0.8)
-frosting = pbr("frosting", (0.95, 0.79, 0.85), roughness=0.55)
+# A vanilla sponge and a barely-pink icing rendered close enough in hue and
+# value that AgX's contrast crushed the difference to nothing, and the whole
+# cake read as one lump of white plastic with no seam between the tiers. The
+# sponge is pushed to an honest, saturated vanilla and the icing deepened off
+# white so a warm band shows at the skirt of every tier and the chapter pink
+# actually registers on the piping instead of averaging out to grey.
+sponge = pbr("sponge", (0.90, 0.63, 0.31), roughness=0.8)
+frosting = pbr("frosting", (0.96, 0.53, 0.66), roughness=0.55)
 cherry = pbr("cherry", (0.72, 0.06, 0.10), roughness=0.12)
 stem = pbr("stem", (0.25, 0.45, 0.16), roughness=0.5)
 berry = pbr("berry", (0.35, 0.05, 0.10), roughness=0.3)

@@ -6,8 +6,13 @@ origin is then moved to the card centre so the site's exploded view can push eac
 node straight out along the card normal without unpicking a parent transform.
 `yup_plane` keeps that normal on local Z in the exported file.
 
-The finished stack is stood on its lower edge and leaned 10 degrees back, which
-puts the printed face square to a camera shooting from 25 degrees above.
+The finished stack rests on its lower edge, laid back at a slight angle rather
+than stood nearly upright: propped on its thin edge the card only ever touches
+the surface along a line, which casts no shadow anyone can see and reads as
+floating no matter how it is lit. Laid back it rests on a real footprint, the
+occlusion under it is strong enough to show up against a near-black page, and
+the printed face still opens up nicely to a camera shooting from 24 degrees
+above.
 """
 import os
 import sys
@@ -27,7 +32,7 @@ corner = 4 if low else 10
 W, H, T = 1.6, 1.0, 0.03
 FRONT = T / 2          # z of the printed face
 BACK = -T / 2
-LEAN = deg(80)         # stood on the lower edge, 10 degrees off vertical
+LEAN = deg(35)         # laid back 55 degrees off vertical, resting on a real footprint
 
 plastic = pbr("plastic", (0.92, 0.96, 0.93), roughness=0.4)
 black = pbr("black", (0.05, 0.05, 0.055), roughness=0.55)

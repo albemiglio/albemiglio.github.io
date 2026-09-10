@@ -30,7 +30,9 @@
   /* The laptop body is wider than its screen, so the frame has to leave room for it. A capture
      of a real product carries no 3D body, so it can run the full width. */
   .device--laptop { max-width: calc(100% - 2.5rem); }
-  /* A landscape interface cropped to a phone-friendly region wants a taller box than the 16:10
-     of the screen it came from, or the crop letterboxes inside the card. */
-  .device--laptop.device--bare { max-width: none; border-radius: 16px; aspect-ratio: 4 / 3; }
+  /* The box keeps the capture's own aspect. A taller one looks like it frames more of the
+     interface, but `object-fit: cover` then crops the sides before the step's focus transform
+     pans across what is left, and the two crops compound: labels and buttons run off both edges.
+     At the capture's aspect the fit is exact, and the focus rect alone decides what is shown. */
+  .device--laptop.device--bare { max-width: none; border-radius: 16px; }
 }

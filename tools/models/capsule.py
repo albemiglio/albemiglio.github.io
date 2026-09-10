@@ -157,4 +157,12 @@ print(f"capsule: length {2 * (TUBE + R):.2f}, clear bore radius {R - WALL_CLEAR:
       f"largest bead {max(b.dimensions.x for b in beads) / 2:.2f}")
 
 root = group("capsule", [shell_a, shell_b, seam, *beads, label])
+# The capsule's own length runs along X; the look-dev camera shoots from a
+# fixed 32-degree azimuth (shared with every other object, for one family
+# light), which put an unrotated capsule on a steep diagonal — filling the
+# square frame corner to corner instead of reading as an object resting on a
+# surface. Turning the whole assembly by the same 32 degrees about its own
+# resting axis (Z, the surface normal) cancels that out and lays the length
+# across the frame instead, without changing the tangent-on-the-ground pose.
+root.rotation_euler = (0, 0, deg(32))
 export(root, a.out)
