@@ -23,5 +23,8 @@ export default defineConfig({
         },
       },
     },
+    // Safari's engine: every spec runs here too, so a WebKit-only regression (scroll handoff,
+    // sticky stage, motion animations) fails the deploy instead of surfacing on a Mac.
+    { name: 'webkit', use: { browserName: 'webkit' } },
   ],
 });
