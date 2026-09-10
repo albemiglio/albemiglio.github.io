@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const chapters = [
   { id: 'ipcam', shots: [0, 2, 4] },
-  { id: 'asd', shots: [0, 2, 4] },
+  { id: 'asd', shots: [0, 1, 3] },
   { id: 'pastis', shots: [1, 2, 4] },
   { id: 'med', shots: [0, 2, 3] },
 ];

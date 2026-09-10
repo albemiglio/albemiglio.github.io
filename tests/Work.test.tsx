@@ -16,7 +16,7 @@ test('renders the ipcam chapter with text, device and step bar', () => {
 
 test('renders the asd chapter alongside ipcam', () => {
   render(<MotionProvider forceReduced><Work /></MotionProvider>);
-  expect(screen.getByRole('heading', { name: /members, fees and receipts in one place/i })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /a club that runs itself/i })).toBeInTheDocument();
   expect(screen.getByRole('figure', { name: /^asd —/i })).toBeInTheDocument();
 });
 

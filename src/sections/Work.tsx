@@ -2,9 +2,9 @@ import { lazy, useEffect, useRef } from 'react';
 import { Chapter, type AnyChapterDef, type ChapterDef } from './Chapter';
 import { useActiveChapter } from '../flows/useActiveChapter';
 import { ipcamSteps, type IpcamState } from '../flows/ipcam/steps';
-import { asdSteps, type AsdState } from '../flows/asd/steps';
 import { pastisShots } from '../flows/pastis/shots';
 import { medShots } from '../flows/med/shots';
+import { asdShots } from '../flows/asd/shots';
 import type { Shot } from '../flows/ShotScene';
 import { CHAPTERS, type ChapterMeta } from '../chapters';
 import { useSceneProgress } from '../scene/useSceneProgress';
@@ -21,7 +21,6 @@ const deviceOf = (id: ChapterMeta['id']) => CHAPTERS.find((c) => c.id === id)!.d
 // chapter scrolls into view — splitting it into the 'flows' chunk (vite.config.ts) keeps it off
 // the initial JS path, same reasoning as SceneMount's SceneCanvas split (P3-R14/F4).
 const IpcamScene = lazy(() => import('../flows/ipcam/Scene').then((m) => ({ default: m.IpcamScene })));
-const AsdScene = lazy(() => import('../flows/asd/Scene').then((m) => ({ default: m.AsdScene })));
 
 // Idle-time prefetch, same after-load-then-idle timing as F1's useSceneGate: once the page has
 // painted and gone idle, warm the 'flows' chunk so the first chapter scrolled to doesn't pay for
@@ -31,7 +30,6 @@ function prefetchScenes(): () => void {
   const cancelLoad = afterLoad(() => {
     cancelIdle = onIdle(() => {
       import('../flows/ipcam/Scene');
-      import('../flows/asd/Scene');
     });
   });
   return () => { cancelLoad(); cancelIdle(); };
@@ -50,10 +48,10 @@ const ipcam: ChapterDef<IpcamState> = {
   Scene: IpcamScene,
 };
 
-const asd: ChapterDef<AsdState> = {
-  id: 'asd', object: 'card', title: 'Members, fees and receipts in one place', audience: 'sports clubs',
-  blurb: 'Multi-tenant management for amateur sports clubs: sign-ups, family links, fee tracking and the receipts the accountant asks for.',
-  fact: '36 organisations live · asd.albemiglio.it', color: 'var(--c-asd)', device: deviceOf('asd'), steps: asdSteps, Scene: AsdScene,
+const asd: ChapterDef<Shot> = {
+  id: 'asd', object: 'card', title: 'A club that runs itself between two trainings', audience: 'sports clubs',
+  blurb: 'Members, medical certificates, sign-ups the families fill in themselves, fees and the receipts the accountant asks for.',
+  fact: '36 organisations live · asd.albemiglio.it', color: 'var(--c-asd)', device: deviceOf('asd'), steps: asdShots, shots: true,
 };
 
 // Real screens of the running product rather than a reconstruction of it (see ShotScene).
