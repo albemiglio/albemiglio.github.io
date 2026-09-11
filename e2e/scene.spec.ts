@@ -65,7 +65,9 @@ test.describe('scene off', () => {
     // the gate had a chance to open one.
     await page.waitForTimeout(4000);
     await expect(page.locator('.scene canvas')).toHaveCount(0);
-    await expect(page.locator('#work-ipcam .chapter__object img')).toHaveAttribute('src', '/fallback/ipcam.png');
-    await expect(page.locator('#work-pastis .chapter__object img')).toHaveAttribute('src', '/fallback/cake.png');
+    // With no scene there is no 3D device to hand the frame to, so the frame has to stand on its
+    // own — and what has to be in it is the product, not a placeholder.
+    await expect(page.locator('#work-ipcam .device .shot')).toHaveAttribute('src', /^\/shots\/ipcam\//);
+    await expect(page.locator('#work-pastis .device .shot')).toHaveAttribute('src', /^\/shots\/pastis\//);
   });
 });

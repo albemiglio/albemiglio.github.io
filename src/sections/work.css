@@ -8,8 +8,6 @@
 .chapter__title { font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.06; letter-spacing: -0.025em; text-wrap: balance; margin: 0 0 1rem; }
 .chapter__blurb { color: var(--muted); max-width: 42ch; margin: 0 0 1rem; }
 .chapter__fact { font-family: var(--font-mono); font-size: 0.85rem; margin: 0; }
-.chapter__object { margin-top: 2rem; aspect-ratio: 1; max-width: 360px; }
-.chapter__object img { width: 100%; height: auto; display: block; }
 .chapter__stage { position: sticky; top: 12vh; }
 
 @media (max-width: 900px) {
@@ -24,9 +22,6 @@
   .chapter__title { order: 2; font-size: 1.6rem; line-height: 1.12; margin: 0 0 1.25rem; }
   .chapter__blurb { order: 4; font-size: 0.95rem; line-height: 1.55; margin: 1.25rem 0 0; max-width: none; }
   .chapter__fact { order: 5; font-size: 0.8rem; color: var(--muted); margin: 0.6rem 0 0; }
-  /* The object is an accent beside the supporting copy, not a second hero competing with the
-     product screen for the fold. */
-  .chapter__object { order: 6; margin: 1.75rem auto 0; max-width: 132px; }
   /* The laptop body is wider than its screen, so the frame has to leave room for it. A capture
      of a real product carries no 3D body, so it can run the full width. */
   .device--laptop { max-width: calc(100% - 2.5rem); }

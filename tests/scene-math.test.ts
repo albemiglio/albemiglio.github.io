@@ -1,4 +1,4 @@
-import { chapterIndex, chapterPhaseFromRect, explodeAmount, heroExitFromRect, heroExplode, isNearIdentity, lerpKeyframes, quadToMatrix3d, rectToWorld } from '../src/scene/math';
+import { chapterIndex, chapterPhaseFromRect, heroExitFromRect, isNearIdentity, lerpKeyframes, quadToMatrix3d, rectToWorld } from '../src/scene/math';
 
 const rect = { x: 100, y: 50, w: 400, h: 250 };
 const corners = (r: typeof rect) => [
@@ -65,13 +65,6 @@ test('lerpKeyframes interpolates and clamps', () => {
   expect(lerpKeyframes(keys, 2)).toEqual([2, 4, 6]);
 });
 
-test('explodeAmount', () => {
-  expect(explodeAmount(0)).toBe(0);
-  expect(explodeAmount(0.25)).toBeGreaterThan(0.9);
-  expect(explodeAmount(0.5)).toBe(0);
-  expect(explodeAmount(1)).toBe(0);
-});
-
 test('chapterPhaseFromRect: 0 below the viewport, 0.5 centred, 1 above', () => {
   const vh = 900;
   expect(chapterPhaseFromRect({ x: 0, y: 900, w: 1, h: 1350 }, vh)).toBe(0);
@@ -92,11 +85,5 @@ test('heroExitFromRect: 0 while the sculpture box sits below 20 % of the viewpor
   expect(heroExitFromRect(-270, 900)).toBe(1);
   expect(heroExitFromRect(undefined, 900)).toBe(1);
   expect(heroExitFromRect(0, 0)).toBe(1);
-});
-
-test('heroExplode: 0 at the top and end of the fly-out, 1 at the midpoint (P3-R20/F12b)', () => {
-  expect(heroExplode(0)).toBe(0);
-  expect(heroExplode(1)).toBeCloseTo(0, 10);
-  expect(heroExplode(0.5)).toBeCloseTo(1, 10);
 });
 

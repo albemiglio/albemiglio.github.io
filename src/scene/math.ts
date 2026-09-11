@@ -117,21 +117,7 @@ export function heroExitFromRect(heroTop: number | undefined, vh: number): numbe
 // (today's behaviour) both endpoints are already off-screen, so the switch back to the real rect
 // is invisible. Mutates and returns `out` (default a fresh rect, for tests) so callers on a hot
 
-// P3-R20/F12b: sin(π·t) so the fly-out explosion rises from 0 as the hero starts to exit, peaks
-// at heroExit's midpoint (t=0.5), and eases back to 0 once the sculpture has fully handed off to
-// the chapter (t=1) — the objects blow apart mid-flight instead of snapping open or shut.
-export function heroExplode(t: number): number {
-  return Math.sin(Math.PI * t);
-}
 
-// Rises 0→1 over phase 0.05–0.25, holds, falls back to 0 by 0.45; 0 elsewhere.
-export function explodeAmount(phase: number): number {
-  const ease = (u: number) => 1 - Math.pow(1 - u, 3);
-  if (phase <= 0.05 || phase >= 0.45) return 0;
-  if (phase < 0.25) return ease((phase - 0.05) / 0.2);
-  if (phase < 0.3) return 1;
-  return 1 - ease((phase - 0.3) / 0.15);
-}
 
 // The frame element carries the handoff matrix, so its own getBoundingClientRect is the PAINTED
 // box, not the layout box the matrix must map from. offsetLeft/Top/Width/Height are layout

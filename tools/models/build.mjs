@@ -6,13 +6,13 @@ const BLENDER = '/Applications/Blender.app/Contents/MacOS/Blender';
 const ROOT = resolve(import.meta.dirname, '../..');
 const BUDGET_BYTES = 2.5 * 1024 * 1024;
 
+// The two devices the scene places on the chapters' frames. There used to be four more — a
+// camera, a card, a cake, a capsule — each rendered to a still as well, for the chapters to show
+// while the scene was closed. Those were ornaments beside captures of the real products, so they
+// went, and the Cycles pass went with them: nothing here is drawn as a picture any more.
 const objects = [
-  { name: 'ipcam', color: '#F0B24A', fallback: true },
-  { name: 'card', color: '#6CCB8A', fallback: true },
-  { name: 'cake', color: '#F3A9B9', fallback: true },
-  { name: 'capsule', color: '#5BC8C4', fallback: true },
-  { name: 'laptop', color: '#E8E0D0', fallback: false },
-  { name: 'phone', color: '#E8E0D0', fallback: false },
+  { name: 'laptop' },
+  { name: 'phone' },
 ];
 
 function blender(script, extra) {
@@ -37,13 +37,6 @@ for (const o of objects) {
   blender(`${o.name}.py`, ['--out', low, '--lod', 'low']);
   optimize(high);
   optimize(low);
-  // Only the objects the site shows as a static image need the Cycles pass; the
-  // devices are always drawn by the 3D scene, so rendering them would just cost
-  // build time and ship a PNG nothing loads.
-  if (o.fallback) {
-    blender('render_fallback.py', ['--glb', high, '--color', o.color, '--out', resolve(ROOT, `public/fallback/${o.name}.png`)]);
-    execFileSync('python3', [resolve(import.meta.dirname, 'clean_alpha.py'), resolve(ROOT, `public/fallback/${o.name}.png`)], { stdio: 'inherit' });
-  }
   total += statSync(high).size + statSync(low).size;
   console.log(`${o.name}: ${(statSync(high).size / 1024).toFixed(1)} KB high, ${(statSync(low).size / 1024).toFixed(1)} KB low`);
 }

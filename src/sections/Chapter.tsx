@@ -9,11 +9,10 @@ import { isNearIdentity, layoutRect, quadToMatrix3d } from '../scene/math';
 import { useRectRegistration } from '../scene/useRectRegistration';
 import { ShotScene, type Shot } from '../flows/ShotScene';
 import { useWide } from '../useWide';
-import type { ChapterMeta } from '../chapters';
 
 export type ChapterDef<S> = {
   id: string; title: string; audience: string; blurb: string; fact: string; color: string;
-  object: ChapterMeta['object']; device: 'laptop' | 'phone'; steps: Step<S>[];
+  device: 'laptop' | 'phone'; steps: Step<S>[];
   /** Either a reconstruction of the interface, or — better — captures of the real product. */
   Scene?: ComponentType<{ state: S }>;
   shots?: boolean;
@@ -26,11 +25,9 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
   const player = useFlowPlayer(def.steps, { active, reduced });
   const wide = useWide();
   const sceneOpen = useSceneSelector((s) => s.sceneOpen);
-  const objectRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const articleRef = useRef<HTMLElement>(null);
   useEffect(() => { sceneStore.set((s) => ({ stepState: { ...s.stepState, [def.id]: player.state } })); }, [def.id, player.state]);
-  useRectRegistration(def.id, 'object', objectRef);
   useEffect(() => { sceneStore.setFrameEl(def.id, frameRef.current); return () => sceneStore.setFrameEl(def.id, null); }, [def.id]);
   useRectRegistration(def.id, 'chapter', articleRef);
   // The frame rides the 3D screen plane in CSS 3D: still DOM, still crisp, still clickable. The
@@ -84,14 +81,6 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
           <h3 className="chapter__title">{def.title}</h3>
           <p className="chapter__blurb">{def.blurb}</p>
           <p className="chapter__fact">{def.fact}</p>
-          <div className="chapter__object" ref={objectRef} aria-hidden="true">
-            {!sceneOpen && (
-              <picture>
-                <source srcSet={`/fallback/${def.object}.webp`} type="image/webp" />
-                <img src={`/fallback/${def.object}.png`} alt="" loading="lazy" />
-              </picture>
-            )}
-          </div>
         </div>
         <div
           className="chapter__stage"

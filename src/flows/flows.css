@@ -41,8 +41,19 @@
    lose the control. `[data-scene]` only exists while the scene is open, which itself requires
    motion not to be reduced (useSceneGate) — under prefers-reduced-motion this rule never
    matches, so the opacity transition never has anything to animate there. */
-.chapter__stage[data-scene]:not([data-flat]) .stepbar { opacity: 0; transition: opacity 200ms var(--ease); }
-.chapter__stage[data-scene]:not([data-flat]):focus-within .stepbar { opacity: 1; }
+/* The blur has to come off, not just the opacity. WebKit composites a backdrop-filtered layer
+   even at zero opacity and even when it is `visibility: hidden`, so in Safari the pill went on
+   blurring the deck beneath it and left its own labels ghosted across the keyboard — while
+   Chromium painted nothing there at all. Both are delayed past the fade so the pill still
+   dissolves rather than snapping flat. */
+.chapter__stage[data-scene]:not([data-flat]) .stepbar {
+  opacity: 0; visibility: hidden; backdrop-filter: none;
+  transition: opacity 200ms var(--ease), visibility 0s linear 200ms, backdrop-filter 0s linear 200ms;
+}
+.chapter__stage[data-scene]:not([data-flat]):focus-within .stepbar {
+  opacity: 1; visibility: visible; backdrop-filter: blur(20px) saturate(140%);
+  transition: opacity 200ms var(--ease), visibility 0s, backdrop-filter 0s;
+}
 .stepbar:focus-visible { outline-offset: 6px; }
 .step { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 6px; text-align: left; min-height: 44px; padding-top: 6px; transition: opacity 120ms ease-out; }
 .step:active { opacity: 0.6; }
