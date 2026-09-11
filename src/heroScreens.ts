@@ -2,15 +2,8 @@
 export type Crop = { x: number; y: number; w: number; h: number };
 export type HeroScreen = { src: string; alt: string; px: [number, number]; crop: Crop };
 
-/**
- * What the hero shows: real screens of the real products, turning slowly.
- *
- * Each entry names a region of its capture rather than the whole thing, because a panel this size
- * can only show about as many source pixels as it has of its own — a whole desktop application
- * scaled into it is a grey thumbnail, and an interface nobody can read is decoration. The regions
- * are chosen to be legible at close to actual size: a few rows of a table, one question and its
- * answers. The crop's own proportions are the panel's, so nothing is squeezed to fit.
- */
+// Each entry names a region of its capture, not the whole thing: a panel can only show about as
+// many source pixels as it has of its own, so a whole application scaled into one is unreadable.
 export const HERO_SCREENS: HeroScreen[] = [
   {
     src: '/shots/pastis/produzione.webp',
@@ -32,17 +25,10 @@ export const HERO_SCREENS: HeroScreen[] = [
   },
 ];
 
-/** The panel's proportions: the crop's, in pixels. */
 export const cropAspect = ({ px, crop }: HeroScreen) => (crop.w * px[0]) / (crop.h * px[1]);
 
-/**
- * The same crop as plain box offsets, for the still in the DOM.
- *
- * The image is blown up until the crop's width fills the box and then pulled into place; both
- * offsets are percentages of the box, so nothing here depends on the box's rendered size. A
- * transform would do the same job, but its percentages and its order of operations are two more
- * things to get wrong in the copy of this markup that lives in index.html.
- */
+// The crop as plain box offsets, for the still in the DOM: blown up until the crop's width fills
+// the box, then pulled into place. Percentages of the box, so nothing depends on its rendered size.
 export function cropStyle(screen: HeroScreen) {
   const { x, y, w, h } = screen.crop;
   return {

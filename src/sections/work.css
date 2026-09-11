@@ -12,11 +12,8 @@
    rather than parked inside a box — the framing every product site that shows a UI well uses.
    `clamp` mirrors .rail's own padding, so it eats exactly the gutter and never more. */
 .chapter__stage { position: sticky; top: 12vh; }
-/* A wide capture runs to the window's edge — the rail's own padding plus half of whatever the
-   viewport has spare once the rail hits its max width. Past that edge the interface is cropped
-   by the window rather than parked in a box, which is what makes it read as running software
-   instead of a picture of some. A phone capture is already narrow: bleeding it would only push
-   it off its column, so the rule asks what the stage is holding. */
+/* A wide capture runs to the window's edge: the rail's padding plus half of whatever the viewport
+   has spare at max width. A phone capture is narrow — bleeding it would push it off its column. */
 .chapter__stage:has(.screen--wide) {
   margin-right: calc(-1 * (clamp(1rem, 4vw, 2.5rem) + max(0px, (100vw - var(--maxw)) / 2)));
 }
@@ -36,9 +33,7 @@
   /* The laptop body is wider than its screen, so the frame has to leave room for it. A capture
      of a real product carries no 3D body, so it can run the full width. */
   .device--laptop { max-width: calc(100% - 2.5rem); }
-  /* The box keeps the capture's own aspect. A taller one looks like it frames more of the
-     interface, but `object-fit: cover` then crops the sides before the step's focus transform
-     pans across what is left, and the two crops compound: labels and buttons run off both edges.
-     At the capture's aspect the fit is exact, and the focus rect alone decides what is shown. */
+  /* Keep the capture's own aspect: at any other, `object-fit: cover` crops the sides before the
+     focus transform pans across what is left, and the two crops compound. */
   .device--laptop.device--bare { max-width: none; border-radius: 16px; }
 }

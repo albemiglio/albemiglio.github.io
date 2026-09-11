@@ -1,6 +1,3 @@
-/* The panel is the product's screen, framed as itself: a hairline border, a deep shadow and the
-   page showing through nothing. Its proportions are the capture's, so the interface is never
-   squeezed, and it runs the full width of its column so the text inside stays legible. */
 .screen {
   position: relative;
   overflow: hidden;
@@ -9,18 +6,14 @@
   border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
   box-shadow: 0 32px 64px -24px rgb(0 0 0 / 0.75), 0 2px 8px rgb(0 0 0 / 0.3);
 }
-/* A hairline of light along the top edge, the way a lit surface catches it. Inset rather than a
-   second border so it does not add to the panel's box. */
+/* Top-edge highlight, inset so it does not add to the panel's box. */
 .screen::after {
   content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
 }
 .screen--wide { aspect-ratio: 1512 / 982; }
-/* Height-capped, not just width-capped: a phone capture is tall enough to run past the fold at
-   any sensible width, and a panel whose own header is above the window is a panel missing the
-   part that says what you are looking at. */
+/* Height-capped too: a phone capture runs past the fold at any sensible width. */
 .screen--tall { aspect-ratio: 1206 / 2622; max-width: 340px; max-height: 62vh; margin: 0 auto; border-radius: 22px; }
-/* The capture fills the panel and is scaled/panned to the step's region by ShotScene. */
 .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .stepbar { display: flex; gap: 6px; margin-top: 16px; }
