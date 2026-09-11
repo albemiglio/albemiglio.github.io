@@ -31,11 +31,7 @@ function emit() {
 export type Quad = [Pt, Pt, Pt, Pt];
 // The rect the quad was measured against travels with it: both come from the same frame, so the
 // matrix can never map from a box the page has already scrolled away from.
-export type QuadFrame = { quad: Quad; rect: Rect } | null;
-const quads = new Map<string, QuadFrame>();
-const quadListeners = new Map<string, Set<(q: QuadFrame) => void>>();
 // The frame elements themselves, so the scene can measure their layout box per frame.
-const frameEls = new Map<string, HTMLElement>();
 
 export const sceneStore = {
   get: () => state,
@@ -53,40 +49,6 @@ export const sceneStore = {
   subscribe(fn: (s: SceneState) => void) {
     listeners.add(fn);
     return () => { listeners.delete(fn); };
-  },
-  setQuad(id: string, frame: QuadFrame) {
-    quads.set(id, frame);
-    quadListeners.get(id)?.forEach((fn) => fn(frame));
-  },
-  getQuad(id: string): QuadFrame {
-    return quads.get(id) ?? null;
-  },
-  setFrameEl(id: string, el: HTMLElement | null) {
-    if (el) frameEls.set(id, el); else frameEls.delete(id);
-  },
-  getFrameEl(id: string): HTMLElement | undefined {
-    return frameEls.get(id);
-  },
-  // C1: called from the scene's error boundary when the WebGL tree unmounts abnormally (a
-  // rejected/malformed GLB) — every chapter that ever registered a quad listener gets nulled out
-  // so Chapter's subscribeQuad callback clears its stale DOM transform instead of freezing it.
-  clearQuads() {
-    for (const id of new Set([...quads.keys(), ...quadListeners.keys()])) {
-      quads.set(id, null);
-      quadListeners.get(id)?.forEach((fn) => fn(null));
-    }
-  },
-  subscribeQuad(id: string, fn: (q: QuadFrame) => void): () => void {
-    let set = quadListeners.get(id);
-    if (!set) {
-      set = new Set();
-      quadListeners.set(id, set);
-    }
-    set.add(fn);
-    return () => {
-      set!.delete(fn);
-      if (set!.size === 0) quadListeners.delete(id);
-    };
   },
 };
 

@@ -19,29 +19,6 @@ test('useSceneSelector re-renders on the selected slice only', () => {
   expect(result.current).toBe(0.42);
 });
 
-test('setQuad notifies only subscribeQuad listeners for that id, not subscribe listeners', () => {
-  let subCalls = 0;
-  const offSub = sceneStore.subscribe(() => { subCalls++; });
-
-  const seenA: import('../src/scene/store').QuadFrame[] = [];
-  const seenB: import('../src/scene/store').QuadFrame[] = [];
-  const offA = sceneStore.subscribeQuad('a', (q) => seenA.push(q));
-  const offB = sceneStore.subscribeQuad('b', (q) => seenB.push(q));
-
-  const quad: import('../src/scene/store').Quad = [
-    { x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 },
-  ];
-  const rect = { x: 0, y: 0, w: 1, h: 1 };
-  sceneStore.setQuad('a', { quad, rect });
-
-  expect(seenA).toEqual([{ quad, rect }]);
-  expect(seenB.length).toBe(0);
-  expect(subCalls).toBe(0);
-
-  offA();
-  offB();
-  offSub();
-});
 
 test('heroExitOf: phones never enter hero mode; wide viewports follow the sculpture box', () => {
   sceneStore.set({ viewport: { w: 390, h: 844 } });

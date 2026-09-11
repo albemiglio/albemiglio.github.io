@@ -8,7 +8,18 @@
 .chapter__title { font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.06; letter-spacing: -0.025em; text-wrap: balance; margin: 0 0 1rem; }
 .chapter__blurb { color: var(--muted); max-width: 42ch; margin: 0 0 1rem; }
 .chapter__fact { font-family: var(--font-mono); font-size: 0.85rem; margin: 0; }
+/* The panel runs past the rail's right edge so the interface reads as cropped by the window
+   rather than parked inside a box — the framing every product site that shows a UI well uses.
+   `clamp` mirrors .rail's own padding, so it eats exactly the gutter and never more. */
 .chapter__stage { position: sticky; top: 12vh; }
+/* A wide capture runs to the window's edge — the rail's own padding plus half of whatever the
+   viewport has spare once the rail hits its max width. Past that edge the interface is cropped
+   by the window rather than parked in a box, which is what makes it read as running software
+   instead of a picture of some. A phone capture is already narrow: bleeding it would only push
+   it off its column, so the rule asks what the stage is holding. */
+.chapter__stage:has(.screen--wide) {
+  margin-right: calc(-1 * (clamp(1rem, 4vw, 2.5rem) + max(0px, (100vw - var(--maxw)) / 2)));
+}
 
 @media (max-width: 900px) {
   .chapter { min-height: auto; padding: 3rem 0 3.5rem; }

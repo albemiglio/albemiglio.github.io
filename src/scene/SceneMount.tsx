@@ -13,7 +13,6 @@ export class SceneBoundary extends Component<{ children: ReactNode }, { failed: 
   static getDerivedStateFromError() { return { failed: true }; }
   componentDidCatch() {
     sceneStore.set({ sceneOpen: false });
-    sceneStore.clearQuads();
   }
   render() { return this.state.failed ? null : this.props.children; }
 }

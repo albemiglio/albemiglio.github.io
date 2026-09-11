@@ -8,9 +8,7 @@ export function useRectRegistration(id: string, kind: 'object' | 'chapter', ref:
     let raf = 0;
     const read = () => {
       raf = 0;
-      // Decorative placement only (the object column, the chapter box): neither element ever
-      // carries a transform, and neither is on the handoff's critical path — the device frame
-      // measures its own box per render frame (see math.layoutRect).
+      // Decorative placement only: neither element ever carries a transform.
       const r = el.getBoundingClientRect();
       sceneStore.setRect(id, kind, { x: r.left, y: r.top, w: r.width, h: r.height });
     };

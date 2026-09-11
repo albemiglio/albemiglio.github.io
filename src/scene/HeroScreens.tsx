@@ -4,7 +4,7 @@ import { useTexture } from '@react-three/drei';
 import { ClampToEdgeWrapping, SRGBColorSpace, Vector3, type Group, type MeshBasicMaterial, type Texture } from 'three';
 import { CAMERA_DIST, CAMERA_FOV } from './CameraRig';
 import { rectToWorld } from './math';
-import { rectCenterOnZPlane } from './devices/screenAnchor';
+import { rectCenterOnZPlane } from './anchor';
 import { heroExitOf, sceneStore } from './store';
 import { HERO_SCREENS, cropAspect } from '../heroScreens';
 

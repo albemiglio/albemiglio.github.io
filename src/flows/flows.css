@@ -1,59 +1,29 @@
-/* transform-origin 0 0: the handoff matrix maps the frame's own layout box onto the projected
-   3D screen plane, and that mapping is written in the element's local corner-anchored space. */
-.device { position: relative; background: var(--surface); border: 1px solid var(--border); overflow: hidden; transform-origin: 0 0; backface-visibility: hidden; }
-/* will-change only while the scene actually drives this element's transform (see Chapter.tsx's
-   frame handoff) — promoting every device to its own compositor layer up front, including the
-   three now sitting off-screen with no scene mounted yet, wastes GPU memory for nothing. */
-.chapter__stage[data-scene] .device { will-change: transform; }
-/* The frames carry captures of real products and are mapped onto the 3D devices' display
-   planes, so their aspect is the devices' own: a 14-inch MacBook Pro's logical display and an
-   iPhone Pro's. Anything else letterboxes the capture or skews the handoff. */
-.device--laptop { border-radius: 14px; aspect-ratio: 1512 / 982; max-width: 520px; margin: 0 auto; }
-.device--phone { border-radius: 32px; aspect-ratio: 1206 / 2622; max-width: 320px; margin: 0 auto; }
-.device__bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
-.device__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
-.device__notch { width: 90px; height: 22px; margin: 8px auto 0; border-radius: 12px; background: var(--bg); }
-.device__screen { position: absolute; inset: 0; }
-/* The capture fills the frame and is scaled/panned to the step's region by ShotScene. */
+/* The panel is the product's screen, framed as itself: a hairline border, a deep shadow and the
+   page showing through nothing. Its proportions are the capture's, so the interface is never
+   squeezed, and it runs the full width of its column so the text inside stays legible. */
+.screen {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #0e1014;
+  border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  box-shadow: 0 32px 64px -24px rgb(0 0 0 / 0.75), 0 2px 8px rgb(0 0 0 / 0.3);
+}
+/* A hairline of light along the top edge, the way a lit surface catches it. Inset rather than a
+   second border so it does not add to the panel's box. */
+.screen::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+}
+.screen--wide { aspect-ratio: 1512 / 982; }
+/* Height-capped, not just width-capped: a phone capture is tall enough to run past the fold at
+   any sensible width, and a panel whose own header is above the window is a panel missing the
+   part that says what you are looking at. */
+.screen--tall { aspect-ratio: 1206 / 2622; max-width: 340px; max-height: 62vh; margin: 0 auto; border-radius: 22px; }
+/* The capture fills the panel and is scaled/panned to the step's region by ShotScene. */
 .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-.device--laptop .device__screen { top: 35px; }
-.device--phone .device__screen { top: 38px; }
-/* A bare frame has no bar or notch to clear, so the capture starts at the top edge. Declared
-   after the two device rules because it has the same specificity as they do. */
-.device--bare .device__screen { top: 0; }
 
-.stepbar { display: flex; gap: 6px; margin-top: 14px; }
-/* F3a: over the 3D deck the bar needs a solid backing to stay readable; in normal flow (fallback
-   image, no scene) the transparent bar is fine as-is. */
-/* Over the 3D deck the bar needs its own ground to stay readable. A translucent layer with the
-   page blurred behind it separates without stamping an opaque slab over the render. */
-.chapter__stage[data-scene] .stepbar {
-  background: color-mix(in srgb, var(--bg) 72%, transparent);
-  backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  border-radius: 14px; padding: 10px 12px;
-}
-@media (prefers-reduced-transparency: reduce) {
-  .chapter__stage[data-scene] .stepbar { background: var(--bg); backdrop-filter: none; }
-}
-/* M2: hide the pill while the 3D handoff hasn't reached the flat DOM pose yet (data-flat unset),
-   so it doesn't clutter the view mid-rotation; keep it up under focus so keyboard users never
-   lose the control. `[data-scene]` only exists while the scene is open, which itself requires
-   motion not to be reduced (useSceneGate) — under prefers-reduced-motion this rule never
-   matches, so the opacity transition never has anything to animate there. */
-/* The blur has to come off, not just the opacity. WebKit composites a backdrop-filtered layer
-   even at zero opacity and even when it is `visibility: hidden`, so in Safari the pill went on
-   blurring the deck beneath it and left its own labels ghosted across the keyboard — while
-   Chromium painted nothing there at all. Both are delayed past the fade so the pill still
-   dissolves rather than snapping flat. */
-.chapter__stage[data-scene]:not([data-flat]) .stepbar {
-  opacity: 0; visibility: hidden; backdrop-filter: none;
-  transition: opacity 200ms var(--ease), visibility 0s linear 200ms, backdrop-filter 0s linear 200ms;
-}
-.chapter__stage[data-scene]:not([data-flat]):focus-within .stepbar {
-  opacity: 1; visibility: visible; backdrop-filter: blur(20px) saturate(140%);
-  transition: opacity 200ms var(--ease), visibility 0s, backdrop-filter 0s;
-}
+.stepbar { display: flex; gap: 6px; margin-top: 16px; }
 .stepbar:focus-visible { outline-offset: 6px; }
 .step { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 6px; text-align: left; min-height: 44px; padding-top: 6px; transition: opacity 120ms ease-out; }
 .step:active { opacity: 0.6; }
