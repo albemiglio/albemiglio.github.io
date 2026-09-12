@@ -13,5 +13,5 @@ export const ipcamShots: Step<Shot>[] = [
   { id: 'live', label: 'Live', ms: 2600, state: { src: '/shots/ipcam/live.webp', alt: 'La diretta di una telecamera', focus: { x: 0.2, y: 0.02, w: 0.55 } } },
   { id: 'ptz', label: 'Pan / tilt', ms: 2400, state: { src: '/shots/ipcam/ptz.webp', alt: "I comandi che muovono l'obiettivo", focus: { x: 0.2, y: 0.58, w: 0.42 } } },
   { id: 'talk', label: 'Talk', ms: 2200, state: { src: '/shots/ipcam/talk.webp', alt: 'Il canale audio a due vie aperto verso la telecamera', focus: { x: 0.24, y: 0.58, w: 0.42 } } },
-  { id: 'recording', label: 'Recordings', ms: 2600, state: { src: '/shots/ipcam/recording.webp', alt: 'Una registrazione riletta sulla linea del tempo', focus: { x: 0.02, y: 0.38, w: 0.55 } } },
+  { id: 'recordings', label: 'Recordings', ms: 2800, state: { src: '/shots/ipcam/recordings.webp', alt: "L'archivio del giorno: quanto è registrato, a che ore, e dov'è il diretta", focus: { x: 0.13, y: 0.01, w: 0.58 } } },
 ];
