@@ -34,11 +34,13 @@ main { position: relative; z-index: 1; }
    about 2.65 box widths, which is what puts the turn's foreshortening where the eye expects it. */
 .hero__ring-stage { position: relative; width: 100%; aspect-ratio: 1.35; perspective: 265cqw; }
 /* Two nested rotations on purpose: the pointer tilt has to answer immediately, and it would
-   inherit the ring's own long turn if they shared a transform. */
+   inherit the ring's own long turn if they shared a transform. No transition here — Hero.tsx
+   eases the two angles itself, one frame at a time (a transition would restart on every
+   pointermove and the lean would move in steps). */
 .hero__tilt {
   position: absolute; inset: 0; transform-style: preserve-3d;
   transform: rotateX(var(--tilt-x, -4.6deg)) rotateY(var(--tilt-y, 0deg));
-  transition: transform 260ms ease-out;
+  will-change: transform;
 }
 .hero__ring { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 1200ms cubic-bezier(0.45, 0, 0.55, 1); }
 /* Centred by `margin: auto` inside the ring, so the transform carries only the turn. */
@@ -57,7 +59,7 @@ main { position: relative; z-index: 1; }
 .hero__still img { position: absolute; height: auto; display: block; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__tilt, .hero__ring, .hero__panel { transition: none; }
+  .hero__ring, .hero__panel { transition: none; }
 }
 @media (max-width: 900px) {
   /* Phones: the hero is as tall as its content, so no dead band before "Work". */

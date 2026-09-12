@@ -17,6 +17,7 @@ const MAX_W = 1.62;
 const YAW = 8.6; // degrees of turn per unit of pointer x
 const PITCH = 5.7; // degrees of lean per unit of pointer y (inverted: up leans back)
 const TILT = -4.6; // the ring is seen slightly from above, so it reads as a ring and not a line
+const CONVERGE = 5; // how fast the lean closes on the pointer: k = 1 - exp(-dt * CONVERGE)
 const NARROW_MAX = 900; // below this the box has no room for a ring — see sections.css
 
 /** Half-widths of the box into container units, so every distance scales with the box. */
@@ -31,19 +32,57 @@ function panelBox(screen: HeroScreen) {
 function HeroRing({ front }: { front: number }) {
   const stage = useRef<HTMLDivElement>(null);
 
-  // The pointer tilt lives in two custom properties: the transition on .hero__tilt does the
-  // easing, so there is no animation loop here at all.
+  // The lean follows the pointer with inertia, closing on it by a constant fraction of the
+  // remaining distance each second. A CSS transition cannot do this: every pointermove would
+  // restart it, so the ring would trail the pointer by a fixed delay and move in steps.
   useEffect(() => {
     const el = stage.current;
-    if (!el) return;
-    const onMove = (e: PointerEvent) => {
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
-      const y = (e.clientY / window.innerHeight) * 2 - 1;
-      el.style.setProperty('--tilt-x', `${TILT - y * PITCH}deg`);
-      el.style.setProperty('--tilt-y', `${x * YAW}deg`);
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const target = { x: TILT, y: 0 };
+    const lean = { x: TILT, y: 0 };
+    let raf = 0;
+    let last = 0;
+    let onScreen = true;
+
+    const frame = (now: number) => {
+      // Framerate-independent: the same curve on a 60 Hz laptop and a 120 Hz display.
+      const dt = last ? Math.min((now - last) / 1000, 0.1) : 0;
+      last = now;
+      const k = 1 - Math.exp(-dt * CONVERGE);
+      lean.x += (target.x - lean.x) * k;
+      lean.y += (target.y - lean.y) * k;
+      el.style.setProperty('--tilt-x', `${lean.x.toFixed(3)}deg`);
+      el.style.setProperty('--tilt-y', `${lean.y.toFixed(3)}deg`);
+      const left = Math.abs(target.x - lean.x) + Math.abs(target.y - lean.y);
+      if (left > 0.01) raf = requestAnimationFrame(frame);
+      else { raf = 0; last = 0; }
     };
+
+    const onMove = (e: PointerEvent) => {
+      if (!onScreen) return;
+      target.x = TILT - ((e.clientY / window.innerHeight) * 2 - 1) * PITCH;
+      target.y = ((e.clientX / window.innerWidth) * 2 - 1) * YAW;
+      if (!raf) { last = 0; raf = requestAnimationFrame(frame); }
+    };
+
+    // Once the hero has scrolled away there is nothing to lean: stop taking the pointer, and
+    // let the ring relax back to its resting tilt instead of freezing mid-lean.
+    const io = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (onScreen) return;
+      target.x = TILT;
+      target.y = 0;
+      if (!raf) { last = 0; raf = requestAnimationFrame(frame); }
+    });
+    io.observe(el);
+
     window.addEventListener('pointermove', onMove, { passive: true });
-    return () => window.removeEventListener('pointermove', onMove);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      io.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   const n = HERO_SCREENS.length;
