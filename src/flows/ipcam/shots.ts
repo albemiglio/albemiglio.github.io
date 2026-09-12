@@ -9,7 +9,6 @@ import type { Shot } from '../ShotScene';
  * `focus` names the region that carries the step's meaning, in fractions of the capture.
  */
 export const ipcamShots: Step<Shot>[] = [
-  { id: 'grid', label: 'Cameras', ms: 2400, state: { src: '/shots/ipcam/grid.webp', alt: 'Le telecamere di casa, tutte in diretta nella stessa griglia', focus: { x: 0.19, y: 0.02, w: 0.45 } } },
   { id: 'live', label: 'Live', ms: 2600, state: { src: '/shots/ipcam/live.webp', alt: 'La diretta di una telecamera', focus: { x: 0.2, y: 0.02, w: 0.55 } } },
   { id: 'ptz', label: 'Pan / tilt', ms: 2400, state: { src: '/shots/ipcam/ptz.webp', alt: "I comandi che muovono l'obiettivo", focus: { x: 0.2, y: 0.58, w: 0.42 } } },
   { id: 'talk', label: 'Talk', ms: 2200, state: { src: '/shots/ipcam/talk.webp', alt: 'Il canale audio a due vie aperto verso la telecamera', focus: { x: 0.24, y: 0.58, w: 0.42 } } },
