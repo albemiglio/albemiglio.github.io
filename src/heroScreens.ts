@@ -7,19 +7,20 @@ export type HeroScreen = { src: string; alt: string; label: string; px: [number,
 // Each entry also names a region of its capture, not the whole thing: a panel can only show about
 // as many source pixels as it has of its own, so a whole application scaled into one is unreadable.
 export const HERO_SCREENS: HeroScreen[] = [
-  {
-    src: '/shots/pastis/produzione.webp',
-    alt: 'Le lavorazioni pianificate di un laboratorio di pasticceria',
-    label: 'pastis · production, stock and orders for a pastry lab',
-    px: [1512, 982],
-    crop: { x: 0.175, y: 0.16, w: 0.435, h: 0.275 },   // the production table: header and four rows
-  },
+  // asd opens: on a phone only the first one is shown, and the chapter right under it is ipcam's.
   {
     src: '/shots/asd/tesserati.webp',
     alt: 'I tesserati di un club, con visite mediche e documenti',
     label: 'asd · members, fees and paperwork for a sports club',
     px: [1512, 982],
     crop: { x: 0.215, y: 0.262, w: 0.345, h: 0.335 },  // five members, their squad and their medical
+  },
+  {
+    src: '/shots/ipcam/live.webp',
+    alt: 'La diretta di una telecamera, con i suoi comandi',
+    label: 'ipcam · self-hosted live video for home cameras',
+    px: [1512, 982],
+    crop: { x: 0.2, y: 0.02, w: 0.75, h: 0.71 },       // the camera's name, its live badge and the picture
   },
   {
     src: '/shots/med/domanda.webp',

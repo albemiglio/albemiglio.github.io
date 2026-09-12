@@ -2,7 +2,6 @@ import { useRef } from 'react';
 import { Chapter, type AnyChapterDef, type ChapterDef } from './Chapter';
 import { useActiveChapter } from '../flows/useActiveChapter';
 import { ipcamShots } from '../flows/ipcam/shots';
-import { pastisShots } from '../flows/pastis/shots';
 import { medShots } from '../flows/med/shots';
 import { asdShots } from '../flows/asd/shots';
 import type { Shot } from '../flows/ShotScene';
@@ -32,20 +31,13 @@ const asd: ChapterDef<Shot> = {
   fact: '36 organisations live · asd.albemiglio.it', color: 'var(--c-asd)', device: deviceOf('asd'), steps: asdShots, shots: true,
 };
 
-// Real screens of the running product rather than a reconstruction of it (see ShotScene).
-const pastis: ChapterDef<Shot> = {
-  id: 'pastis', title: 'The lab knows what it is missing before the morning does', audience: 'pastry labs',
-  blurb: 'Every production explodes down to the raw ingredients, so stock, purchases and orders answer one question: what has to happen today.',
-  fact: 'In production at pastis.albemiglio.it', color: 'var(--c-pastis)', device: deviceOf('pastis'), steps: pastisShots, shots: true,
-};
-
 const med: ChapterDef<Shot> = {
   id: 'med', title: 'The exam, with the clock running', audience: 'medical school candidates',
   blurb: 'Simulations built like the real admission test, corrected the moment you answer, with the score broken down by subject.',
   fact: 'Live at med.albemiglio.it', color: 'var(--c-med)', device: deviceOf('med'), steps: medShots, shots: true,
 };
 
-export const chapters: AnyChapterDef[] = [ipcam, asd, pastis, med];
+export const chapters: AnyChapterDef[] = [ipcam, asd, med];
 const ids = chapters.map((c) => c.id);
 
 export function Work() {

@@ -3,7 +3,7 @@
    --line:#ddd;--line-soft:#ebebeb;--accent:#0f6fbf;--accent-soft:#e8f2fb;
    --ok:#1f7a43;--ok-soft:#e9f4ed;--warn:#756a1a;--warn-soft:#f4f0d9;--bad:#b23c25;--bad-soft:#fbeae6;
    radius: --radius-lg:.75rem (12px), --radius-xl:1rem (16px), pills at 999px. Light UI inside the
-   dark phone shell (per spec), same convention as pastis. Right/wrong text-on-soft-bg pairs
+   dark phone shell (per spec). Right/wrong text-on-soft-bg pairs
    measured at 4.75:1 (ok) and 5.05:1 (bad) — both clear the WCAG AA 4.5:1 floor. */
 .med { position: absolute; inset: 0; background: #fff; color: #222; font-family: var(--font-sans); overflow: hidden; }
 .med__panel { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 14px 14px 16px; gap: 10px; }

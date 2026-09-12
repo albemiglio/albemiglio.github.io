@@ -55,7 +55,7 @@ main { position: relative; z-index: 1; }
 .hero__panel img { position: absolute; height: auto; display: block; border-radius: 0.8cqw; }
 
 /* The still: the whole hero on phones, and what reduced motion gets instead of a turning ring. */
-.hero__still { position: relative; overflow: hidden; border-radius: 14px; aspect-ratio: 2.44; background: #0e1014; box-shadow: 0 24px 60px rgb(0 0 0 / 0.45); display: none; }
+.hero__still { position: relative; overflow: hidden; border-radius: 14px; aspect-ratio: 1.59; background: #0e1014; box-shadow: 0 24px 60px rgb(0 0 0 / 0.45); display: none; }
 .hero__still img { position: absolute; height: auto; display: block; }
 
 @media (prefers-reduced-motion: reduce) {

@@ -47,7 +47,7 @@ test.describe('reduced motion', () => {
     await page.waitForTimeout(6200);
     await expect(caption).toHaveText(first!);
     await expect(page.locator('#work-ipcam .screen .shot')).toHaveAttribute('src', /^\/shots\/ipcam\//);
-    await expect(page.locator('#work-pastis .screen .shot')).toHaveAttribute('src', /^\/shots\/pastis\//);
+    await expect(page.locator('#work-med .screen .shot')).toHaveAttribute('src', /^\/shots\/med\//);
   });
 });
 

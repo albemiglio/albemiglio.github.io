@@ -19,9 +19,9 @@ test('renders the asd chapter alongside ipcam', () => {
   expect(screen.getByRole('figure', { name: /^asd —/i })).toBeInTheDocument();
 });
 
-test('renders all four chapters', () => {
+test('renders every chapter', () => {
   render(<MotionProvider forceReduced><Work /></MotionProvider>);
-  expect(screen.getAllByRole('figure')).toHaveLength(4);
+  expect(screen.getAllByRole('figure')).toHaveLength(3);
   expect(screen.getByRole('heading', { name: /the exam, with the clock running/i })).toBeInTheDocument();
   expect(screen.getByRole('figure', { name: /^med —/i })).toBeInTheDocument();
 });
