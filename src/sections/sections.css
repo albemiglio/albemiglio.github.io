@@ -1,3 +1,6 @@
+main { position: relative; z-index: 1; }
+#portfolio, #about, #contact, .footer { background: var(--bg); }
+
 .btn {
   display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.1rem;
   border: 1px solid var(--border); border-radius: 999px;
@@ -21,15 +24,41 @@
 .hero__sub { color: var(--muted); max-width: 40ch; line-height: 1.55; margin: 0 0 1.75rem; }
 .hero__cta { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 .hero__stage { width: 100%; max-width: 540px; justify-self: end; }
-/* Just tall enough for the tallest panel: the caption belongs under it, not a screen away. */
-.hero__sculpture { width: 100%; aspect-ratio: 1.35; display: grid; align-content: center; }
+/* Just tall enough for the tallest panel: the caption belongs under it, not a screen away.
+   It is also the container the ring measures itself against: every distance inside the ring is
+   written in `cqw`, so the whole thing scales with the box and nothing is in pixels. */
+.hero__sculpture { width: 100%; aspect-ratio: 1.35; display: grid; align-content: center; container-type: inline-size; }
 .hero__caption { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); margin: 0.9rem 0 0; text-align: center; }
-/* The still the hero shows until the scene opens, and the whole hero on phones. `overflow: hidden`
-   is what makes the crop a crop: the image inside is scaled past the box on purpose. */
-.hero__still { position: relative; overflow: hidden; border-radius: 14px; aspect-ratio: 2.44; background: #0e1014; box-shadow: 0 24px 60px rgb(0 0 0 / 0.45); }
-/* Blown up until the crop fills the box, then pulled into place — see cropStyle(). The
-   width/left/top come from the screen definition, so only the box lives here. */
+
+/* The ring of screens. `perspective` is the camera distance in the same units as the panels —
+   about 2.65 box widths, which is what puts the turn's foreshortening where the eye expects it. */
+.hero__ring-stage { position: relative; width: 100%; aspect-ratio: 1.35; perspective: 265cqw; }
+/* Two nested rotations on purpose: the pointer tilt has to answer immediately, and it would
+   inherit the ring's own long turn if they shared a transform. */
+.hero__tilt {
+  position: absolute; inset: 0; transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-x, -4.6deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 260ms ease-out;
+}
+.hero__ring { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 1200ms cubic-bezier(0.45, 0, 0.55, 1); }
+/* Centred by `margin: auto` inside the ring, so the transform carries only the turn. */
+.hero__panel {
+  position: absolute; inset: 0; margin: auto; overflow: hidden;
+  border-radius: 1.2cqw; padding: 1.45cqw; background: #2b3038;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.45);
+  backface-visibility: hidden;
+  transition: opacity 1200ms ease-in-out;
+}
+/* Blown up until the crop fills the panel, then pulled into place — see cropStyle(). */
+.hero__panel img { position: absolute; height: auto; display: block; border-radius: 0.8cqw; }
+
+/* The still: the whole hero on phones, and what reduced motion gets instead of a turning ring. */
+.hero__still { position: relative; overflow: hidden; border-radius: 14px; aspect-ratio: 2.44; background: #0e1014; box-shadow: 0 24px 60px rgb(0 0 0 / 0.45); display: none; }
 .hero__still img { position: absolute; height: auto; display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__tilt, .hero__ring, .hero__panel { transition: none; }
+}
 @media (max-width: 900px) {
   /* Phones: the hero is as tall as its content, so no dead band before "Work". */
   .hero { min-height: auto; padding: clamp(3.5rem, 10vh, 5rem) 0 0.5rem; }
@@ -37,6 +66,9 @@
   .hero__stage { max-width: none; justify-self: stretch; }
   .hero__sculpture { aspect-ratio: auto; margin: 0.75rem 0 0; }
   .hero__caption { margin-top: 0.6rem; text-align: left; }
+  /* No room for a ring at this width: one real screen, cropped to what can be read here. */
+  .hero__ring-stage { display: none; }
+  .hero__still { display: block; }
 }
 
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.9rem; }

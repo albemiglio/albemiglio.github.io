@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Chapter, type AnyChapterDef, type ChapterDef } from './Chapter';
 import { useActiveChapter } from '../flows/useActiveChapter';
 import { ipcamShots } from '../flows/ipcam/shots';
@@ -7,8 +7,6 @@ import { medShots } from '../flows/med/shots';
 import { asdShots } from '../flows/asd/shots';
 import type { Shot } from '../flows/ShotScene';
 import { CHAPTERS, type ChapterMeta } from '../chapters';
-import { useSceneProgress } from '../scene/useSceneProgress';
-import { sceneStore } from '../scene/store';
 import './work.css';
 
 // The scene places a 3D device per chapter from the registry; taking the DOM frame's kind from
@@ -52,9 +50,7 @@ const ids = chapters.map((c) => c.id);
 
 export function Work() {
   const ref = useRef<HTMLElement>(null);
-  useSceneProgress(ref);
   const { activeId, register } = useActiveChapter(ids);
-  useEffect(() => { sceneStore.set({ activeId }); }, [activeId]);
   return (
     <section ref={ref} id="work" className="section" aria-label="Work">
       <div className="rail"><h2 className="section-title">Work</h2></div>

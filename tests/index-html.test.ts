@@ -5,7 +5,6 @@ import { render } from '@testing-library/react';
 import { content } from '../src/content';
 import { Hero } from '../src/sections/Hero';
 import { MotionProvider } from '../src/MotionProvider';
-import { sceneStore } from '../src/scene/store';
 
 // index.html carries a static snapshot of the Hero section (P3-R13/F5) so the LCP image and
 // hero text paint before React mounts. This guards it against drifting out of sync with
@@ -30,28 +29,41 @@ test('static hero snapshot has every CTA label and href', () => {
 // replaces this markup with <Hero/> wholesale on mount (P3-R13/F5), so the two need to match
 // attribute-for-attribute, not just contain the same words. This renders the real component and
 // diffs it against the static snapshot's own <img>/<source>/CTA-anchor attributes.
-const PICTURE_ATTRS = ['src', 'loading', 'fetchpriority', 'decoding', 'width', 'height', 'style'];
+const PICTURE_ATTRS = ['src', 'loading', 'fetchpriority', 'decoding', 'width', 'height'];
+// Style through the CSSOM, not the raw attribute: React's serialiser writes `a:1;b:2` and the
+// hand-written snapshot the same, but a browser reads both back as `a: 1; b: 2` — comparing the
+// strings would fail on spacing alone.
+const styleOf = (el: Element) => (el as HTMLElement).style.cssText;
 function attrMap(el: Element): Record<string, string | null> {
   const map: Record<string, string | null> = {};
   for (const name of PICTURE_ATTRS) map[name] = el.getAttribute(name);
+  map.style = styleOf(el);
   return map;
 }
 
 function renderHero() {
-  sceneStore.set({ sceneOpen: false });
   return render(createElement(MotionProvider, { forceReduced: true, children: createElement(Hero) }));
 }
 
-test('static hero snapshot matches the rendered <img> attributes exactly', () => {
+test('static hero snapshot matches every rendered <img>, attribute for attribute', () => {
   const { container } = renderHero();
-  const renderedImg = container.querySelector('img');
-  expect(renderedImg).toBeTruthy();
+  const rendered = [...container.querySelectorAll('img')];
+  expect(rendered.length).toBeGreaterThan(0);
 
   const staticDoc = new DOMParser().parseFromString(html, 'text/html');
-  const staticImg = staticDoc.querySelector('#root img');
-  expect(staticImg).toBeTruthy();
+  const snapshot = [...staticDoc.querySelectorAll('#root img')];
 
-  expect(attrMap(renderedImg!)).toEqual(attrMap(staticImg!));
+  expect(snapshot.map(attrMap)).toEqual(rendered.map(attrMap));
+});
+
+// The ring's boxes and turns are computed (panelBox, the transform per panel), so the snapshot
+// carries numbers no substring check would notice going stale. Compare the panels themselves.
+test('static hero snapshot has the same ring panels as the component', () => {
+  const { container } = renderHero();
+  const rendered = [...container.querySelectorAll('.hero__panel')].map(styleOf);
+  const staticDoc = new DOMParser().parseFromString(html, 'text/html');
+  const snapshot = [...staticDoc.querySelectorAll('#root .hero__panel')].map(styleOf);
+  expect(snapshot).toEqual(rendered);
 });
 
 test('the static hero names the same screen the component does', () => {

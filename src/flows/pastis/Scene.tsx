@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useMotionPrefs } from '../../MotionProvider';
-import { sceneStore } from '../../scene/store';
 import { columns, flavours, order } from './data';
 import type { PastisState } from './steps';
 import './pastis.css';
@@ -18,24 +17,12 @@ export function PastisScene({ state }: { state: PastisState }) {
   const [tiers, setTiers] = useState<number>(reduced ? state.tiers : 1);
   useEffect(() => {
     if (!state.configuring) { setTiers(state.tiers); return; }
-    // F4/P3-R18: reduced mode never runs this counter — the store already holds tiers:3 from
-    // the step state Chapter.tsx published, which is what the 3D cake reads.
     if (reduced) { setTiers(state.tiers); return; }
-    // F4/P3-R18: the 3D cake (src/scene/objects/Cake.tsx) reads stepState.pastis.tiers, not this
-    // local counter — publish the displayed count on every tick so the sculpture follows it.
-    // Spread from this Scene's own `state`, not from the store: Chapter's effect (the parent)
-    // writes the full step state AFTER this child's effect ran, so reading the store here would
-    // see the previous step and either no-op or race the parent's write.
-    const publish = (n: number) => {
-      sceneStore.set((s) => ({ stepState: { ...s.stepState, pastis: { ...state, tiers: n as PastisState['tiers'] } } }));
-    };
     setTiers(1);
-    publish(1);
     let n = 1;
     const id = setInterval(() => {
       n += 1;
       setTiers(n);
-      publish(n);
       if (n >= state.tiers) clearInterval(id);
     }, dur.base * 1000);
     return () => clearInterval(id);

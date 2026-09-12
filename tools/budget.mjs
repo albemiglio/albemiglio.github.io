@@ -4,10 +4,9 @@ import { gzipSync } from 'node:zlib';
 
 const DIST = process.env.DIST ? resolve(process.env.DIST) : resolve(import.meta.dirname, '../dist');
 const INITIAL_LIMIT = 120 * 1024;
-const LAZY_LIMIT = 300 * 1024;
-// The four chapter Scenes (vite.config.ts's 'flows' manualChunks entry) are their own lazy
-// chunk, separate from the three.js 'scene' chunk they share the stage with (P3-R14/F4) — small
-// budget of its own, not folded into the scene sum below.
+// Anything not referenced by the entry HTML is lazy. The four chapter Scenes
+// (vite.config.ts's 'flows' group) get their own budget; nothing else should be down here.
+const LAZY_LIMIT = 40 * 1024;
 const FLOWS_LIMIT = 60 * 1024; // the four Scenes carry motion's layout/gesture code with them
 
 const gz = (file) => gzipSync(readFileSync(file)).length;
@@ -25,8 +24,7 @@ for (const ref of new Set(refs)) {
 console.log(`initial JS: ${kb(initial)} KB gz (limit ${kb(INITIAL_LIMIT)} KB)`);
 
 // The entry HTML references its own initial JS; anything not referenced is only reachable
-// through a lazy import (SceneMount's, or a chapter object's own) and counts as part of the
-// lazily-loaded scene payload.
+// through a lazy import (a chapter Scene's) and counts as lazily-loaded payload.
 const referenced = new Set(refs);
 const allJs = readdirSync(resolve(DIST, 'assets')).filter((f) => f.endsWith('.js'));
 let lazySize = 0;
@@ -42,7 +40,7 @@ for (const f of allJs) {
   lazySize += size;
   console.log(`lazy: assets/${f}: ${kb(size)} KB gz`);
 }
-console.log(`lazy scene chunks: ${kb(lazySize)} KB gz (limit ${kb(LAZY_LIMIT)} KB)`);
+console.log(`other lazy chunks: ${kb(lazySize)} KB gz (limit ${kb(LAZY_LIMIT)} KB)`);
 console.log(`flows chunk: ${kb(flowsSize)} KB gz (limit ${kb(FLOWS_LIMIT)} KB)`);
 
 if (initial > INITIAL_LIMIT || lazySize > LAZY_LIMIT || flowsSize > FLOWS_LIMIT) process.exit(1);

@@ -1,11 +1,9 @@
-import { Suspense, useCallback, useEffect, useRef, type ComponentType, type CSSProperties, type RefCallback } from 'react';
+import { Suspense, useCallback, useRef, type ComponentType, type CSSProperties, type RefCallback } from 'react';
 import type { Step } from '../flows/types';
 import { useFlowPlayer } from '../flows/player';
 import { ScreenPanel } from '../flows/ScreenPanel';
 import { StepBar } from '../flows/StepBar';
 import { useMotionPrefs } from '../MotionProvider';
-import { sceneStore } from '../scene/store';
-import { useRectRegistration } from '../scene/useRectRegistration';
 import { ShotScene, type Shot } from '../flows/ShotScene';
 import { useWide } from '../useWide';
 
@@ -24,8 +22,6 @@ export function Chapter<S>({ def, active, register }: { def: ChapterDef<S>; acti
   const player = useFlowPlayer(def.steps, { active, reduced });
   const wide = useWide();
   const articleRef = useRef<HTMLElement>(null);
-  useEffect(() => { sceneStore.set((s) => ({ stepState: { ...s.stepState, [def.id]: player.state } })); }, [def.id, player.state]);
-  useRectRegistration(def.id, 'chapter', articleRef);
   const { Scene } = def;
   // A stable callback: a fresh closure per render would re-register the article on every step tick.
   const articleRef_ = useCallback((el: HTMLElement | null) => { articleRef.current = el; register(el); }, [register]);
