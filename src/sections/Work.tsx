@@ -30,7 +30,7 @@ const ipcam: ChapterDef<Shot> = {
 
 const asd: ChapterDef<Shot> = {
   id: 'asd', title: 'A club that runs itself between two trainings', audience: 'sports clubs',
-  blurb: 'Members, medical certificates, sign-ups the families fill in themselves, fees and the receipts the accountant asks for.',
+  blurb: 'Members, fees, deadlines, sponsors, kit and documents in one place, with the sign-ups families fill in themselves and the match posts for the socials.',
   fact: '36 organisations live · asd.albemiglio.it', color: 'var(--c-asd)', device: deviceOf('asd'), steps: asdShots, shots: true,
 };
 
