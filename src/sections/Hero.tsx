@@ -45,6 +45,8 @@ export function Hero() {
   const { name, title, sub, ctas } = content.hero;
   const sculptureRef = useRef<HTMLDivElement>(null);
   useRectRegistration('hero', 'object', sculptureRef);
+  // Named, or the hero is three anonymous fragments of interface beside a name.
+  const shown = HERO_SCREENS[useSceneSelector((s) => s.heroIndex)] ?? HERO_SCREENS[0];
   return (
     <section id="hero" className="hero">
       <div className="rail hero__grid">
@@ -60,8 +62,11 @@ export function Hero() {
             ))}
           </div>
         </div>
-        <div className="hero__sculpture" ref={sculptureRef} aria-hidden="true">
-          <HeroFallback />
+        <div className="hero__stage">
+          <div className="hero__sculpture" ref={sculptureRef} aria-hidden="true">
+            <HeroFallback />
+          </div>
+          <p className="hero__caption">{shown.label}</p>
         </div>
       </div>
     </section>

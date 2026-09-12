@@ -4,6 +4,8 @@ import { heroExitFromRect, type Pt, type Rect } from './math';
 export type { Rect } from './math';
 export type ChapterRects = { object?: Rect; chapter?: Rect };
 export type SceneState = {
+  /** Which hero panel is square to the viewer, so the DOM can name it. */
+  heroIndex: number;
   progress: number;
   activeId: string | null;
   rects: Record<string, ChapterRects>;
@@ -14,6 +16,7 @@ export type SceneState = {
 
 let state: SceneState = {
   progress: 0,
+  heroIndex: 0,
   activeId: null,
   rects: {},
   stepState: {},

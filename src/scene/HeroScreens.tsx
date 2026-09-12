@@ -50,6 +50,7 @@ export function HeroScreens({ tilt, still = false }: { tilt?: { current: HeroTil
   const centre = useMemo(() => new Vector3(), []);
   const base = useRef({ visible: false, x: 0, y: 0, scale: 0, active: false });
   const spin = useRef(0);
+  const shown = useRef(0);
   const reduced = useRef(false);
 
   const textures = useTexture(HERO_SCREENS.map((s) => s.src));
@@ -86,7 +87,10 @@ export function HeroScreens({ tilt, still = false }: { tilt?: { current: HeroTil
       camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
       rectCenterOnZPlane(rect, s.viewport, camera, centre);
       const world = rectToWorld(rect, s.viewport, CAMERA_FOV, CAMERA_DIST, view.width / view.height);
-      b.scale = Math.min(world.scaleW, world.scaleH) / 2;
+      // Half the box's WIDTH, not its smaller side: the panels are sized in these units, so
+      // tying them to the height too would shrink them whenever the box gets shorter — and the
+      // box is only as tall as the tallest panel plus its caption.
+      b.scale = world.scaleW / 2;
       b.x = centre.x;
       b.y = centre.y;
       b.active = heroExitOf(s) < 1;
@@ -115,6 +119,9 @@ export function HeroScreens({ tilt, still = false }: { tilt?: { current: HeroTil
     const p = ((spin.current % cycle) - HOLD) / TURN;
     const e = p <= 0 ? 0 : p >= 1 ? 1 : p * p * (3 - 2 * p);
     const angle = (rest + e) * step;
+    // Which panel is square to the viewer, for the caption in the DOM to name.
+    const front = ((-rest % HERO_SCREENS.length) + HERO_SCREENS.length) % HERO_SCREENS.length;
+    if (front !== shown.current) { shown.current = front; sceneStore.set({ heroIndex: front }); }
     for (let i = 0; i < g.children.length; i++) {
       const panel = g.children[i];
       const a = angle + i * step;

@@ -54,6 +54,15 @@ test('static hero snapshot matches the rendered <img> attributes exactly', () =>
   expect(attrMap(renderedImg!)).toEqual(attrMap(staticImg!));
 });
 
+test('the static hero names the same screen the component does', () => {
+  const { container } = renderHero();
+  const rendered = container.querySelector('.hero__caption')?.textContent;
+  const staticDoc = new DOMParser().parseFromString(html, 'text/html');
+  const snapshot = staticDoc.querySelector('#root .hero__caption')?.textContent;
+  expect(rendered).toBeTruthy();
+  expect(snapshot).toBe(rendered);
+});
+
 test('the preloaded LCP image is the one the static hero actually shows', () => {
   const staticDoc = new DOMParser().parseFromString(html, 'text/html');
   const preload = staticDoc.querySelector('link[rel="preload"][as="image"]');
