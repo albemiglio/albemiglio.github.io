@@ -18,8 +18,15 @@
   margin-right: calc(-1 * (clamp(1rem, 4vw, 2.5rem) + max(0px, (100vw - var(--maxw)) / 2)));
 }
 
+/* L'ultimo capitolo non è seguito da un altro capitolo ma da una sezione nuova: la sua coda
+   di scroll, che negli altri viene coperta dal capitolo successivo, qui resta un buco. Le serve
+   quel tanto che basta a far scorrere i suoi passi, non l'intera corsa. */
+.chapter:last-of-type, .chapter:last-of-type .chapter__grid { min-height: 94vh; }
+
 @media (max-width: 900px) {
   .chapter { min-height: auto; padding: 3rem 0 3.5rem; }
+  .chapter:last-of-type, .chapter:last-of-type .chapter__grid { min-height: auto; }
+  .chapter:last-of-type { padding-bottom: 1rem; }
   /* `display: contents` lifts the text block's children into the chapter grid, so the running
      product can sit between the title and the supporting copy — the order the eye wants — without
      a second copy of the markup for one breakpoint. */
